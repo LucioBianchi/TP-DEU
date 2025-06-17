@@ -1,0 +1,50 @@
+body.dark-mode {
+  background-color: #111;
+  color: #eee;
+}
+
+body.dark-mode .bg-dark {
+  background-color: #222 !important;
+}
+
+.large-text {
+  font-size: 1.25rem;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  background: #222;
+  color: #fff;
+}
+.sidebar-buttons {
+  display: flex;
+  flex-direction: column;
+  background: #111;
+  padding: 0.5em 0;
+  min-width: 60px;
+  align-items: center;
+}
+.sidebar-buttons button {
+  background: none;
+  border: none;
+  color: #fff;
+  padding: 1em;
+  margin: 0.2em 0;
+  font-size: 1.5em;
+  cursor: pointer;
+  outline: none;
+}
+.sidebar-buttons button[aria-selected="true"] {
+  background: #444;
+}
+.sidebar-content {
+  flex: 1;
+  padding: 1em;
+  background: #fff;
+  color: #222;
+}
+[role="tabpanel"][hidden] {
+  display: none;
+}
