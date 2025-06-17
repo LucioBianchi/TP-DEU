@@ -1,0 +1,36 @@
+import React from "react";
+import FiltersPanel from "./FiltersPanel/FiltersPanel";
+import InfoPanel from "./InfoPanel/InfoPanel";
+
+export default function Panel({ selected }) {
+  let content = null;
+  switch (selected) {
+    case "filtros":
+      content = <FiltersPanel />;
+      break;
+    case "info":
+      content = <InfoPanel />;
+      break;
+    case "usuario":
+      content = <UserPanel />;
+      break;
+    case "config":
+      content = <ConfigPanel />;
+      break;
+    default:
+      content = null;
+  }
+
+  if (!content) return null;
+
+  return (
+    <aside
+      className="panel-overlay"
+      role="region"
+      aria-label="Panel lateral"
+      tabIndex={-1}
+    >
+      {content}
+    </aside>
+  );
+}

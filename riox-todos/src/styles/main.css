@@ -1,0 +1,60 @@
+html, body, #root, .app-root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.app-root {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* El mapa ocupa todo el fondo */
+.leaflet-container {
+  position: absolute !important;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 1;
+}
+
+/* Sidebar fijo a la izquierda */
+.sidebar {
+  position: absolute;
+  top: 0; left: 0;
+  height: 100vh;
+  width: 70px;
+  background: #222;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Panel flotante a la derecha del sidebar */
+.panel-overlay {
+  position: absolute;
+  top: 0;
+  left: 70px;
+  height: 100vh;
+  width: 320px;
+  background: #fff;
+  color: #222;
+  z-index: 20;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+  padding: 1.5em 1em;
+  overflow-y: auto;
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+  white-space: nowrap;
+}

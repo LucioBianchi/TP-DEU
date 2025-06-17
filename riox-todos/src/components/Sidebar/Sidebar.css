@@ -1,0 +1,44 @@
+.sidebar {
+  display: flex;
+  flex-direction: row;
+  min-width: 70px;
+  background: #222;
+  color: #fff;
+  height: 100vh;
+}
+
+.sidebar-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #111;
+  padding: 0.5em 0;
+  min-width: 70px;
+  height: 100vh;
+}
+
+.sidebar-buttons button {
+  background: none;
+  border: none;
+  color: #fff;
+  padding: 1.2em 0.5em;
+  margin: 0.2em 0;
+  font-size: 1.5em;
+  cursor: pointer;
+  outline: none;
+  width: 100%;
+}
+
+.sidebar-buttons button[aria-selected="true"] {
+  background: #444;
+}
+
+.sidebar-content {
+  flex: 1;
+  background: #fff;
+  color: #222;
+  min-width: 220px;
+  height: 100vh;
+  padding: 0;
+  overflow: hidden;
+}
