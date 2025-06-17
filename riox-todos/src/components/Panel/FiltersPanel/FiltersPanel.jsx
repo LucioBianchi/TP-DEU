@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 
-export default function FiltrosPanel() {
-  const [localidad, setLocalidad] = useState("");
-  const [agua, setAgua] = useState("");
-  const [arena, setArena] = useState("");
+export default function FiltersPanel({ filtros, setFiltros }) {
 
   const localidades = ["Todas", "Localidad 1", "Localidad 2", "Localidad 3"];
 
@@ -16,9 +13,9 @@ export default function FiltrosPanel() {
         <label htmlFor="localidad-select"><strong>Localidad</strong></label>
         <select
           id="localidad-select"
-          value={localidad}
-          onChange={e => setLocalidad(e.target.value)}
-          style={{ width: "100%" }}
+          value={filtros.localidad}
+          onChange={e => setFiltros(f => ({ ...f, localidad: e.target.value }))}
+          style={{ width: "100%", marginTop: "0.5em" }}
           aria-describedby="localidad-desc"
         >
           {localidades.map(loc => (
@@ -47,8 +44,8 @@ export default function FiltrosPanel() {
                 type="radio"
                 name="agua"
                 value={nivel}
-                checked={agua === nivel}
-                onChange={() => setAgua(nivel)}
+                checked={filtros.agua === nivel}
+                onChange={() => setFiltros(f => ({ ...f, agua: nivel }))}
               />{" "}
               {nivel}
             </label>
@@ -73,8 +70,8 @@ export default function FiltrosPanel() {
                 type="radio"
                 name="arena"
                 value={nivel}
-                checked={arena === nivel}
-                onChange={() => setArena(nivel)}
+                checked={filtros.arena === nivel}
+                onChange={() => setFiltros(f => ({ ...f, arena: nivel }))}
               />{" "}
               {nivel}
             </label>

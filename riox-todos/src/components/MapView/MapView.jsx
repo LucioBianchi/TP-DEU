@@ -3,14 +3,21 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { balnearios } from "../../data/balnearios";
 import "leaflet/dist/leaflet.css";
 
-export default function MapView() {
+export default function MapView({ filtros }) {
+  const balneariosFiltrados = balnearios.filter(b => {
+  const matchLocalidad = !filtros.localidad || filtros.localidad === "Todas" || b.localidad === filtros.localidad;
+  const matchAgua = !filtros.agua || b.agua === filtros.agua;
+  const matchArena = !filtros.arena || b.arena === filtros.arena;
+  return matchLocalidad && matchAgua && matchArena;
+  });
+  
   return (
     <MapContainer center={[-34.6037, -58.3816]} zoom={13} style={{ height: "100vh", width: "100%" }} aria-label="Mapa de balnearios">
       <TileLayer
         attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {balnearios.map(b => (
+      {balneariosFiltrados.map(b => (
         <Marker key={b.id} position={[b.lat, b.lng]}>
           <Popup>
             <strong>{b.nombre}</strong><br />

@@ -4,11 +4,11 @@ import InfoPanel from "./InfoPanel/InfoPanel";
 import UserPanel from "./UserPanel/UserPanel";
 import ConfigPanel from "./ConfigPanel/ConfigPanel";
 
-export default function Panel({ selected }) {
+export default function Panel({ selected, filtros, setFiltros }) {
   let content = null;
   switch (selected) {
     case "filtros":
-      content = <FiltersPanel />;
+      content = <FiltersPanel filtros={filtros} setFiltros={setFiltros} />;
       break;
     case "info":
       content = <InfoPanel />;

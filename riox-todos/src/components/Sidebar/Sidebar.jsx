@@ -11,23 +11,21 @@ const buttons = [
 
 export default function Sidebar({ selected, setSelected, children }) {
   return (
-    <aside className="sidebar" role="navigation" aria-label="Barra lateral">
-      <div className="sidebar-buttons" role="tablist" aria-orientation="vertical">
-        {buttons.map((btn, idx) => (
-          <button
-            key={btn.id}
-            role="tab"
-            aria-selected={selected === btn.id}
-            aria-controls={`panel-${btn.id}`}
-            tabIndex={selected === btn.id ? 0 : -1}
-            onClick={() => setSelected(btn.id)}
-            aria-label={btn.label}
-          >
-            <span className="icon" aria-hidden="true">{btn.icon}</span>
-          </button>
-        ))}
-      </div>
-      <div className="sidebar-content">{children}</div>
-    </aside>
+  <aside className="sidebar" aria-label="Barra lateral">
+      <div className="sidebar-buttons">
+      {buttons.map((btn) => (
+        <button
+          key={btn.id}
+          className={selected === btn.id ? "selected" : ""}
+          onClick={() => setSelected(btn.id)}
+          aria-label={btn.label}
+          aria-current={selected === btn.id ? "page" : undefined}
+        >
+          <span className="icon" aria-hidden="true">{btn.icon}</span>
+        </button>
+      ))}
+    </div>
+    <div className="sidebar-content">{children}</div>
+  </aside>
   );
 }
