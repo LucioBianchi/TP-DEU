@@ -12,7 +12,7 @@ export default function FiltrosPanel() {
       <h2 id="filtros-heading">Filtrar Balnearios</h2>
       <div aria-hidden="true" style={{ marginBottom: "1em" }} />
 
-      <div style={{ marginBottom: "1em" }}>
+      <div style={{ marginBottom: "2em" }}>
         <label htmlFor="localidad-select"><strong>Localidad</strong></label>
         <select
           id="localidad-select"
@@ -35,7 +35,7 @@ export default function FiltrosPanel() {
           background: "rgba(0, 123, 255, 0.08)",
           borderRadius: "8px",
           padding: "1em",
-          marginBottom: "1em",
+          marginBottom: "2em",
           border: "1px solid #007bff"
         }}
       >
@@ -61,7 +61,7 @@ export default function FiltrosPanel() {
           background: "rgba(40, 167, 69, 0.08)",
           borderRadius: "8px",
           padding: "1em",
-          marginBottom: "1em",
+          marginBottom: "2em",
           border: "1px solid #28a745"
         }}
       >
@@ -82,20 +82,68 @@ export default function FiltrosPanel() {
         </div>
       </fieldset>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.5em" }}>
-        <button type="button" style={{ width: "100%" }}>
-          Más cercano
-        </button>
-        <button type="button" style={{ width: "100%" }}>
-          Menos contaminado
-        </button>
-        <button type="button" style={{ width: "100%" }}>
-          Menos contaminación de Agua
-        </button>
-        <button type="button" style={{ width: "100%" }}>
-          Menos contaminación de Arena
-        </button>
-      </div>
+       <div style={{ display: "flex", flexDirection: "column", gap: "0.7em" }}>
+      <button
+        type="button"
+        style={{
+          width: "100%",
+          padding: "0.7em",
+          fontSize: "1em",
+          borderRadius: "1.5em",
+          background: "#007bff",
+          color: "#fff",
+          border: "none",
+          fontWeight: "bold"
+        }}
+      >
+        Más cercano
+      </button>
+      <button
+        type="button"
+        style={{
+          width: "100%",
+          padding: "0.7em",
+          fontSize: "1em",
+          borderRadius: "1.5em",
+          background: "#17a2b8",
+          color: "#fff",
+          border: "none",
+          fontWeight: "bold"
+        }}
+      >
+        Menos contaminado
+      </button>
+      <button
+        type="button"
+        style={{
+          width: "100%",
+          padding: "0.7em",
+          fontSize: "1em",
+          borderRadius: "1.5em",
+          background: "#28a745",
+          color: "#fff",
+          border: "none",
+          fontWeight: "bold"
+        }}
+      >
+        Menos contaminación de Agua
+      </button>
+      <button
+        type="button"
+        style={{
+          width: "100%",
+          padding: "0.7em",
+          fontSize: "1em",
+          borderRadius: "1.5em",
+          background: "#ffc107",
+          color: "#222",
+          border: "none",
+          fontWeight: "bold"
+        }}
+      >
+        Menos contaminación de Arena
+      </button>
+    </div>
     </form>
   );
 }

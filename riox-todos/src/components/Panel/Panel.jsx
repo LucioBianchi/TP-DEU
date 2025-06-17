@@ -1,6 +1,8 @@
 import React from "react";
 import FiltersPanel from "./FiltersPanel/FiltersPanel";
 import InfoPanel from "./InfoPanel/InfoPanel";
+import UserPanel from "./UserPanel/UserPanel";
+import ConfigPanel from "./ConfigPanel/ConfigPanel";
 
 export default function Panel({ selected }) {
   let content = null;

@@ -73,7 +73,8 @@ export default function InfoPanel() {
                 fontWeight: "bold",
                 cursor: "pointer",
                 outline: "none",
-                marginBottom: "0.25em"
+                marginBottom: "0.25em",
+                fontSize: "1em "
               }}
             >
               {section.label}

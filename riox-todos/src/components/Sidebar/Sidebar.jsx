@@ -23,7 +23,7 @@ export default function Sidebar({ selected, setSelected, children }) {
             onClick={() => setSelected(btn.id)}
             aria-label={btn.label}
           >
-            <span aria-hidden="true">{btn.icon}</span>
+            <span className="icon" aria-hidden="true">{btn.icon}</span>
           </button>
         ))}
       </div>
