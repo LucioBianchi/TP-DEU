@@ -1,31 +1,39 @@
-import React, { useState } from "react";
+import React from "react";
 import Sidebar from "./components/Sidebar/Sidebar";
 import MapView from "./components/MapView/MapView";
 import Panel from "./components/Panel/Panel";
 import { ConfigProvider } from "./context/ConfigContext.jsx";
+import { useAppState } from "./hooks/useAppState";
 
-export default function App() {
-  const [selected, setSelected] = useState("mapa");
-  const [filtros, setFiltros] = useState({
-    localidad: "",
-    agua: "",
-    arena: ""
-  });
+function AppContent() {
+  const { 
+    currentPage, 
+    filters,
+    navigateTo, 
+    updateFilters
+  } = useAppState();
 
   return (
+    <div className="app-root">
+      <MapView filters={filters} />
+      <Sidebar 
+        currentPage={currentPage} 
+        onNavigate={navigateTo}
+      >
+        <Panel
+          currentPage={currentPage}
+          filters={filters}
+          onFiltersChange={updateFilters}
+        />
+      </Sidebar>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
     <ConfigProvider>
-      <div className="app-root">
-        <MapView filtros={filtros}/>
-        <Sidebar selected={selected} setSelected={setSelected} />
-        {selected !== "mapa" && (
-          <Panel
-            selected={selected}
-            setSelected={setSelected}
-            filtros={filtros}
-            setFiltros={setFiltros}
-          />
-        )}
-      </div>
+      <AppContent />
     </ConfigProvider>
   );
 }

@@ -2,19 +2,23 @@ import React from "react";
 import { useConfig } from "../../../context/ConfigContext.jsx";
 
 export default function ConfigPanel() {
-  const { fontSize, setFontSize, iconSize, setIconSize } = useConfig();
+  const { config, updateConfig, resetConfig } = useConfig();
+
+  const handleConfigChange = (key, value) => {
+    updateConfig(key, value);
+  };
 
   return (
     <section aria-labelledby="config-header">
-      <h2 id="config-header">Configuración</h2>
+      <h2 id="config-header">Configuración de Accesibilidad</h2>
       <div aria-hidden="true" style={{ marginBottom: "1em" }} />
 
-      <div style={{ marginBottom: "1em" }}>
+      <div style={{ marginBottom: "1.5em" }}>
         <label htmlFor="font-size-select"><strong>Tamaño de la letra</strong></label>
         <select
           id="font-size-select"
-          value={fontSize}
-          onChange={e => setFontSize(e.target.value)}
+          value={config.fontSize}
+          onChange={e => handleConfigChange('fontSize', e.target.value)}
           style={{ width: "100%", marginTop: "0.5em" }}
         >
           <option value="small">Pequeño</option>
@@ -23,12 +27,12 @@ export default function ConfigPanel() {
         </select>
       </div>
 
-      <div>
+      <div style={{ marginBottom: "1.5em" }}>
         <label htmlFor="icon-size-select"><strong>Tamaño de los iconos</strong></label>
         <select
           id="icon-size-select"
-          value={iconSize}
-          onChange={e => setIconSize(e.target.value)}
+          value={config.iconSize}
+          onChange={e => handleConfigChange('iconSize', e.target.value)}
           style={{ width: "100%", marginTop: "0.5em" }}
         >
           <option value="small">Pequeño</option>
@@ -36,6 +40,49 @@ export default function ConfigPanel() {
           <option value="large">Grande</option>
         </select>
       </div>
+
+      <div style={{ marginBottom: "1.5em" }}>
+        <label htmlFor="font-family-select"><strong>Familia de fuente</strong></label>
+        <select
+          id="font-family-select"
+          value={config.fontFamily}
+          onChange={e => handleConfigChange('fontFamily', e.target.value)}
+          style={{ width: "100%", marginTop: "0.5em" }}
+        >
+          <option value="default">Predeterminada</option>
+          <option value="dyslexic">Dyslexic-friendly</option>
+          <option value="serif">Serif</option>
+          <option value="monospace">Monospace</option>
+        </select>
+      </div>
+
+      <div style={{ marginBottom: "2em" }}>
+        <label style={{ display: "flex", alignItems: "center", gap: "0.5em" }}>
+          <input
+            type="checkbox"
+            checked={config.reducedMotion}
+            onChange={e => handleConfigChange('reducedMotion', e.target.checked)}
+          />
+          <strong>Movimiento reducido</strong>
+        </label>
+      </div>
+
+      <button
+        type="button"
+        onClick={resetConfig}
+        style={{
+          width: "100%",
+          padding: "0.7em",
+          fontSize: "1em",
+          borderRadius: "1.5em",
+          background: "#6c757d",
+          color: "#fff",
+          border: "none",
+          fontWeight: "bold"
+        }}
+      >
+        Restablecer configuración
+      </button>
     </section>
   );
 }

@@ -1,24 +1,40 @@
-import React, { useState } from "react";
+import React from "react";
+import { useBalnearios } from "../../../hooks/useBalnearios";
 
-export default function FiltersPanel({ filtros, setFiltros }) {
+export default function FiltersPanel({ filters, onFiltersChange }) {
+  const { uniqueValues, stats } = useBalnearios(filters);
 
-  const localidades = ["Todas", "Localidad 1", "Localidad 2", "Localidad 3"];
+  const handleFilterChange = (key, value) => {
+    onFiltersChange({ [key]: value });
+  };
 
   return (
     <form aria-label="Filtrar balnearios">
       <h2 id="filtros-heading">Filtrar Balnearios</h2>
       <div aria-hidden="true" style={{ marginBottom: "1em" }} />
 
+      {/* Estadísticas */}
+      <div style={{ 
+        background: "rgba(0,0,0,0.05)", 
+        padding: "0.5em", 
+        borderRadius: "4px", 
+        marginBottom: "1em",
+        fontSize: "0.9em"
+      }}>
+        <strong>Resultados:</strong> {stats.filtered} de {stats.total} balnearios
+      </div>
+
       <div style={{ marginBottom: "2em" }}>
         <label htmlFor="localidad-select"><strong>Localidad</strong></label>
         <select
           id="localidad-select"
-          value={filtros.localidad}
-          onChange={e => setFiltros(f => ({ ...f, localidad: e.target.value }))}
+          value={filters.localidad}
+          onChange={e => handleFilterChange('localidad', e.target.value)}
           style={{ width: "100%", marginTop: "0.5em" }}
           aria-describedby="localidad-desc"
         >
-          {localidades.map(loc => (
+          <option value="">Todas las localidades</option>
+          {uniqueValues.localidades.map(loc => (
             <option key={loc} value={loc}>{loc}</option>
           ))}
         </select>
@@ -38,14 +54,24 @@ export default function FiltersPanel({ filtros, setFiltros }) {
       >
         <legend><strong>Contaminación de Agua</strong></legend>
         <div style={{ display: "flex", gap: "1em", marginTop: "0.5em" }}>
-          {["Alta", "Media", "Baja"].map(nivel => (
+          <label>
+            <input
+              type="radio"
+              name="agua"
+              value=""
+              checked={filters.agua === ""}
+              onChange={() => handleFilterChange('agua', '')}
+            />{" "}
+            Todas
+          </label>
+          {uniqueValues.aguas.map(nivel => (
             <label key={nivel}>
               <input
                 type="radio"
                 name="agua"
                 value={nivel}
-                checked={filtros.agua === nivel}
-                onChange={() => setFiltros(f => ({ ...f, agua: nivel }))}
+                checked={filters.agua === nivel}
+                onChange={() => handleFilterChange('agua', nivel)}
               />{" "}
               {nivel}
             </label>
@@ -64,83 +90,30 @@ export default function FiltersPanel({ filtros, setFiltros }) {
       >
         <legend><strong>Contaminación de Arena</strong></legend>
         <div style={{ display: "flex", gap: "1em", marginTop: "0.5em" }}>
-          {["Alta", "Media", "Baja"].map(nivel => (
+          <label>
+            <input
+              type="radio"
+              name="arena"
+              value=""
+              checked={filters.arena === ""}
+              onChange={() => handleFilterChange('arena', '')}
+            />{" "}
+            Todas
+          </label>
+          {uniqueValues.arenas.map(nivel => (
             <label key={nivel}>
               <input
                 type="radio"
                 name="arena"
                 value={nivel}
-                checked={filtros.arena === nivel}
-                onChange={() => setFiltros(f => ({ ...f, arena: nivel }))}
+                checked={filters.arena === nivel}
+                onChange={() => handleFilterChange('arena', nivel)}
               />{" "}
               {nivel}
             </label>
           ))}
         </div>
       </fieldset>
-
-       <div style={{ display: "flex", flexDirection: "column", gap: "0.7em" }}>
-      <button
-        type="button"
-        style={{
-          width: "100%",
-          padding: "0.7em",
-          fontSize: "1em",
-          borderRadius: "1.5em",
-          background: "#007bff",
-          color: "#fff",
-          border: "none",
-          fontWeight: "bold"
-        }}
-      >
-        Más cercano
-      </button>
-      <button
-        type="button"
-        style={{
-          width: "100%",
-          padding: "0.7em",
-          fontSize: "1em",
-          borderRadius: "1.5em",
-          background: "#17a2b8",
-          color: "#fff",
-          border: "none",
-          fontWeight: "bold"
-        }}
-      >
-        Menos contaminado
-      </button>
-      <button
-        type="button"
-        style={{
-          width: "100%",
-          padding: "0.7em",
-          fontSize: "1em",
-          borderRadius: "1.5em",
-          background: "#28a745",
-          color: "#fff",
-          border: "none",
-          fontWeight: "bold"
-        }}
-      >
-        Menos contaminación de Agua
-      </button>
-      <button
-        type="button"
-        style={{
-          width: "100%",
-          padding: "0.7em",
-          fontSize: "1em",
-          borderRadius: "1.5em",
-          background: "#ffc107",
-          color: "#222",
-          border: "none",
-          fontWeight: "bold"
-        }}
-      >
-        Menos contaminación de Arena
-      </button>
-    </div>
     </form>
   );
 }
