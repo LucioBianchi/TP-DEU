@@ -1,37 +1,77 @@
-# My Static HTML App
+## 🚀 Instalación y Uso
 
-This project is a simple static HTML application that serves an HTML file using a Node.js server.
+```bash
+# Clonar el repositorio
+git clone [URL_DEL_REPO]
 
-## Project Structure
+# Entrar al directorio
+cd riox-todos
 
+# Instalar dependencias
+npm install
+
+# Ejecutar en desarrollo
+npm run dev
+
+# Build para producción
+npm run build
 ```
-my-static-html-app
-├── public
-│   └── index.html
-├── server.js
-└── README.md
+
+## ♿ Accesibilidad
+
+La aplicación está diseñada siguiendo las pautas WCAG 2.1:
+
+- **Navegación por teclado** completa
+- **ARIA labels** y roles apropiados
+- **Contraste** configurable
+- **Tamaño de fuente** ajustable
+- **Skip links** para navegación rápida
+
+## 📱 Funcionalidades
+
+### Mapa
+- Visualización de balnearios con marcadores
+- Información detallada en popups
+- Filtros por localidad
+
+### Paneles
+- **Filtros**: Filtrar balnearios por localidad
+- **Info**: Información sobre el proyecto y metodología
+- **Usuario**: Gestión de cuenta (preparado para Google Login)
+- **Config**: Ajustes de accesibilidad
+
+### Configuraciones
+- Tamaño de fuente (pequeño, mediano, grande)
+- Tamaño de iconos
+- Familia de fuente (incluyendo fuentes para dislexia)
+- Modo de alto contraste
+
+## �� Diseño
+
+- **Paleta de colores** accesible
+- **Tipografía** clara y legible
+- **Layout** responsive
+- **Iconos** descriptivos
+
+## 📊 Datos
+
+Los datos de balnearios incluyen:
+- Nombre y localidad
+- Coordenadas geográficas
+- Niveles de contaminación (agua y arena)
+- Descripciones detalladas
+
+## 🔧 Desarrollo
+
+```bash
+# Ejecutar tests
+npm test
+
+# Linting
+npm run lint
+
+# Build de desarrollo
+npm run build:dev
 ```
 
-## Getting Started
-
-To run this project, you need to have Node.js installed on your machine.
-
-### Installation
-
-1. Clone the repository or download the project files.
-2. Navigate to the project directory.
-
-### Running the Server
-
-1. Open a terminal and navigate to the project directory.
-2. Run the following command to start the server:
-
-   ```
-   node server.js
-   ```
-
-3. Open your web browser and go to `http://localhost:3000` to view the application.
-
-## License
-
-This project is licensed under the MIT License.
+**Nota**: Este proyecto es parte del trabajo práctico de la materia DUX.
