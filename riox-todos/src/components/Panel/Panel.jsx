@@ -12,7 +12,7 @@ const PANEL_COMPONENTS = {
   [PAGES.CONFIG]: ConfigPanel
 };
 
-export default function Panel({ currentPage, filters, onFiltersChange, onClose }) {
+export default function Panel({ currentPage, filters, onFiltersChange, onResetFilters, onClose }) {
   const pageConfig = getPageConfig(currentPage);
   
   // Solo manejar Escape para cerrar
@@ -42,7 +42,8 @@ export default function Panel({ currentPage, filters, onFiltersChange, onClose }
   const panelProps = {
     [PAGES.FILTROS]: {
       filters,
-      onFiltersChange
+      onFiltersChange,
+      onResetFilters
     },
     [PAGES.INFO]: {},
     [PAGES.USUARIO]: {},

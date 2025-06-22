@@ -11,7 +11,8 @@ function AppContent() {
     filters,
     navigateTo, 
     closePanel,
-    updateFilters
+    updateFilters,
+    resetFilters
   } = useAppState();
 
   return (
@@ -29,6 +30,7 @@ function AppContent() {
         currentPage={currentPage}
         filters={filters}
         onFiltersChange={updateFilters}
+        onResetFilters={resetFilters}
         onClose={closePanel}
       />
       
