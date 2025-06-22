@@ -25,12 +25,37 @@
   margin: 0.2em 0;
   font-size: 1.5em;
   cursor: pointer;
-  outline: none;
   width: 100%;
+  transition: background-color 0.2s, color 0.2s;
+  position: relative;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.sidebar-buttons button[aria-selected="true"] {
+/* Estilos de focus nativos */
+.sidebar-buttons button:focus {
+  outline: 2px solid #fff;
+  outline-offset: -2px;
+  background: #333;
+}
+
+.sidebar-buttons button:hover {
+  background: #333;
+}
+
+/* Estado seleccionado */
+.sidebar-buttons button.selected,
+.sidebar-buttons button[aria-current="page"] {
   background: #444;
+}
+
+.sidebar-buttons button.selected:focus,
+.sidebar-buttons button[aria-current="page"]:focus {
+  background: #555;
+  outline: 2px solid #fff;
+  outline-offset: -2px;
 }
 
 .sidebar-content {
@@ -41,4 +66,15 @@
   height: 100vh;
   padding: 0;
   overflow: hidden;
+}
+
+/* Indicador visual para el botón activo */
+.sidebar-buttons button.selected::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #007bff;
 }

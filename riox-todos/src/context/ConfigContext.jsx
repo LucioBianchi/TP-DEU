@@ -5,8 +5,7 @@ const ConfigContext = createContext();
 const defaultConfig = {
   fontSize: "medium",
   iconSize: "medium", 
-  fontFamily: "default",
-  reducedMotion: false
+  fontFamily: "default"
 };
 
 export function ConfigProvider({ children }) {
@@ -49,8 +48,9 @@ export function ConfigProvider({ children }) {
     };
     root.style.setProperty("--font-family", fontFamilyMap[config.fontFamily] || "system-ui");
     
-    // Movimiento reducido
-    root.classList.toggle("reduced-motion", config.reducedMotion);
+    // Aplicar clase CSS para la familia de fuente
+    root.classList.remove('font-default', 'font-dyslexic', 'font-serif', 'font-monospace');
+    root.classList.add(`font-${config.fontFamily}`);
     
   }, [config]);
 

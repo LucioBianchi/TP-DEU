@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { getPageConfig, PAGES } from "../../config/pages";
 import FiltersPanel from "./FiltersPanel/FiltersPanel";
 import InfoPanel from "./InfoPanel/InfoPanel";
@@ -12,11 +12,23 @@ const PANEL_COMPONENTS = {
   [PAGES.CONFIG]: ConfigPanel
 };
 
-export default function Panel({ currentPage, filters, onFiltersChange }) {
+export default function Panel({ currentPage, filters, onFiltersChange, onClose }) {
   const pageConfig = getPageConfig(currentPage);
   
-  // Si la página no requiere panel, no renderizar nada
-  if (!pageConfig.requiresPanel) {
+  // Solo manejar Escape para cerrar
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
+  // Si no hay página seleccionada, no renderizar nada
+  if (!currentPage || !pageConfig) {
     return null;
   }
 
@@ -40,11 +52,26 @@ export default function Panel({ currentPage, filters, onFiltersChange }) {
   return (
     <aside
       className="panel-overlay"
-      role="region"
-      aria-label={`Panel de ${pageConfig.label}`}
-      tabIndex={-1}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="panel-title"
+      aria-describedby="panel-description"
     >
-      <PanelComponent {...panelProps[currentPage]} />
+      <div className="panel-header">
+        <h2 id="panel-title" className="panel-title">{pageConfig.label}</h2>
+        <button
+          className="panel-close-btn"
+          onClick={onClose}
+          aria-label={`Cerrar panel de ${pageConfig.label}`}
+          title="Cerrar (Escape)"
+        >
+          <span aria-hidden="true">✕</span>
+        </button>
+      </div>
+      
+      <div id="panel-description" className="panel-content">
+        <PanelComponent {...panelProps[currentPage]} />
+      </div>
     </aside>
   );
 }

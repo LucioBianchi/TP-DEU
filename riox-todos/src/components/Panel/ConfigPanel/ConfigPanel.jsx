@@ -9,10 +9,7 @@ export default function ConfigPanel() {
   };
 
   return (
-    <section aria-labelledby="config-header">
-      <h2 id="config-header">Configuración de Accesibilidad</h2>
-      <div aria-hidden="true" style={{ marginBottom: "1em" }} />
-
+    <section>
       <div style={{ marginBottom: "1.5em" }}>
         <label htmlFor="font-size-select"><strong>Tamaño de la letra</strong></label>
         <select
@@ -41,7 +38,7 @@ export default function ConfigPanel() {
         </select>
       </div>
 
-      <div style={{ marginBottom: "1.5em" }}>
+      <div style={{ marginBottom: "2em" }}>
         <label htmlFor="font-family-select"><strong>Familia de fuente</strong></label>
         <select
           id="font-family-select"
@@ -54,17 +51,6 @@ export default function ConfigPanel() {
           <option value="serif">Serif</option>
           <option value="monospace">Monospace</option>
         </select>
-      </div>
-
-      <div style={{ marginBottom: "2em" }}>
-        <label style={{ display: "flex", alignItems: "center", gap: "0.5em" }}>
-          <input
-            type="checkbox"
-            checked={config.reducedMotion}
-            onChange={e => handleConfigChange('reducedMotion', e.target.checked)}
-          />
-          <strong>Movimiento reducido</strong>
-        </label>
       </div>
 
       <button

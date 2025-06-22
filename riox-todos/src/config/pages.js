@@ -1,5 +1,4 @@
 export const PAGES = {
-  MAPA: 'mapa',
   FILTROS: 'filtros', 
   INFO: 'info',
   USUARIO: 'usuario',
@@ -7,13 +6,6 @@ export const PAGES = {
 };
 
 export const PAGE_CONFIG = {
-  [PAGES.MAPA]: {
-    id: PAGES.MAPA,
-    label: 'Mapa',
-    icon: '🗺️',
-    description: 'Ver mapa de balnearios',
-    requiresPanel: false
-  },
   [PAGES.FILTROS]: {
     id: PAGES.FILTROS,
     label: 'Filtros',
@@ -44,6 +36,6 @@ export const PAGE_CONFIG = {
   }
 };
 
-export const getPageConfig = (pageId) => PAGE_CONFIG[pageId] || PAGE_CONFIG[PAGES.MAPA];
+export const getPageConfig = (pageId) => PAGE_CONFIG[pageId] || null;
 
 export const getAllPages = () => Object.values(PAGE_CONFIG); 

@@ -32,10 +32,6 @@ export const FONT_FAMILIES = {
   MONOSPACE: 'monospace'
 };
 
-export const ACCESSIBILITY_FEATURES = {
-  REDUCED_MOTION: 'reducedMotion'
-};
-
 export const ARIA_LABELS = {
   MAP: 'Mapa de balnearios',
   SIDEBAR: 'Barra lateral',

@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 
 export function useAppState() {
-  const [currentPage, setCurrentPage] = useState('mapa');
+  const [currentPage, setCurrentPage] = useState(null);
   const [filters, setFilters] = useState({
     localidad: '',
     agua: '',
@@ -10,6 +10,11 @@ export function useAppState() {
 
   const navigateTo = useCallback((page) => {
     setCurrentPage(page);
+  }, []);
+
+  const closePanel = useCallback(() => {
+    setCurrentPage(null);
+    // El foco se manejará en el componente Sidebar
   }, []);
 
   const updateFilters = useCallback((newFilters) => {
@@ -28,6 +33,7 @@ export function useAppState() {
     currentPage,
     filters,
     navigateTo,
+    closePanel,
     updateFilters,
     resetFilters
   };

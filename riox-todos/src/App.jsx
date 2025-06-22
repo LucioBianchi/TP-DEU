@@ -10,22 +10,31 @@ function AppContent() {
     currentPage, 
     filters,
     navigateTo, 
+    closePanel,
     updateFilters
   } = useAppState();
 
   return (
     <div className="app-root">
+      <a href="#main-content" className="skip-link">
+        Saltar al contenido principal
+      </a>
+      
       <MapView filters={filters} />
       <Sidebar 
         currentPage={currentPage} 
         onNavigate={navigateTo}
-      >
-        <Panel
-          currentPage={currentPage}
-          filters={filters}
-          onFiltersChange={updateFilters}
-        />
-      </Sidebar>
+      />
+      <Panel
+        currentPage={currentPage}
+        filters={filters}
+        onFiltersChange={updateFilters}
+        onClose={closePanel}
+      />
+      
+      <main id="main-content" tabIndex={-1}>
+        {/* El mapa es el contenido principal */}
+      </main>
     </div>
   );
 }

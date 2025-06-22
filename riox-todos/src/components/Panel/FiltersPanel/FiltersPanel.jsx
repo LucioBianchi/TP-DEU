@@ -10,17 +10,18 @@ export default function FiltersPanel({ filters, onFiltersChange }) {
 
   return (
     <form aria-label="Filtrar balnearios">
-      <h2 id="filtros-heading">Filtrar Balnearios</h2>
-      <div aria-hidden="true" style={{ marginBottom: "1em" }} />
-
       {/* Estadísticas */}
-      <div style={{ 
-        background: "rgba(0,0,0,0.05)", 
-        padding: "0.5em", 
-        borderRadius: "4px", 
-        marginBottom: "1em",
-        fontSize: "0.9em"
-      }}>
+      <div 
+        role="status" 
+        aria-live="polite"
+        style={{ 
+          background: "rgba(0,0,0,0.05)", 
+          padding: "0.5em", 
+          borderRadius: "4px", 
+          marginBottom: "1em",
+          fontSize: "0.9em"
+        }}
+      >
         <strong>Resultados:</strong> {stats.filtered} de {stats.total} balnearios
       </div>
 
