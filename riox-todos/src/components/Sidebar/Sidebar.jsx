@@ -6,26 +6,28 @@ export default function Sidebar({ currentPage, onNavigate }) {
   const pages = getAllPages();
 
   return (
-    <aside 
+    <nav 
       className="sidebar" 
-      aria-label="Barra lateral de navegación"
+      aria-label="Navegación principal de la aplicación"
     >
-      <div className="sidebar-buttons" role="toolbar" aria-label="Navegación principal">
+      <h2 className="sr-only">Menú de navegación</h2>
+      <ul className="sidebar-buttons" aria-label="Opciones de navegación">
         {pages.map((page, index) => (
-          <button
-            key={page.id}
-            className={currentPage === page.id ? "selected" : ""}
-            onClick={() => onNavigate(page.id)}
-            aria-label={`${page.description}. ${currentPage === page.id ? 'Activo' : 'Inactivo'}`}
-            aria-current={currentPage === page.id ? "page" : undefined}
-            aria-pressed={currentPage === page.id}
-            title={`${page.description} (${index + 1} de ${pages.length})`}
-            tabIndex={0}
-          >
-            <span className="icon" aria-hidden="true">{page.icon}</span>
-          </button>
+          <li key={page.id}>
+            <button
+              className={currentPage === page.id ? "selected" : ""}
+              onClick={() => onNavigate(page.id)}
+              aria-label={`${page.description}. ${currentPage === page.id ? 'Página actual' : 'Ir a página'}`}
+              aria-current={currentPage === page.id ? "page" : undefined}
+              title={`${page.description} (${index + 1} de ${pages.length})`}
+              tabIndex={0}
+            >
+              <span className="icon" aria-hidden="true">{page.icon}</span>
+              <span className="sr-only">{page.description}</span>
+            </button>
+          </li>
         ))}
-      </div>
-    </aside>
+      </ul>
+    </nav>
   );
 }

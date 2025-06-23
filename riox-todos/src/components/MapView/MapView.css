@@ -3,6 +3,18 @@
   height: 100vh;
 }
 
+/* Fix for W3C CSS validation errors from Leaflet */
+.leaflet-container img.leaflet-tile {
+  /* Override the problematic plus-lighter mix-blend-mode */
+  mix-blend-mode: normal;
+}
+
+/* Fix for VML behavior property */
+.lvml {
+  /* Remove the problematic behavior property */
+  behavior: auto;
+}
+
 /* Estilos para marcadores accesibles */
 .custom-marker-container {
   background: transparent !important;

@@ -28,10 +28,12 @@ export default function FiltersPanel({ filters, onFiltersChange, onResetFilters 
 
   return (
     <form aria-label="Filtrar balnearios">
+      <h3 className="sr-only">Filtros de búsqueda</h3>
+      
       {/* Estadísticas */}
-      <div 
-        role="status" 
+      <section 
         aria-live="polite"
+        aria-label="Estadísticas de resultados"
         style={{ 
           background: "rgba(0,0,0,0.05)", 
           padding: "0.8em", 
@@ -42,11 +44,11 @@ export default function FiltersPanel({ filters, onFiltersChange, onResetFilters 
         }}
       >
         <strong>Resultados:</strong> {stats.filtered} de {stats.total} balnearios
-      </div>
+      </section>
 
       {/* Botón para quitar filtros */}
       {hasActiveFilters && (
-        <div style={{ marginBottom: "1.5em" }}>
+        <section style={{ marginBottom: "1.5em" }}>
           <button
             type="button"
             onClick={handleResetFilters}
@@ -79,17 +81,18 @@ export default function FiltersPanel({ filters, onFiltersChange, onResetFilters 
           >
             ✕ Quitar filtros
           </button>
-        </div>
+        </section>
       )}
 
       {/* Filtro de Localidad con estilo mejorado */}
-      <div style={{ marginBottom: "2em" }}>
+      <section style={{ marginBottom: "2em" }}>
         <label htmlFor="localidad-select" style={{ display: "block", marginBottom: "0.5em" }}>
           <strong style={{ fontSize: "1.1em", color: "#495057" }}>Localidad</strong>
         </label>
         <div style={{ position: "relative" }}>
           <select
             id="localidad-select"
+            name="localidad"
             value={filters.localidad}
             onChange={e => handleFilterChange('localidad', e.target.value)}
             style={{ 
@@ -124,7 +127,7 @@ export default function FiltersPanel({ filters, onFiltersChange, onResetFilters 
         <span id="localidad-desc" className="sr-only">
           Selecciona una localidad para filtrar los balnearios.
         </span>
-      </div>
+      </section>
 
       {/* Filtro de Contaminación de Agua */}
       <fieldset

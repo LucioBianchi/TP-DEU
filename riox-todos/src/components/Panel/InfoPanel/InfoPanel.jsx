@@ -5,7 +5,7 @@ const sections = [
     id: "que-es",
     label: "¿Qué es la contaminación?",
     content: (
-      <div>
+      <article>
         <p>
           La contaminación en balnearios puede afectar tanto el agua como la arena, poniendo en riesgo la salud de las personas y el ambiente. Es importante conocer sus causas y cómo prevenirla.
         </p>
@@ -15,14 +15,14 @@ const sections = [
         <p>
           La contaminación de la arena puede contener microorganismos patógenos, residuos plásticos, colillas de cigarrillos y otros desechos que representan un riesgo para la salud, especialmente para niños que juegan en la playa.
         </p>
-      </div>
+      </article>
     ),
   },
   {
     id: "como-se-mide",
     label: "¿Cómo se mide?",
     content: (
-      <div>
+      <article>
         <h3>Protocolo de muestreo</h3>
         <p>
           Las muestras tanto de agua como de arena se toman siguiendo un protocolo específico y deben ser enviadas a laboratorio para su análisis.
@@ -42,28 +42,28 @@ const sections = [
         <p>
           Se toman muestras de arena a diferentes profundidades y se analizan en laboratorio para detectar la presencia de microorganismos patógenos y otros contaminantes.
         </p>
-      </div>
+      </article>
     ),
   },
   {
     id: "como-ayudar",
     label: "¿Cómo ayudarnos?",
     content: (
-      <div>
+      <article>
         <p>Puedes contribuir a mantener las playas limpias y seguras de las siguientes maneras:</p>
         <ul>
           <li><strong>No arrojar basura:</strong> Lleva contigo todos los residuos y deposítalos en los contenedores correspondientes.</li>
           <li><strong>Usar productos biodegradables:</strong> Opta por protectores solares y otros productos que no dañen el medio ambiente.</li>
           <li><strong>Realizar mediciones:</strong> Participa en el monitoreo ciudadano de la calidad del agua y arena de las playas.</li>
         </ul>
-      </div>
+      </article>
     ),
   },
   {
     id: "contacto",
     label: "Información de contacto",
     content: (
-      <div>
+      <article>
         <p>
           Para consultas, denuncias o reportes de contaminación, comunícate con nosotros:
         </p>
@@ -87,7 +87,7 @@ const sections = [
         <p>
           <strong>Emergencias ambientales:</strong> Si detectas un vertido o contaminación grave, llama inmediatamente al número de emergencias.
         </p>
-      </div>
+      </article>
     ),
   },
 ];
@@ -100,8 +100,9 @@ export default function InfoPanel() {
   };
 
   return (
-    <div role="region" aria-label="Información sobre contaminación de balnearios">
-      <div>
+    <section aria-label="Información sobre contaminación de balnearios">
+      <h2 className="sr-only">Información sobre contaminación</h2>
+      <div aria-label="Secciones de información">
         {sections.map((section, index) => (
           <div key={section.id} style={{ marginBottom: "1.5em" }}>
             <button
@@ -150,7 +151,6 @@ export default function InfoPanel() {
             
             <div
               id={`section-${section.id}`}
-              role="region"
               aria-labelledby={`accordion-${section.id}`}
               hidden={open !== section.id}
               style={{
@@ -173,6 +173,6 @@ export default function InfoPanel() {
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 }

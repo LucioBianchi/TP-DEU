@@ -51,14 +51,12 @@ export default function Panel({ currentPage, filters, onFiltersChange, onResetFi
   };
 
   return (
-    <aside
-      className="panel-overlay"
-      role="dialog"
-      aria-modal="true"
+    <section
+      className="panel-overlay" 
       aria-labelledby="panel-title"
       aria-describedby="panel-description"
     >
-      <div className="panel-header">
+      <header className="panel-header">
         <h2 id="panel-title" className="panel-title">{pageConfig.label}</h2>
         <button
           className="panel-close-btn"
@@ -68,11 +66,11 @@ export default function Panel({ currentPage, filters, onFiltersChange, onResetFi
         >
           <span aria-hidden="true">✕</span>
         </button>
-      </div>
+      </header>
       
       <div id="panel-description" className="panel-content">
         <PanelComponent {...panelProps[currentPage]} />
       </div>
-    </aside>
+    </section>
   );
 }
