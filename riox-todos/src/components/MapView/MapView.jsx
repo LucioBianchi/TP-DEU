@@ -4,6 +4,7 @@ import { useBalnearios } from "../../hooks/useBalnearios";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import BalnearioModal from "../Modal/BalnearioModal";
+import "./MapView.css";
 
 // Arreglar el problema de los iconos de Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -14,15 +15,39 @@ L.Icon.Default.mergeOptions({
 });
 
 // Crear icono personalizado
-const createCustomIcon = (color = "#007bff") => {
+const createCustomIcon = (color = "#007bff", balnearioName = "", aguaLevel = "", arenaLevel = "") => {
+  const getContaminationDescription = (agua, arena) => {
+    const aguaText = agua === "Alto" ? "contaminación alta" : agua === "Medio" ? "contaminación media" : "contaminación baja";
+    const arenaText = arena === "Alto" ? "contaminación alta" : arena === "Medio" ? "contaminación media" : "contaminación baja";
+    return `Agua: ${aguaText}, Arena: ${arenaText}`;
+  };
+
+  const getAccessibilityLevel = (agua, arena) => {
+    if (agua === "Alto" || arena === "Alto") {
+      return "No recomendado para uso recreativo";
+    } else if (agua === "Medio" || arena === "Medio") {
+      return "Precaución recomendada";
+    } else {
+      return "Seguro para uso recreativo";
+    }
+  };
+
   return L.divIcon({
     html: `
-      <svg width="24" height="36" viewBox="0 0 24 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 0C5.37 0 0 5.37 0 12c0 8.5 12 24 12 24s12-15.5 12-24c0-6.63-5.37-12-12-12z" fill="${color}"/>
-        <circle cx="12" cy="12" r="6" fill="white"/>
-      </svg>
+      <div 
+        class="custom-marker" 
+        role="button" 
+        tabindex="0"
+        aria-label="Balneario ${balnearioName}. ${getContaminationDescription(aguaLevel, arenaLevel)}. ${getAccessibilityLevel(aguaLevel, arenaLevel)}. Presiona Enter o Espacio para ver información detallada"
+        style="cursor: pointer; outline: none;"
+      >
+        <svg width="24" height="36" viewBox="0 0 24 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 8.5 12 24 12 24s12-15.5 12-24c0-6.63-5.37-12-12-12z" fill="${color}"/>
+          <circle cx="12" cy="12" r="6" fill="white"/>
+        </svg>
+      </div>
     `,
-    className: "custom-marker",
+    className: "custom-marker-container",
     iconSize: [24, 36],
     iconAnchor: [12, 36],
     popupAnchor: [0, -36]
@@ -83,6 +108,29 @@ export default function MapView({ filters }) {
     }
   }, [openPopupId]);
 
+  // Asegurar que los marcadores sean accesibles por teclado
+  useEffect(() => {
+    const markers = document.querySelectorAll('.custom-marker');
+    markers.forEach(marker => {
+      // Asegurar que los marcadores sean focusables
+      marker.setAttribute('tabindex', '0');
+      
+      // Agregar manejo de teclado adicional
+      const handleKeyDown = (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          marker.click();
+        }
+      };
+      
+      marker.addEventListener('keydown', handleKeyDown);
+      
+      return () => {
+        marker.removeEventListener('keydown', handleKeyDown);
+      };
+    });
+  }, [balnearios]);
+
   return (
     <MapContainer 
       center={[-34.6037, -58.3816]} 
@@ -98,7 +146,7 @@ export default function MapView({ filters }) {
         <Marker 
           key={b.id} 
           position={[b.lat, b.lng]}
-          icon={createCustomIcon(getContaminationColor(b.agua))}
+          icon={createCustomIcon(getContaminationColor(b.agua), b.nombre, b.agua, b.arena)}
           eventHandlers={{
             click: () => setOpenPopupId(b.id),
             keydown: (e) => {
@@ -112,12 +160,18 @@ export default function MapView({ filters }) {
           <Popup
             onOpen={() => setOpenPopupId(b.id)}
             onClose={() => setOpenPopupId(null)}
+            aria-label={`Información detallada de ${b.nombre}`}
           >
-            <div style={{ 
-              minWidth: "300px", 
-              maxWidth: "400px",
-              padding: "0"
-            }}>
+            <div 
+              style={{ 
+                minWidth: "300px", 
+                maxWidth: "400px",
+                padding: "0"
+              }}
+              role="dialog"
+              aria-labelledby={`popup-title-${b.id}`}
+              aria-describedby={`popup-content-${b.id}`}
+            >
               {/* Header */}
               <div style={{
                 background: "#f8f9fa",
@@ -125,12 +179,15 @@ export default function MapView({ filters }) {
                 borderBottom: "1px solid #dee2e6",
                 borderRadius: "8px 8px 0 0"
               }}>
-                <h3 style={{
-                  margin: "0 0 0.5rem 0",
-                  fontSize: "1.2em",
-                  fontWeight: "bold",
-                  color: "#495057"
-                }}>
+                <h3 
+                  id={`popup-title-${b.id}`}
+                  style={{
+                    margin: "0 0 0.5rem 0",
+                    fontSize: "1.2em",
+                    fontWeight: "bold",
+                    color: "#495057"
+                  }}
+                >
                   {b.nombre}
                 </h3>
                 <p style={{
@@ -143,7 +200,10 @@ export default function MapView({ filters }) {
               </div>
 
               {/* Contenido */}
-              <div style={{ padding: "1rem" }}>
+              <div 
+                id={`popup-content-${b.id}`}
+                style={{ padding: "1rem" }}
+              >
                 {/* Descripción */}
                 <p style={{
                   margin: "0 0 1rem 0",
