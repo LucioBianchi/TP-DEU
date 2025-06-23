@@ -5,11 +5,22 @@ export default function FiltersPanel({ filters, onFiltersChange, onResetFilters 
   const { uniqueValues, stats } = useBalnearios(filters);
 
   const handleFilterChange = (key, value) => {
-    onFiltersChange({ [key]: value });
+    // Convertir de femenino a masculino para el filtro interno
+    const internalValue = value === "Baja" ? "Bajo" : 
+                         value === "Media" ? "Medio" : 
+                         value === "Alta" ? "Alto" : value;
+    onFiltersChange({ [key]: internalValue });
   };
 
   const handleResetFilters = () => {
     onResetFilters();
+  };
+
+  // Convertir de masculino a femenino para mostrar en la UI
+  const getDisplayValue = (value) => {
+    return value === "Bajo" ? "Baja" : 
+           value === "Medio" ? "Media" : 
+           value === "Alto" ? "Alta" : value;
   };
 
   // Verificar si hay filtros activos
@@ -170,12 +181,12 @@ export default function FiltersPanel({ filters, onFiltersChange, onResetFilters 
             <input
               type="radio"
               name="agua"
-              value="Bajo"
-              checked={filters.agua === "Bajo"}
-              onChange={() => handleFilterChange('agua', 'Bajo')}
+              value="Baja"
+              checked={getDisplayValue(filters.agua) === "Baja"}
+              onChange={() => handleFilterChange('agua', 'Baja')}
               style={{ transform: "scale(1.2)" }}
             />
-            <span style={{ fontWeight: "500", color: "#28a745" }}>Bajo</span>
+            <span style={{ fontWeight: "500", color: "#28a745" }}>Baja</span>
           </label>
           <label style={{ 
             display: "flex", 
@@ -189,12 +200,12 @@ export default function FiltersPanel({ filters, onFiltersChange, onResetFilters 
             <input
               type="radio"
               name="agua"
-              value="Medio"
-              checked={filters.agua === "Medio"}
-              onChange={() => handleFilterChange('agua', 'Medio')}
+              value="Media"
+              checked={getDisplayValue(filters.agua) === "Media"}
+              onChange={() => handleFilterChange('agua', 'Media')}
               style={{ transform: "scale(1.2)" }}
             />
-            <span style={{ fontWeight: "500", color: "#ffc107" }}>Medio</span>
+            <span style={{ fontWeight: "500", color: "#ffc107" }}>Media</span>
           </label>
           <label style={{ 
             display: "flex", 
@@ -208,12 +219,12 @@ export default function FiltersPanel({ filters, onFiltersChange, onResetFilters 
             <input
               type="radio"
               name="agua"
-              value="Alto"
-              checked={filters.agua === "Alto"}
-              onChange={() => handleFilterChange('agua', 'Alto')}
+              value="Alta"
+              checked={getDisplayValue(filters.agua) === "Alta"}
+              onChange={() => handleFilterChange('agua', 'Alta')}
               style={{ transform: "scale(1.2)" }}
             />
-            <span style={{ fontWeight: "500", color: "#dc3545" }}>Alto</span>
+            <span style={{ fontWeight: "500", color: "#dc3545" }}>Alta</span>
           </label>
         </div>
       </fieldset>
@@ -273,12 +284,12 @@ export default function FiltersPanel({ filters, onFiltersChange, onResetFilters 
             <input
               type="radio"
               name="arena"
-              value="Bajo"
-              checked={filters.arena === "Bajo"}
-              onChange={() => handleFilterChange('arena', 'Bajo')}
+              value="Baja"
+              checked={getDisplayValue(filters.arena) === "Baja"}
+              onChange={() => handleFilterChange('arena', 'Baja')}
               style={{ transform: "scale(1.2)" }}
             />
-            <span style={{ fontWeight: "500", color: "#28a745" }}>Bajo</span>
+            <span style={{ fontWeight: "500", color: "#28a745" }}>Baja</span>
           </label>
           <label style={{ 
             display: "flex", 
@@ -292,12 +303,12 @@ export default function FiltersPanel({ filters, onFiltersChange, onResetFilters 
             <input
               type="radio"
               name="arena"
-              value="Medio"
-              checked={filters.arena === "Medio"}
-              onChange={() => handleFilterChange('arena', 'Medio')}
+              value="Media"
+              checked={getDisplayValue(filters.arena) === "Media"}
+              onChange={() => handleFilterChange('arena', 'Media')}
               style={{ transform: "scale(1.2)" }}
             />
-            <span style={{ fontWeight: "500", color: "#ffc107" }}>Medio</span>
+            <span style={{ fontWeight: "500", color: "#ffc107" }}>Media</span>
           </label>
           <label style={{ 
             display: "flex", 
@@ -311,12 +322,12 @@ export default function FiltersPanel({ filters, onFiltersChange, onResetFilters 
             <input
               type="radio"
               name="arena"
-              value="Alto"
-              checked={filters.arena === "Alto"}
-              onChange={() => handleFilterChange('arena', 'Alto')}
+              value="Alta"
+              checked={getDisplayValue(filters.arena) === "Alta"}
+              onChange={() => handleFilterChange('arena', 'Alta')}
               style={{ transform: "scale(1.2)" }}
             />
-            <span style={{ fontWeight: "500", color: "#dc3545" }}>Alto</span>
+            <span style={{ fontWeight: "500", color: "#dc3545" }}>Alta</span>
           </label>
         </div>
       </fieldset>

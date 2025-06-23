@@ -4,11 +4,21 @@ import { balnearios } from '../data/balnearios';
 export function useBalnearios(filters) {
   const filteredBalnearios = useMemo(() => {
     return balnearios.filter(b => {
+      // Filtro por localidad
       const matchLocalidad = !filters.localidad || 
-                            filters.localidad === "Todas" || 
+                            filters.localidad === "" || 
                             b.localidad === filters.localidad;
-      const matchAgua = !filters.agua || b.agua === filters.agua;
-      const matchArena = !filters.arena || b.arena === filters.arena;
+      
+      // Filtro por agua
+      const matchAgua = !filters.agua || 
+                       filters.agua === "" || 
+                       b.agua === filters.agua;
+      
+      // Filtro por arena
+      const matchArena = !filters.arena || 
+                        filters.arena === "" || 
+                        b.arena === filters.arena;
+      
       return matchLocalidad && matchAgua && matchArena;
     });
   }, [filters]);

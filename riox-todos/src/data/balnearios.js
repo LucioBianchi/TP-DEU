@@ -5,8 +5,8 @@ export const balnearios = [
     localidad: "Localidad 1",
     lat: -34.6037,
     lng: -58.3816,
-    agua: "Alta",
-    arena: "Baja",
+    agua: "Alto",
+    arena: "Bajo",
     descripcion: "Zona popular, agua con contaminación alta, arena con contaminación baja."
   },
   {
@@ -15,8 +15,8 @@ export const balnearios = [
     localidad: "Localidad 2",
     lat: -34.6090,
     lng: -58.3840,
-    agua: "Baja",
-    arena: "Alta",
+    agua: "Bajo",
+    arena: "Alto",
     descripcion: "Agua con contaminación baja, arena con contaminación alta."
   },
   {
@@ -25,8 +25,8 @@ export const balnearios = [
     localidad: "Localidad 3",
     lat: -34.6050,
     lng: -58.3820,
-    agua: "Alta",
-    arena: "Alta",
+    agua: "Alto",
+    arena: "Alto",
     descripcion: "Ambas contaminaciones altas."
   },
   {
@@ -35,8 +35,8 @@ export const balnearios = [
     localidad: "Localidad 1",
     lat: -34.6010,
     lng: -58.3800,
-    agua: "Baja",
-    arena: "Baja",
+    agua: "Bajo",
+    arena: "Bajo",
     descripcion: "Ambas contaminaciones bajas."
   }
 ];

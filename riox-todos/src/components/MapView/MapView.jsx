@@ -2,7 +2,32 @@ import React, { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { useBalnearios } from "../../hooks/useBalnearios";
 import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 import BalnearioModal from "../Modal/BalnearioModal";
+
+// Arreglar el problema de los iconos de Leaflet
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
+
+// Crear icono personalizado
+const createCustomIcon = (color = "#007bff") => {
+  return L.divIcon({
+    html: `
+      <svg width="24" height="36" viewBox="0 0 24 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 0C5.37 0 0 5.37 0 12c0 8.5 12 24 12 24s12-15.5 12-24c0-6.63-5.37-12-12-12z" fill="${color}"/>
+        <circle cx="12" cy="12" r="6" fill="white"/>
+      </svg>
+    `,
+    className: "custom-marker",
+    iconSize: [24, 36],
+    iconAnchor: [12, 36],
+    popupAnchor: [0, -36]
+  });
+};
 
 export default function MapView({ filters }) {
   const { balnearios } = useBalnearios(filters);
@@ -11,11 +36,11 @@ export default function MapView({ filters }) {
   // Función para obtener el color según el nivel de contaminación
   const getContaminationColor = (nivel) => {
     switch (nivel) {
-      case "Baja":
+      case "Bajo":
         return "#28a745";
-      case "Media":
+      case "Medio":
         return "#ffc107";
-      case "Alta":
+      case "Alto":
         return "#dc3545";
       default:
         return "#6c757d";
@@ -25,11 +50,11 @@ export default function MapView({ filters }) {
   // Función para obtener el texto descriptivo
   const getContaminationText = (nivel) => {
     switch (nivel) {
-      case "Baja":
+      case "Bajo":
         return "Contaminación baja - Seguro para uso recreativo";
-      case "Media":
+      case "Medio":
         return "Contaminación media - Precaución recomendada";
-      case "Alta":
+      case "Alto":
         return "Contaminación alta - No recomendado para uso recreativo";
       default:
         return "Información no disponible";
@@ -73,6 +98,7 @@ export default function MapView({ filters }) {
         <Marker 
           key={b.id} 
           position={[b.lat, b.lng]}
+          icon={createCustomIcon(getContaminationColor(b.agua))}
           eventHandlers={{
             click: () => setOpenPopupId(b.id),
             keydown: (e) => {
@@ -237,7 +263,7 @@ export default function MapView({ filters }) {
                     color: "#495057",
                     lineHeight: "1.4"
                   }}>
-                    {b.agua === "Alta" || b.arena === "Alta" 
+                    {b.agua === "Alto" || b.arena === "Alto" 
                       ? "Se recomienda evitar el uso recreativo de este balneario debido a los altos niveles de contaminación detectados."
                       : "Este balneario presenta condiciones aceptables para uso recreativo, pero siempre es recomendable verificar las condiciones actuales antes de visitar."
                     }
