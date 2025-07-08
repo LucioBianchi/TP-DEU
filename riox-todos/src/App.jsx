@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import Sidebar from "./components/Sidebar/Sidebar";
 import MapView from "./components/MapView/MapView";
 import Panel from "./components/Panel/Panel";
 import { ConfigProvider } from "./context/ConfigContext.jsx";
 import { useAppState } from "./hooks/useAppState";
+import WelcomeScreen from "./components/WelcomeScreen/WelcomeScreen";
 
 function AppContent() {
   const { 
@@ -53,6 +54,15 @@ function AppContent() {
 }
 
 export default function App() {
+  const [showWelcome, setShowWelcome] = useState(true);
+  const [showInfo, setShowInfo] = useState(false);
+
+  if (showWelcome) {
+    return (
+      <WelcomeScreen onStart={() => setShowWelcome(false)} />
+    );
+  }
+
   return (
     <ConfigProvider>
       <AppContent />
