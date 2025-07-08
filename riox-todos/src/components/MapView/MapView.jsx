@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { useBalnearios } from "../../hooks/useBalnearios";
 import "leaflet/dist/leaflet.css";
@@ -35,9 +35,7 @@ const createCustomIcon = (color = "#007bff", balnearioName = "", aguaLevel = "",
   return L.divIcon({
     html: `
       <div 
-        class="custom-marker" 
-        role="button" 
-        tabindex="0"
+        class="custom-marker"
         aria-label="Balneario ${balnearioName}. ${getContaminationDescription(aguaLevel, arenaLevel)}. ${getAccessibilityLevel(aguaLevel, arenaLevel)}. Presiona Enter o Espacio para ver información detallada"
         style="cursor: pointer; outline: none;"
       >
@@ -57,6 +55,7 @@ const createCustomIcon = (color = "#007bff", balnearioName = "", aguaLevel = "",
 export default function MapView({ filters }) {
   const { balnearios } = useBalnearios(filters);
   const [openPopupId, setOpenPopupId] = useState(null);
+  const popupRefs = useRef({});
 
   // Función para obtener el color según el nivel de contaminación
   const getContaminationColor = (nivel) => {
@@ -110,26 +109,52 @@ export default function MapView({ filters }) {
 
   // Asegurar que los marcadores sean accesibles por teclado
   useEffect(() => {
-    const markers = document.querySelectorAll('.custom-marker');
-    markers.forEach(marker => {
-      // Asegurar que los marcadores sean focusables
-      marker.setAttribute('tabindex', '0');
-      
-      // Agregar manejo de teclado adicional
-      const handleKeyDown = (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          marker.click();
+    // Solo el marker activo debe ser focuseable
+    const containers = document.querySelectorAll('.leaflet-marker-icon.custom-marker-container');
+    containers.forEach(container => {
+      const marker = container.querySelector('.custom-marker');
+      if (openPopupId) {
+        if (marker && marker.getAttribute('aria-label')?.includes(balnearios.find(b => b.id === openPopupId)?.nombre)) {
+          container.setAttribute('tabindex', '0');
+        } else {
+          container.setAttribute('tabindex', '-1');
         }
-      };
-      
-      marker.addEventListener('keydown', handleKeyDown);
-      
-      return () => {
-        marker.removeEventListener('keydown', handleKeyDown);
-      };
+      } else {
+        container.setAttribute('tabindex', '0');
+      }
     });
-  }, [balnearios]);
+  }, [openPopupId, balnearios]);
+
+  useEffect(() => {
+    if (!openPopupId) return;
+
+    // Encuentra todos los elementos focuseables dentro del popup
+    const popup = document.querySelector('.leaflet-popup[aria-label]');
+    if (!popup) return;
+    const focusable = popup.querySelectorAll('[tabindex="0"], a, button, input, select, textarea');
+    if (!focusable.length) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    function handleTrap(e) {
+      if (e.key !== 'Tab') return;
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+
+    popup.addEventListener('keydown', handleTrap);
+    return () => popup.removeEventListener('keydown', handleTrap);
+  }, [openPopupId]);
 
   return (
     <section 
@@ -156,21 +181,23 @@ export default function MapView({ filters }) {
               // El marker solo abre el popup si se hace click o enter/espacio en el botón, no directamente en el marker
             }}
           >
-            {/* Botón accesible para abrir el popup */}
-            <div
-              tabIndex={0}
-              role="button"
-              aria-label={`Ver información de ${b.nombre}`}
-              style={{ position: 'absolute', left: '-9999px' }}
-              onKeyDown={e => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  setOpenPopupId(b.id);
-                }
-              }}
-              onClick={() => setOpenPopupId(b.id)}
-            />
             <Popup
-              onOpen={() => setOpenPopupId(b.id)}
+              onOpen={() => {
+                setOpenPopupId(b.id);
+                setTimeout(() => {
+                  if (popupRefs.current[b.id]) {
+                    popupRefs.current[b.id].focus();
+                  }
+                  // Forzar blur y quitar tabindex del marker activo
+                  const containers = document.querySelectorAll('.leaflet-marker-icon.custom-marker-container');
+                  containers.forEach(container => {
+                    const marker = container.querySelector('.custom-marker');
+                    if (marker && marker.getAttribute('aria-label')?.includes(b.nombre)) {
+                      container.setAttribute('tabindex', '-1');
+                    }
+                  });
+                }, 0);
+              }}
               onClose={() => setOpenPopupId(null)}
               aria-label={`Información detallada de ${b.nombre}`}
               autoPan={true}
@@ -205,6 +232,7 @@ export default function MapView({ filters }) {
                     tabIndex={0}
                     role="region"
                     aria-label="Nombre del balneario"
+                    ref={el => (popupRefs.current[b.id] = el)}
                   >
                     {b.nombre}
                   </h3>
