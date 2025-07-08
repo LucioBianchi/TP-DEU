@@ -24,7 +24,7 @@ export default function WelcomeScreen({ onStart }) {
             Rio x Todos
           </h1>
           <p id="welcome-desc" className="welcome-desc">
-          Conocé el estado ambiental de los balnearios de forma rápida y confiable. Consultá niveles de contaminación, servicios disponibles, accesibilidad y datos locales. Además, investigadores y usuarios habilitados pueden colaborar cargando mediciones para construir una base científica abierta y dinámica.
+          Conocé el nivel de contaminación de los balnearios del Rio de La Plata de forma rápida y confiable. Además, investigadores y usuarios habilitados pueden colaborar cargando mediciones para construir una base científica abierta y dinámica.
           </p>
           <button
             className="welcome-start-btn"
