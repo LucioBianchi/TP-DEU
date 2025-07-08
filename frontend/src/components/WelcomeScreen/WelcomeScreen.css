@@ -1,0 +1,84 @@
+.welcome-bg {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: url('/balneario.jpg') center center/cover no-repeat;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.welcome-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(30, 30, 40, 0.60); /* Overlay oscuro para legibilidad */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.welcome-centerbox {
+  background: rgba(255,255,255,0.75);
+  border-radius: 1.2rem;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.2);
+  text-align: center;
+  max-width: 95vw;
+  width: 100%;
+  max-width: 650px;
+  margin: 0 1rem;
+}
+
+.welcome-title {
+  font-size: 2.5rem;
+  margin-bottom: 1.2rem;
+  color: #1976d2;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.welcome-desc {
+  font-size: 1.15rem;
+  margin-bottom: 2.2rem;
+  color: #222;
+}
+
+.welcome-start-btn {
+  font-size: 1.1rem;
+  padding: 0.9rem 2.2rem;
+  border-radius: 0.6rem;
+  border: none;
+  cursor: pointer;
+  background: #1976d2;
+  color: #fff;
+  font-weight: 600;
+  transition: background 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.welcome-start-btn:hover,
+.welcome-start-btn:focus {
+  background: #125ea2;
+  outline: 2px solid #1976d2;
+  outline-offset: 2px;
+}
+
+/* Mobile styles */
+@media (max-width: 600px) {
+  .welcome-centerbox {
+    padding: 1.2rem 0.7rem;
+    max-width: 98vw;
+  }
+  .welcome-title {
+    font-size: 2rem;
+  }
+  .welcome-desc {
+    font-size: 1rem;
+  }
+  .welcome-start-btn {
+    font-size: 1rem;
+    padding: 0.8rem 1.2rem;
+  }
+} 
