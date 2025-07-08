@@ -153,19 +153,28 @@ export default function MapView({ filters }) {
             position={[b.lat, b.lng]}
             icon={createCustomIcon(getContaminationColor(b.agua), b.nombre, b.agua, b.arena)}
             eventHandlers={{
-              click: () => setOpenPopupId(b.id),
-              keydown: (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  setOpenPopupId(b.id);
-                }
-              }
+              // El marker solo abre el popup si se hace click o enter/espacio en el botón, no directamente en el marker
             }}
           >
+            {/* Botón accesible para abrir el popup */}
+            <div
+              tabIndex={0}
+              role="button"
+              aria-label={`Ver información de ${b.nombre}`}
+              style={{ position: 'absolute', left: '-9999px' }}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  setOpenPopupId(b.id);
+                }
+              }}
+              onClick={() => setOpenPopupId(b.id)}
+            />
             <Popup
               onOpen={() => setOpenPopupId(b.id)}
               onClose={() => setOpenPopupId(null)}
               aria-label={`Información detallada de ${b.nombre}`}
+              autoPan={true}
+              autoFocus={false}
             >
               <article 
                 style={{ 
@@ -176,6 +185,7 @@ export default function MapView({ filters }) {
                 role="dialog"
                 aria-labelledby={`popup-title-${b.id}`}
                 aria-describedby={`popup-content-${b.id}`}
+                tabIndex={0}
               >
                 {/* Header */}
                 <header style={{
@@ -192,14 +202,22 @@ export default function MapView({ filters }) {
                       fontWeight: "bold",
                       color: "#495057"
                     }}
+                    tabIndex={0}
+                    role="region"
+                    aria-label="Nombre del balneario"
                   >
                     {b.nombre}
                   </h3>
-                  <p style={{
-                    margin: "0",
-                    fontSize: "0.9em",
-                    color: "#6c757d"
-                  }}>
+                  <p
+                    style={{
+                      margin: "0",
+                      fontSize: "0.9em",
+                      color: "#6c757d"
+                    }}
+                    tabIndex={0}
+                    role="region"
+                    aria-label="Localidad"
+                  >
                     <strong>Localidad:</strong> {b.localidad}
                   </p>
                 </header>
@@ -210,18 +228,28 @@ export default function MapView({ filters }) {
                   style={{ padding: "1rem" }}
                 >
                   {/* Descripción */}
-                  <p style={{
-                    margin: "0 0 1rem 0",
-                    color: "#495057",
-                    lineHeight: "1.5"
-                  }}>
+                  <p
+                    style={{
+                      margin: "0 0 1rem 0",
+                      color: "#495057",
+                      lineHeight: "1.5"
+                    }}
+                    tabIndex={0}
+                    role="region"
+                    aria-label="Descripción"
+                  >
                     {b.descripcion}
                   </p>
 
                   {/* Estado de contaminación */}
-                  <section style={{
-                    marginBottom: "1rem"
-                  }}>
+                  <section
+                    style={{
+                      marginBottom: "1rem"
+                    }}
+                    tabIndex={0}
+                    role="region"
+                    aria-label="Estado de contaminación"
+                  >
                     <h4 style={{
                       margin: "0 0 0.75rem 0",
                       fontSize: "1em",
@@ -234,13 +262,18 @@ export default function MapView({ filters }) {
                       gridTemplateColumns: "1fr 1fr",
                       gap: "0.75rem"
                     }}>
-                      <article style={{
-                        padding: "0.75rem",
-                        borderRadius: "6px",
-                        border: "2px solid",
-                        borderColor: getContaminationColor(b.agua),
-                        background: "#f8f9fa"
-                      }}>
+                      <article
+                        style={{
+                          padding: "0.75rem",
+                          borderRadius: "6px",
+                          border: "2px solid",
+                          borderColor: getContaminationColor(b.agua),
+                          background: "#f8f9fa"
+                        }}
+                        tabIndex={0}
+                        role="region"
+                        aria-label="Estado del agua"
+                      >
                         <div style={{
                           display: "flex",
                           alignItems: "center",
@@ -270,13 +303,18 @@ export default function MapView({ filters }) {
                         </p>
                       </article>
 
-                      <article style={{
-                        padding: "0.75rem",
-                        borderRadius: "6px",
-                        border: "2px solid",
-                        borderColor: getContaminationColor(b.arena),
-                        background: "#f8f9fa"
-                      }}>
+                      <article
+                        style={{
+                          padding: "0.75rem",
+                          borderRadius: "6px",
+                          border: "2px solid",
+                          borderColor: getContaminationColor(b.arena),
+                          background: "#f8f9fa"
+                        }}
+                        tabIndex={0}
+                        role="region"
+                        aria-label="Estado de la arena"
+                      >
                         <div style={{
                           display: "flex",
                           alignItems: "center",
@@ -309,12 +347,17 @@ export default function MapView({ filters }) {
                   </section>
 
                   {/* Recomendaciones */}
-                  <section style={{
-                    padding: "0.75rem",
-                    background: "#e3f2fd",
-                    borderRadius: "6px",
-                    borderLeft: "4px solid #007bff"
-                  }}>
+                  <section
+                    style={{
+                      padding: "0.75rem",
+                      background: "#e3f2fd",
+                      borderRadius: "6px",
+                      borderLeft: "4px solid #007bff"
+                    }}
+                    tabIndex={0}
+                    role="region"
+                    aria-label="Recomendación"
+                  >
                     <h4 style={{
                       margin: "0 0 0.5rem 0",
                       fontSize: "0.9em",
