@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { GoogleLogin } from '@react-oauth/google';
-import jwtDecode from 'jwt-decode';
+import * as jwt_decode from 'jwt-decode';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 // Simulación de estado de usuario y datos
 // El estado real se manejará con useState
@@ -103,7 +104,7 @@ export default function UserPanel() {
     const token = localStorage.getItem('jwt');
     if (token) {
       try {
-        const decoded = jwtDecode(token);
+        const decoded = jwt_decode.default(token);
         return {
           ...initialUser,
           isLogged: true,
@@ -164,7 +165,6 @@ export default function UserPanel() {
           <GoogleLogin
             onSuccess={handleGoogleLogin}
             onError={() => alert('Error al iniciar sesión con Google')}
-            width="100%"
             useOneTap
           />
 
