@@ -1,77 +1,50 @@
-## 🚀 Instalación y Uso
+# TP-DEU: Mapa de Balnearios
+
+Aplicación web para visualizar balnearios y su información relevante.
+
+## Instalación y uso rápido
+
+### 1. Clonar el repositorio
 
 ```bash
-# Clonar el repositorio
 git clone [URL_DEL_REPO]
-
-# Entrar al directorio
-cd riox-todos
-
-# Instalar dependencias
-npm install
-
-# Ejecutar en desarrollo
-npm run dev
-
-# Build para producción
-npm run build
+cd TP-DEU
 ```
 
-## ♿ Accesibilidad
+### 2. Instalar dependencias
 
-La aplicación está diseñada siguiendo las pautas WCAG 2.1:
+#### Frontend
+```bash
+cd frontend
+npm install
+```
 
-- **Navegación por teclado** completa
-- **ARIA labels** y roles apropiados
-- **Contraste** configurable
-- **Tamaño de fuente** ajustable
-- **Skip links** para navegación rápida
+#### Backend
+```bash
+cd backend
+npm install
+```
 
-## 📱 Funcionalidades
+### 3. Ejecutar en desarrollo
 
-### Mapa
-- Visualización de balnearios con marcadores
-- Información detallada en popups
-- Filtros por localidad
+#### Frontend
+```bash
+cd frontend
+npm run dev
+```
 
-### Paneles
-- **Filtros**: Filtrar balnearios por localidad
-- **Info**: Información sobre el proyecto y metodología
-- **Usuario**: Gestión de cuenta (preparado para Google Login)
-- **Config**: Ajustes de accesibilidad
+#### Backend
+```bash
+cd backend
+node index.js
+```
 
-### Configuraciones
-- Tamaño de fuente (pequeño, mediano, grande)
-- Tamaño de iconos
-- Familia de fuente (incluyendo fuentes para dislexia)
-- Modo de alto contraste
-
-## �� Diseño
-
-- **Paleta de colores** accesible
-- **Tipografía** clara y legible
-- **Layout** responsive
-- **Iconos** descriptivos
-
-## 📊 Datos
-
-Los datos de balnearios incluyen:
-- Nombre y localidad
-- Coordenadas geográficas
-- Niveles de contaminación (agua y arena)
-- Descripciones detalladas
-
-## 🔧 Desarrollo
+### 4. (Opcional) Usar Docker Compose
 
 ```bash
-# Ejecutar tests
-npm test
-
-# Linting
-npm run lint
-
-# Build de desarrollo
-npm run build:dev
+docker-compose up --build
 ```
 
-**Nota**: Este proyecto es parte del trabajo práctico de la materia DUX.
+---
+
+Listo. Accedé a la app desde tu navegador en la URL que se indique (por defecto, http://localhost:5173 para el frontend).
