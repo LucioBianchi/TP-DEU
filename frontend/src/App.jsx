@@ -3,6 +3,7 @@ import Sidebar from "./components/Sidebar/Sidebar";
 import MapView from "./components/MapView/MapView";
 import Panel from "./components/Panel/Panel";
 import { ConfigProvider } from "./context/ConfigContext.jsx";
+import { AuthProvider } from "./context/AuthContext.jsx";
 import { useAppState } from "./hooks/useAppState";
 import WelcomeScreen from "./components/WelcomeScreen/WelcomeScreen";
 
@@ -59,13 +60,19 @@ export default function App() {
 
   if (showWelcome) {
     return (
-      <WelcomeScreen onStart={() => setShowWelcome(false)} />
+      <AuthProvider>
+        <ConfigProvider>
+          <WelcomeScreen onStart={() => setShowWelcome(false)} />
+        </ConfigProvider>
+      </AuthProvider>
     );
   }
 
   return (
-    <ConfigProvider>
-      <AppContent />
-    </ConfigProvider>
+    <AuthProvider>
+      <ConfigProvider>
+        <AppContent />
+      </ConfigProvider>
+    </AuthProvider>
   );
 }

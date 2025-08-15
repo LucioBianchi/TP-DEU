@@ -1,49 +1,64 @@
 import { useMemo } from 'react';
-import { balnearios } from '../data/balnearios';
+import { useBalneariosAPI } from './useBalneariosAPI';
 
 export function useBalnearios(filters) {
+  const { balnearios, loading, error } = useBalneariosAPI();
+
   const filteredBalnearios = useMemo(() => {
+    if (!balnearios.length) return [];
+    
     return balnearios.filter(b => {
-      // Filtro por localidad
-      const matchLocalidad = !filters.localidad || 
-                            filters.localidad === "" || 
-                            b.localidad === filters.localidad;
+      // Filtro por nombre/localidad
+      const matchNombre = !filters.nombre || 
+                         filters.nombre === "" || 
+                         b.name.toLowerCase().includes(filters.nombre.toLowerCase());
       
-      // Filtro por agua
+      // Filtro por contaminación de agua
       const matchAgua = !filters.agua || 
                        filters.agua === "" || 
-                       b.agua === filters.agua;
+                       getContaminationLevel(b.water_pollution_level) === filters.agua;
       
-      // Filtro por arena
+      // Filtro por contaminación de arena
       const matchArena = !filters.arena || 
                         filters.arena === "" || 
-                        b.arena === filters.arena;
+                        getContaminationLevel(b.sand_pollution_level) === filters.arena;
       
-      return matchLocalidad && matchAgua && matchArena;
+      return matchNombre && matchAgua && matchArena;
     });
-  }, [filters]);
+  }, [balnearios, filters]);
 
   const uniqueValues = useMemo(() => {
+    if (!balnearios.length) return { nombres: [], aguas: [], arenas: [] };
+    
     return {
-      localidades: [...new Set(balnearios.map(b => b.localidad))],
-      aguas: [...new Set(balnearios.map(b => b.agua))],
-      arenas: [...new Set(balnearios.map(b => b.arena))]
+      nombres: [...new Set(balnearios.map(b => b.name))],
+      aguas: [...new Set(balnearios.map(b => getContaminationLevel(b.water_pollution_level)))],
+      arenas: [...new Set(balnearios.map(b => getContaminationLevel(b.sand_pollution_level)))]
     };
-  }, []);
+  }, [balnearios]);
 
   const stats = useMemo(() => {
     return {
       total: balnearios.length,
       filtered: filteredBalnearios.length
     };
-  }, [filteredBalnearios.length]);
+  }, [balnearios.length, filteredBalnearios.length]);
 
   return {
     balnearios: filteredBalnearios,
     allBalnearios: balnearios,
     uniqueValues,
-    stats
+    stats,
+    loading,
+    error
   };
+}
+
+// Función auxiliar para convertir niveles numéricos a texto
+function getContaminationLevel(level) {
+  if (level <= 0.3) return 'Bajo';
+  if (level <= 0.7) return 'Medio';
+  return 'Alto';
 }
 
 // Función auxiliar para ordenamiento
