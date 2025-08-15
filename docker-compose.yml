@@ -6,11 +6,24 @@ services:
       - "4000:4000"
     volumes:
       - ./backend:/app
+      - /app/node_modules
     environment:
       - NODE_ENV=development
+    env_file:
+      - ./backend/.env
+    restart: "no"
+  
   frontend:
     build: ./frontend
     ports:
       - "5173:80"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - ./frontend/.env
     depends_on:
-      - backend 
+      - backend
+    restart: "no"

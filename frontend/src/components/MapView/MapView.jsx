@@ -3,7 +3,6 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { useBalnearios } from "../../hooks/useBalnearios";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import BalnearioModal from "../Modal/BalnearioModal";
 import "./MapView.css";
 
 // Arreglar el problema de los iconos de Leaflet
@@ -175,7 +174,7 @@ export default function MapView({ filters }) {
         {balnearios.map(b => (
           <Marker 
             key={b.id} 
-            position={[b.lat, b.lng]}
+            position={[b.latitude, b.longitude]}
             icon={createCustomIcon(getContaminationColor(b.agua), b.nombre, b.agua, b.arena)}
             eventHandlers={{
               // El marker solo abre el popup si se hace click o enter/espacio en el botón, no directamente en el marker

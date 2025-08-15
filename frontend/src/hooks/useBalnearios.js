@@ -4,47 +4,96 @@ import { useBalneariosAPI } from './useBalneariosAPI';
 export function useBalnearios(filters) {
   const { balnearios, loading, error } = useBalneariosAPI();
 
-  const filteredBalnearios = useMemo(() => {
-    if (!balnearios.length) return [];
+  // Normalizar respuesta API -> forma interna homogénea
+  const normalized = useMemo(() => {
+    if (!Array.isArray(balnearios)) return [];
     
-    return balnearios.filter(b => {
+    console.log('Datos crudos del API:', balnearios);
+    
+    const result = balnearios
+      .map(r => {
+        const waterNum = numOrZero(r.water_pollution_level);
+        const sandNum = numOrZero(r.sand_pollution_level);
+        const normalizedItem = {
+          id: r.id,
+            // nombres
+          nombre: r.name || r.nombre || '',
+          localidad: r.locality || r.localidad || '',
+            // coordenadas normalizadas
+          latitude: toNumber(r.latitude),
+          longitude: toNumber(r.longitude),
+            // niveles numéricos crudos
+          water_pollution_level: waterNum,
+          sand_pollution_level: sandNum,
+            // niveles textuales derivados (agua/arena para UI previa)
+          agua: getContaminationLevel(waterNum),
+          arena: getContaminationLevel(sandNum),
+            // descripción
+          descripcion: r.description || r.descripcion || '',
+            // fecha (si aplica)
+          last_measurement_date: r.last_measurement_date || null
+        };
+        
+        console.log('Item normalizado:', normalizedItem);
+        return normalizedItem;
+      })
+      // filtrar entradas sin coordenadas válidas para no romper Leaflet
+      .filter(r => isFinite(r.latitude) && isFinite(r.longitude));
+    
+    console.log('Resultado final normalizado:', result);
+    return result;
+  }, [balnearios]);
+
+  const filteredBalnearios = useMemo(() => {
+    if (!normalized.length) return [];
+    
+    console.log('Filtros aplicados:', filters);
+    console.log('Datos normalizados antes del filtrado:', normalized);
+    
+    const result = normalized.filter(b => {
       // Filtro por nombre/localidad
       const matchNombre = !filters.nombre || 
                          filters.nombre === "" || 
-                         b.name.toLowerCase().includes(filters.nombre.toLowerCase());
+                         b.nombre.toLowerCase().includes(filters.nombre.toLowerCase());
       
       // Filtro por contaminación de agua
       const matchAgua = !filters.agua || 
                        filters.agua === "" || 
-                       getContaminationLevel(b.water_pollution_level) === filters.agua;
+                       b.agua === filters.agua;
       
       // Filtro por contaminación de arena
       const matchArena = !filters.arena || 
                         filters.arena === "" || 
-                        getContaminationLevel(b.sand_pollution_level) === filters.arena;
+                        b.arena === filters.arena;
       
-      return matchNombre && matchAgua && matchArena;
+      const matches = matchNombre && matchAgua && matchArena;
+      console.log(`Balneario ${b.nombre}: nombre=${matchNombre}, agua=${matchAgua}, arena=${matchArena}, total=${matches}`);
+      
+      return matches;
     });
-  }, [balnearios, filters]);
+    
+    console.log('Resultado del filtrado:', result);
+    return result;
+  }, [normalized, filters]);
 
   const uniqueValues = useMemo(() => {
-    if (!balnearios.length) return { nombres: [], aguas: [], arenas: [] };
+    if (!normalized.length) return { nombres: [], aguas: [], arenas: [] };
     
     return {
-      nombres: [...new Set(balnearios.map(b => b.name))],
-      aguas: [...new Set(balnearios.map(b => getContaminationLevel(b.water_pollution_level)))],
-      arenas: [...new Set(balnearios.map(b => getContaminationLevel(b.sand_pollution_level)))]
+      nombres: [...new Set(normalized.map(b => b.nombre))],
+      aguas: [...new Set(normalized.map(b => b.agua))],
+      arenas: [...new Set(normalized.map(b => b.arena))]
     };
-  }, [balnearios]);
+  }, [normalized]);
 
   const stats = useMemo(() => {
     return {
-      total: balnearios.length,
+      total: normalized.length,
       filtered: filteredBalnearios.length
     };
-  }, [balnearios.length, filteredBalnearios.length]);
+  }, [normalized.length, filteredBalnearios.length]);
 
-  return {
+  const result = {
     balnearios: filteredBalnearios,
     allBalnearios: balnearios,
     uniqueValues,
@@ -52,13 +101,26 @@ export function useBalnearios(filters) {
     loading,
     error
   };
+  
+  console.log('Hook useBalnearios retornando:', result);
+  
+  return result;
 }
 
-// Función auxiliar para convertir niveles numéricos a texto
+// Helpers
 function getContaminationLevel(level) {
-  if (level <= 0.3) return 'Bajo';
-  if (level <= 0.7) return 'Medio';
+  const v = typeof level === 'number' ? level : numOrZero(level);
+  if (v <= 0.3) return 'Bajo';
+  if (v <= 0.7) return 'Medio';
   return 'Alto';
+}
+function toNumber(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : NaN;
+}
+function numOrZero(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
 }
 
 // Función auxiliar para ordenamiento
