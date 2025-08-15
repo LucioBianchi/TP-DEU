@@ -75,7 +75,19 @@ class Database {
       });
     });
   }
+
+  // Método helper para ejecutar múltiples comandos SQL (como CREATE TABLE)
+  async exec(sql) {
+    return new Promise((resolve, reject) => {
+      this.db.exec(sql, (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+  }
+
 }
+
 
 // Singleton instance
 const database = new Database();

@@ -4,7 +4,7 @@ const cors = require('cors');
 const path = require('path');
 
 // Importar configuración de base de datos
-const { database } = require('./src/config/database');
+const database = require('./src/config/database');
 
 // Importar rutas
 const authRoutes = require('./src/routes/authRoutes');
@@ -62,19 +62,11 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Middleware para rutas no encontradas
-app.use('*', (req, res) => {
-  res.status(404).json({ 
-    success: false,
-    error: 'Ruta no encontrada' 
-  });
-});
 
 // Inicializar servidor
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);
   console.log(`API disponible en http://localhost:${PORT}/api`);
-  console.log(`Health check: http://localhost:${PORT}/api/health`);
 });
 
 // Manejo de señales de terminación

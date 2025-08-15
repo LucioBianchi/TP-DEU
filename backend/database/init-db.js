@@ -1,4 +1,5 @@
-const { database, Location } = require('../src/models');
+const database = require('../src/config/database');
+const { Location } = require('../src/models');
 const fs = require('fs');
 const path = require('path');
 
@@ -7,14 +8,14 @@ async function initDatabase() {
     // Conectar a la base de datos
     await database.connect();
     
-    // Leer y ejecutar el esquema
+    // Leer el esquema
     const schemaPath = path.join(__dirname, 'schema.sql');
     const schema = fs.readFileSync(schemaPath, 'utf8');
     
     console.log('Inicializando base de datos...');
     
-    // Ejecutar el esquema (crear tablas)
-    await database.run(schema);
+    // Ejecutar el esquema usando exec (no run)
+    await database.exec(schema);
     console.log('Esquema ejecutado correctamente');
     
     // Insertar solo ubicaciones de ejemplo
@@ -26,7 +27,7 @@ async function initDatabase() {
     console.error('Error inicializando base de datos:', error);
     process.exit(1);
   } finally {
-    database.close();
+    await database.close();
   }
 }
 
@@ -36,52 +37,82 @@ async function insertDefaultLocations() {
   // Ubicaciones precargadas por defecto
   const defaultLocations = [
     {
-      name: 'Balneario Municipal',
-      latitude: -34.6037,
-      longitude: -58.3816,
-      description: 'Balneario principal de la ciudad con amplias playas y servicios completos'
+      name: 'Punta Lara',
+      latitude: -34.8167,
+      longitude: -57.9833,
+      description: 'Balneario histórico de La Plata, playa de arena fina y aguas tranquilas. Ideal para familias y deportes acuáticos.'
     },
     {
-      name: 'Playa San Fernando',
+      name: 'Balneario Municipal de La Plata',
+      latitude: -34.8200,
+      longitude: -57.9800,
+      description: 'Balneario oficial de la ciudad, con servicios completos, guardavidas y estacionamiento.'
+    },
+    {
+      name: 'Balneario El Rincón',
+      latitude: -34.8150,
+      longitude: -57.9850,
+      description: 'Balneario privado con restaurante, sombrillas y actividades recreativas.'
+    },
+    {
+      name: 'Playa de Berisso',
+      latitude: -34.8500,
+      longitude: -57.9000,
+      description: 'Playa popular de Berisso, cercana a La Plata, con ambiente familiar y tranquilo.'
+    },
+    {
+      name: 'Balneario San Fernando',
       latitude: -34.4500,
       longitude: -58.5500,
-      description: 'Playa popular para familias, aguas tranquilas y arena fina'
-    },
-    {
-      name: 'Balneario Quilmes',
-      latitude: -34.7167,
-      longitude: -58.2667,
-      description: 'Balneario histórico con vista al Río de la Plata, ideal para deportes acuáticos'
+      description: 'Balneario histórico del norte del GBA, con amplias playas y servicios completos.'
     },
     {
       name: 'Playa Vicente López',
       latitude: -34.5333,
       longitude: -58.4667,
-      description: 'Playa urbana con acceso fácil, perfecta para visitas cortas'
+      description: 'Playa urbana del norte, fácil acceso en transporte público, ideal para visitas cortas.'
+    },
+    {
+      name: 'Balneario Quilmes',
+      latitude: -34.7167,
+      longitude: -58.2667,
+      description: 'Balneario del sur del GBA, con vista al Río de la Plata y ambiente histórico.'
     },
     {
       name: 'Balneario Tigre',
       latitude: -34.4267,
       longitude: -58.5767,
-      description: 'Balneario en zona de delta, ambiente natural y tranquilo'
+      description: 'Balneario en zona de delta, ambiente natural, ideal para deportes acuáticos.'
+    },
+    {
+      name: 'Playa de Ensenada',
+      latitude: -34.8700,
+      longitude: -57.9200,
+      description: 'Playa cercana a La Plata, ambiente tranquilo y familiar, menos concurrida.'
+    },
+    {
+      name: 'Balneario Magdalena',
+      latitude: -35.0833,
+      longitude: -57.5167,
+      description: 'Balneario de la costa atlántica bonaerense, aguas más limpias y ambiente natural.'
     }
   ];
 
   for (const locationData of defaultLocations) {
     try {
       await Location.create(locationData);
-      console.log(`Ubicación creada: ${locationData.name}`);
+      console.log('Ubicación creada:', locationData.name);
     } catch (error) {
-      console.log(`Ubicación ${locationData.name} ya existe o error:`, error.message);
+      console.log('Ubicación', locationData.name, 'ya existe o error:', error.message);
     }
   }
   
-  console.log(`${defaultLocations.length} ubicaciones procesadas`);
+  console.log(defaultLocations.length, 'ubicaciones procesadas');
   
   // Verificar que las ubicaciones se crearon
   try {
     const locationCount = await database.queryOne('SELECT COUNT(*) as count FROM locations');
-    console.log(`Total ubicaciones en la base: ${locationCount.count}`);
+    console.log('Total ubicaciones en la base:', locationCount.count);
   } catch (error) {
     console.log('Error verificando ubicaciones:', error.message);
   }
