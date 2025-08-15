@@ -1,79 +1,91 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const jwt = require('jsonwebtoken');
-const sqlite3 = require('sqlite3').verbose();
-const { OAuth2Client } = require('google-auth-library');
+const path = require('path');
+
+// Importar configuración de base de datos
+const { database } = require('./src/config/database');
+
+// Importar rutas
+const authRoutes = require('./src/routes/authRoutes');
+const userRoutes = require('./src/routes/userRoutes');
+const locationRoutes = require('./src/routes/locationRoutes');
+const measurementRoutes = require('./src/routes/measurementRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
-const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
 
+// Middleware global
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// DB setup
-const db = new sqlite3.Database('./users.db');
-db.serialize(() => {
-  db.run(`CREATE TABLE IF NOT EXISTS users (
-    id TEXT PRIMARY KEY,
-    email TEXT NOT NULL,
-    name TEXT
-  )`);
+// Middleware de logging
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
 });
 
-// Google Auth
-const googleClient = new OAuth2Client(CLIENT_ID);
-
-// Middleware para verificar JWT
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-  if (!token) return res.sendStatus(401);
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403);
-    req.user = user;
-    next();
+// Conectar a la base de datos
+database.connect()
+  .then(() => {
+    console.log('Base de datos conectada correctamente');
+  })
+  .catch((error) => {
+    console.error('Error conectando a la base de datos:', error);
+    process.exit(1);
   });
-}
 
-// Endpoint de login con Google
-app.post('/api/auth/google', async (req, res) => {
-  const { token } = req.body;
-  if (!token) return res.status(400).json({ error: 'Token requerido' });
-  let ticket, payload;
-  try {
-    ticket = await googleClient.verifyIdToken({
-      idToken: token,
-      audience: CLIENT_ID,
-    });
-    payload = ticket.getPayload();
-  } catch (err) {
-    return res.status(401).json({ error: 'Token de Google inválido' });
-  }
-  // Guardar usuario en la base si no existe
-  db.run(
-    `INSERT OR IGNORE INTO users (id, email, name) VALUES (?, ?, ?)`,
-    [payload.sub, payload.email, payload.name || ''],
-    err => {
-      if (err) return res.status(500).json({ error: 'DB error' });
-      // Crear JWT propio
-      const user = { id: payload.sub, email: payload.email, name: payload.name };
-      const ourToken = jwt.sign(user, JWT_SECRET, { expiresIn: '1d' });
-      res.json({ token: ourToken, user });
-    }
-  );
-});
+// Rutas de la API
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/locations', locationRoutes);
+app.use('/api/measurements', measurementRoutes);
 
-// Endpoint para obtener usuario actual
-app.get('/api/me', authenticateToken, (req, res) => {
-  db.get('SELECT id, email, name FROM users WHERE id = ?', [req.user.id], (err, row) => {
-    if (err || !row) return res.sendStatus(404);
-    res.json(row);
+// Ruta de health check
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    message: 'Backend funcionando correctamente',
+    database: 'Conectado'
   });
 });
 
+// Middleware de manejo de errores
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({ 
+    success: false,
+    error: 'Error interno del servidor',
+    message: process.env.NODE_ENV === 'development' ? err.message : 'Algo salió mal'
+  });
+});
+
+// Middleware para rutas no encontradas
+app.use('*', (req, res) => {
+  res.status(404).json({ 
+    success: false,
+    error: 'Ruta no encontrada' 
+  });
+});
+
+// Inicializar servidor
 app.listen(PORT, () => {
-  console.log(`Backend listening on port ${PORT}`);
-}); 
+  console.log(`Servidor corriendo en puerto ${PORT}`);
+  console.log(`API disponible en http://localhost:${PORT}/api`);
+  console.log(`Health check: http://localhost:${PORT}/api/health`);
+});
+
+// Manejo de señales de terminación
+process.on('SIGTERM', async () => {
+    console.log('SIGTERM recibido, cerrando servidor...');
+    await database.close();
+    process.exit(0);
+  });
+  
+  process.on('SIGINT', async () => {
+    console.log('SIGINT recibido, cerrando servidor...');
+    await database.close();
+    process.exit(0);
+  });
