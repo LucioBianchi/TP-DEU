@@ -1,0 +1,366 @@
+/* Overlay del formulario */
+.measurement-form-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+  }
+  
+  /* Modal principal */
+  .measurement-form-modal {
+    background: white;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    position: relative;
+  }
+  
+  /* Header con barra de progreso */
+  .form-header {
+    background: #e3f2fd;
+    padding: 1rem;
+    position: relative;
+  }
+  
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  .progress-fill {
+    height: 100%;
+    background: #2196f3;
+    transition: width 0.3s ease;
+  }
+  
+  .close-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: #333;
+    color: white;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+  }
+  
+  .close-button:hover,
+  .close-button:focus {
+    background: #555;
+    outline: 2px solid #2196f3;
+  }
+  
+  /* Contenido del formulario */
+  .form-content {
+    padding: 2rem;
+    overflow-y: auto;
+    max-height: calc(90vh - 80px);
+  }
+  
+  /* Títulos de pasos */
+  .step-title {
+    margin: 0 0 2rem 0;
+    color: #2c3e50;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 0.5rem;
+    font-weight: 600;
+  }
+  
+  /* Opciones de fecha */
+  .date-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .date-option {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+  
+  .date-option:hover {
+    border-color: #2196f3;
+    background: #f5f5f5;
+  }
+  
+  .date-option.selected {
+    border-color: #2196f3;
+    background: #e3f2fd;
+  }
+  
+  .date-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  .radio-custom {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    position: relative;
+    flex-shrink: 0;
+  }
+  
+  .date-option.selected .radio-custom {
+    border-color: #2196f3;
+    background: #2196f3;
+  }
+  
+  .date-option.selected .radio-custom::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+  }
+  
+  .option-text {
+    flex: 1;
+    font-weight: 500;
+  }
+  
+  .calendar-icon {
+    font-size: 1.2em;
+    color: #666;
+  }
+  
+  /* Input de fecha personalizada */
+  .custom-date-input {
+    margin-bottom: 2rem;
+  }
+  
+  .custom-date-input label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #2c3e50;
+  }
+  
+  .custom-date-input input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+  }
+  
+  .custom-date-input input:focus {
+    outline: none;
+    border-color: #2196f3;
+  }
+  
+  /* Opciones de ubicación */
+  .location-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .location-option {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+  
+  .location-option:hover {
+    border-color: #2196f3;
+    background: #f5f5f5;
+  }
+  
+  .location-option.selected {
+    border-color: #2196f3;
+    background: #e3f2fd;
+  }
+  
+  .location-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  .location-icon {
+    font-size: 1.2em;
+    color: #666;
+  }
+  
+  /* Inputs de coordenadas */
+  .coordinates-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .input-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .input-group label {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #2c3e50;
+  }
+  
+  .input-group input {
+    padding: 0.75rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+  }
+  
+  .input-group input:focus {
+    outline: none;
+    border-color: #2196f3;
+  }
+  
+  /* Input de localidad */
+  .locality-input {
+    margin-bottom: 2rem;
+  }
+  
+  .locality-input label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #2c3e50;
+  }
+  
+  .locality-input select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 1rem;
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+  }
+  
+  .locality-input select:focus {
+    outline: none;
+    border-color: #2196f3;
+  }
+  
+  /* Botones de acción */
+  .step-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  
+  .btn-primary,
+  .btn-secondary {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .btn-primary {
+    background: #2196f3;
+    color: white;
+  }
+  
+  .btn-primary:hover,
+  .btn-primary:focus {
+    background: #1976d2;
+    outline: 2px solid #64b5f6;
+  }
+  
+  .btn-secondary {
+    background: #f5f5f5;
+    color: #333;
+  }
+  
+  .btn-secondary:hover,
+  .btn-secondary:focus {
+    background: #e0e0e0;
+    outline: 2px solid #2196f3;
+  }
+  
+  .arrow-right {
+    font-size: 0.8em;
+  }
+  
+  /* Clase para lectores de pantalla */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .measurement-form-modal {
+      margin: 1rem;
+      max-height: calc(100vh - 2rem);
+    }
+    
+    .form-content {
+      padding: 1.5rem;
+    }
+    
+    .coordinates-inputs {
+      grid-template-columns: 1fr;
+    }
+    
+    .step-actions {
+      flex-direction: column;
+    }
+  }

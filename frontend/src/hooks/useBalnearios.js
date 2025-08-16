@@ -109,10 +109,25 @@ export function useBalnearios(filters) {
 
 // Helpers
 function getContaminationLevel(level) {
-  const v = typeof level === 'number' ? level : numOrZero(level);
-  if (v <= 0.3) return 'Bajo';
-  if (v <= 0.7) return 'Medio';
-  return 'Alto';
+  // Si el nivel es null, undefined o no es un número válido, retornar "Sin datos"
+  if (level === null || level === undefined || !Number.isFinite(Number(level))) {
+    return 'Sin datos';
+  }
+  
+  const v = Number(level);
+  
+  // Si el valor es 0, también considerar como "Sin datos"
+  if (v === 0) {
+    return 'Sin datos';
+  }
+  
+  // Lógica CORRECTA basada en los valores reales del backend
+  if (v === 1.0) return 'Bajo';
+  if (v === 3.0) return 'Medio';
+  if (v === 5.0) return 'Alto';
+  
+  // Fallback para valores inesperados
+  return 'Sin datos';
 }
 function toNumber(v) {
   const n = Number(v);
