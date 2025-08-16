@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useConfig } from "../../context/ConfigContext";
-import { DateStep, LocationStep, ContaminationTypeStep, WaterMeasurementStep, SandMeasurementStep } from "./steps";
+import { DateStep, LocationStep, ContaminationTypeStep, WaterMeasurementStep, SandMeasurementStep, ExtraInfoStep } from "./steps";
 import "./MeasurementForm.css";
 
 // Componente principal del formulario
@@ -70,70 +70,96 @@ const MeasurementForm = ({ isOpen, onClose, onSubmit }) => {
             dateData={formData.date}
           />
         );
-        case 3:
-            return (
-              <ContaminationTypeStep
-                onNext={(contaminationData) => {
-                  setFormData(prev => ({ ...prev, contamination: contaminationData }));
-                  // Si solo necesita medición de agua, ir al paso 4
-                  if (contaminationData.needsWaterMeasurement && !contaminationData.needsSandMeasurement) {
-                    setCurrentStep(4);
-                  } else if (contaminationData.needsSandMeasurement && !contaminationData.needsWaterMeasurement) {
+      case 3:
+        return (
+          <ContaminationTypeStep
+            onNext={(contaminationData) => {
+              setFormData(prev => ({ ...prev, contamination: contaminationData }));
+              // Determinar el siguiente paso según la selección
+              if (contaminationData.needsWaterMeasurement && !contaminationData.needsSandMeasurement) {
+                setCurrentStep(4); // Solo agua
+              } else if (contaminationData.needsSandMeasurement && !contaminationData.needsWaterMeasurement) {
                 setCurrentStep(5); // Solo arena
-                    console.log("Datos completos:", { ...formData, contamination: contaminationData });
-                  } else if (contaminationData.needsWaterMeasurement && contaminationData.needsSandMeasurement) {
-                    // Si necesita ambos, empezar con agua
-                    setCurrentStep(4);
-                  }
-                }}
-                onBack={() => setCurrentStep(2)}
-                onClose={onClose}
-                dateData={formData.date}
-                locationData={formData.location}
-              />
-            );
-            case 4:
-                return (
-                  <WaterMeasurementStep
-                    onNext={(waterData) => {
-                      setFormData(prev => ({ ...prev, water: waterData }));
-                      // Si también necesita medición de arena, ir al paso 5
-                      if (formData.contamination?.needsSandMeasurement) {
-                        setCurrentStep(5);
-                      } else {
-                        // Solo agua, enviar formulario
-                        handleSubmit(waterData);
-                      }
-                    }}
-                    onBack={() => setCurrentStep(3)}
-                    onClose={onClose}
-                    dateData={formData.date}
-                    locationData={formData.location}
-                    contaminationData={formData.contamination}
-                  />
-                );
-              case 5:
-                return (
-                  <SandMeasurementStep
-                    onNext={(sandData) => {
-                      setFormData(prev => ({ ...prev, sand: sandData }));
-                      // Enviar formulario completo
-                      handleSubmit(sandData);
-                    }}
-                    onBack={() => {
-                      // Si venimos del paso de agua, volver ahí; si no, al paso 3
-                      if (formData.water) {
-                        setCurrentStep(4);
-                      } else {
-                        setCurrentStep(3);
-                      }
-                    }}
-                    onClose={onClose}
-                    dateData={formData.date}
-                    locationData={formData.location}
-                    contaminationData={formData.contamination}
-                  />
-                );
+              } else if (contaminationData.needsWaterMeasurement && contaminationData.needsSandMeasurement) {
+                setCurrentStep(4); // Empezar con agua
+              }
+            }}
+            onBack={() => setCurrentStep(2)}
+            onClose={onClose}
+            dateData={formData.date}
+            locationData={formData.location}
+          />
+        );
+      case 4:
+        return (
+          <WaterMeasurementStep
+            onNext={(waterData) => {
+              setFormData(prev => ({ ...prev, water: waterData }));
+              // Si también necesita medición de arena, ir al paso 5
+              if (formData.contamination?.needsSandMeasurement) {
+                setCurrentStep(5);
+              } else {
+                // Solo agua, ir a información extra
+                setCurrentStep(6);
+              }
+            }}
+            onBack={() => setCurrentStep(3)}
+            onClose={onClose}
+            dateData={formData.date}
+            locationData={formData.location}
+            contaminationData={formData.contamination}
+          />
+        );
+      case 5:
+        return (
+          <SandMeasurementStep
+            onNext={(sandData) => {
+              setFormData(prev => ({ ...prev, sand: sandData }));
+              // Ir a información extra
+              setCurrentStep(6);
+            }}
+            onBack={() => {
+              // Si venimos del paso de agua, volver ahí; si no, al paso 3
+              if (formData.water) {
+                setCurrentStep(4);
+              } else {
+                setCurrentStep(3);
+              }
+            }}
+            onClose={onClose}
+            dateData={formData.date}
+            locationData={formData.location}
+            contaminationData={formData.contamination}
+          />
+        );
+      case 6:
+        return (
+          <ExtraInfoStep
+            onNext={(extraData) => {
+              setFormData(prev => ({ ...prev, extra: extraData }));
+              // Enviar formulario completo
+              handleSubmit(extraData);
+            }}
+            onBack={() => {
+              // Volver al paso anterior según qué mediciones se hicieron
+              if (formData.water && formData.sand) {
+                setCurrentStep(5); // Volver a arena
+              } else if (formData.water) {
+                setCurrentStep(4); // Volver a agua
+              } else if (formData.sand) {
+                setCurrentStep(5); // Volver a arena
+              } else {
+                setCurrentStep(3); // Volver a tipo de contaminación
+              }
+            }}
+            onClose={onClose}
+            dateData={formData.date}
+            locationData={formData.location}
+            contaminationData={formData.contamination}
+            waterData={formData.water}
+            sandData={formData.sand}
+          />
+        );
       default:
         return null;
     }
