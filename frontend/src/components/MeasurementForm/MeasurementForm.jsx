@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
-import { DateStep } from "./steps";
+import { useConfig } from "../../context/ConfigContext";
+import { DateStep, LocationStep } from "./steps";
 import "./MeasurementForm.css";
 
 // Componente principal del formulario
 const MeasurementForm = ({ isOpen, onClose, onSubmit }) => {
+  const { config } = useConfig();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({});
   const modalRef = useRef(null);
@@ -43,58 +45,75 @@ const MeasurementForm = ({ isOpen, onClose, onSubmit }) => {
     onSubmit(completeData);
     onClose();
   };
+
+  const renderStep = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <DateStep
+            onNext={(dateData) => {
+              setFormData(prev => ({ ...prev, date: dateData }));
+              setCurrentStep(2);
+            }}
+            onClose={onClose}
+          />
+        );
+      case 2:
+        return (
+          <LocationStep
+            onNext={(locationData) => {
+              setFormData(prev => ({ ...prev, location: locationData }));
+              // Aquí iría el siguiente paso cuando lo implementemos
+              console.log("Datos completos:", { ...formData, location: locationData });
+            }}
+            onBack={() => setCurrentStep(1)}
+            onClose={onClose}
+            dateData={formData.date}
+          />
+        );
+      default:
+        return null;
+    }
+  };
   
   if (!isOpen) return null;
   
   return (
-    <div 
-      className="measurement-form-overlay"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="form-title"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
-      <div 
-        ref={modalRef}
-        className="measurement-form-modal"
-        role="document"
-        aria-label="Formulario de medición"
-      >
-        {/* Barra superior */}
-        <div className="form-header">
-          <div className="progress-bar">
-            <div 
-              className="progress-fill" 
-              style={{ width: `${(currentStep / 2) * 100}%` }}
-            ></div>
+    <>
+      {isOpen && (
+        <div className="measurement-form-overlay">
+          <div className="measurement-form-modal" ref={modalRef}>
+            {/* Header del modal */}
+            <div className="form-header">
+              <h2>Nueva Medición</h2>
+              <button
+                ref={closeButtonRef}
+                type="button"
+                onClick={onClose}
+                className="close-button"
+                aria-label="Cerrar formulario"
+              >
+                ×
+              </button>
+            </div>
+  
+            {/* Barra de progreso */}
+            <div className="progress-bar">
+              <div 
+                className="progress-fill" 
+                style={{ width: `${(currentStep / 2) * 100}%` }}
+              ></div>
+            </div>
+  
+            {/* Contenido del formulario */}
+            <div className="form-content">
+              {renderStep()}
+            </div>
+            
           </div>
-          <button
-            ref={closeButtonRef}
-            onClick={onClose}
-            className="close-button"
-            aria-label="Cerrar formulario"
-          >
-            ×
-          </button>
         </div>
-        
-        {/* Contenido del formulario */}
-        <div className="form-content">
-          {currentStep === 1 && (
-            <DateStep 
-              onNext={handleNext}
-              onClose={onClose}
-            />
-          )}
-          
-          {currentStep === 2 && (
-            <div>LocationStep - Próximo paso</div>
-          )}
-        </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 

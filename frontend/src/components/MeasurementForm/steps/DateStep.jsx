@@ -19,7 +19,7 @@ const DateStep = ({ onNext, onClose }) => {
       medium: { title: '1.4rem', body: '1rem', button: '1rem' },
       large: { title: '1.6rem', body: '1.1rem', button: '1.1rem' }
     };
-    return sizeMap[config.textSize] || sizeMap.medium;
+    return sizeMap[config.fontSize] || sizeMap.medium;
   };
   
   const getFontFamily = () => {
