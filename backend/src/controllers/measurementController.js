@@ -71,14 +71,12 @@ class MeasurementController {
         additional_notes 
       } = req.body;
       const user_id = req.user.id;
-      
-      // Validaciones básicas
-      if (!location_id || 
-          (ecoli_water === undefined && enterococci_water === undefined) ||
-          (ecoli_sand === undefined && enterococci_sand === undefined)) {
+
+      // Verificar que haya algún valor de medición
+      if (!ecoli_water && !enterococci_water && !ecoli_sand && !enterococci_sand) {
         return res.status(400).json({
           success: false,
-          error: 'location_id y al menos un valor de contaminación son requeridos'
+          error: 'Al menos una medición debe tener un valor'
         });
       }
       
@@ -120,7 +118,33 @@ class MeasurementController {
       });
     }
   }
-  
+
+  // Obtener mediciones pendientes de otros usuarios (para validadores)
+  static async getPendingMeasurementsFromOthers(req, res) {
+    try {
+      // Verificar que el usuario es validador
+      if (req.user.role !== 'validator' && req.user.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          error: 'Solo los validadores pueden ver mediciones pendientes de otros usuarios'
+        });
+      }
+      
+      const measurements = await Measurement.getPendingMeasurementsFromOthers(req.user.id);
+      
+      res.json({
+        success: true,
+        data: measurements,
+        count: measurements.length
+      });
+    } catch (error) {
+      console.error('Error obteniendo mediciones pendientes:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Error interno del servidor'
+      });
+    }
+  }
 
   // Aprobar/rechazar medición
   static async review(req, res) {

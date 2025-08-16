@@ -10,6 +10,9 @@ router.get('/', MeasurementController.getAll);
 // GET /api/measurements/pending - Obtener mediciones pendientes
 router.get('/pending', authenticateToken, requireRole(['validator', 'admin']), MeasurementController.getPending);
 
+// GET /api/measurements/pending-others - Obtener mediciones pendientes de otros usuarios
+router.get('/pending-others', authenticateToken, requireRole(['validator', 'admin']), MeasurementController.getPendingMeasurementsFromOthers);
+
 // GET /api/measurements/approved - Obtener mediciones aprobadas
 router.get('/approved', MeasurementController.getApproved);
 

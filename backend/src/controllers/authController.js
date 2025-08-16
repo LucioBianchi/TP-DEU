@@ -36,7 +36,6 @@ class AuthController {
           id: payload.sub,
           email: payload.email,
           name: payload.name || '',
-          role: 'user', // Por defecto es usuario normal
           measurement_count: 0
         };
         

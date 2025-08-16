@@ -171,6 +171,25 @@ class Measurement {
     }
   }
 
+  // Obtener mediciones pendientes de otros usuarios
+  static async getPendingMeasurementsFromOthers(userId) {
+    const sql = `
+      SELECT m.*, u.name as user_name, l.name as location_name
+      FROM measurements m
+      JOIN users u ON m.user_id = u.id
+      JOIN locations l ON m.location_id = l.id
+      WHERE m.status = 'pending' AND m.user_id != ?
+      ORDER BY m.created_at DESC
+    `;
+    
+    try {
+      const measurements = await db.query(sql, [userId]);
+      return measurements;
+    } catch (error) {
+      throw new Error(`Error obteniendo mediciones pendientes de otros usuarios: ${error.message}`);
+    }
+  }
+
   // Método para actualizar niveles de contaminación de ubicación basado en mediciones aprobadas
   static async updateLocationPollutionLevels(locationId) {
     const sql = `
@@ -179,6 +198,7 @@ class Measurement {
         AVG(enterococci_water) as avg_enterococci_water,
         AVG(ecoli_sand) as avg_ecoli_sand,
         AVG(enterococci_sand) as avg_enterococci_sand
+        COUNT(*) as measurement_count
       FROM measurements 
       WHERE location_id = ? AND status = 'approved'
       AND created_at >= datetime('now', '-30 days')
@@ -216,7 +236,7 @@ class Measurement {
 
   // Método auxiliar para calcular nivel de contaminación
   static calculatePollutionLevel(ecoli, enterococci, type) {
-    if (!ecoli || !enterococci) return 3.0; // Valor por defecto
+    if (!ecoli || !enterococci) return 0.0; // Valor por defecto
     
     const standards = type === 'water' ? {
       low: { ecoli: 250, enterococci: 50 },

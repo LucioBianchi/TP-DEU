@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from "../../../context/AuthContext";
 import MeasurementForm from "../../MeasurementForm/MeasurementForm";
@@ -97,7 +97,67 @@ export default function UserPanel() {
   const [open, setOpen] = useState(null);
   const [userData, setUserData] = useState(initialUserData);
   const [showMeasurementForm, setShowMeasurementForm] = useState(false);
+  const [pendingMeasurementsFromOthers, setPendingMeasurementsFromOthers] = useState([]);
+  const [canValidate, setCanValidate] = useState(false);
   const { user, loginWithGoogle, logout, isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      checkIfCanValidate();
+    }
+  }, [isAuthenticated, user]);
+
+  const checkIfCanValidate = () => {
+    // Verificar si el usuario tiene rol de validador o admin
+    setCanValidate(user.role === 'validator' || user.role === 'admin');
+    
+    if (canValidate) {
+      loadPendingMeasurementsFromOthers();
+    }
+  };
+
+  const loadPendingMeasurementsFromOthers = async () => {
+    try {
+      const response = await fetch('/api/measurements/pending-others', {
+        headers: { 
+          'Authorization': `Bearer ${user.token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setPendingMeasurementsFromOthers(data.data);
+      }
+    } catch (error) {
+      console.error('Error cargando mediciones pendientes:', error);
+    }
+  };
+
+  const handleValidateMeasurement = async (measurementId, status) => {
+    try {
+      const response = await fetch(`/api/measurements/${measurementId}/review`, {
+        method: 'PUT',
+        headers: { 
+          'Authorization': `Bearer ${user.token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status, notes: '' })
+      });
+      
+      if (response.ok) {
+        // Recargar las mediciones pendientes
+        loadPendingMeasurementsFromOthers();
+        // Mostrar mensaje de éxito
+        alert(`Medición ${status === 'approved' ? 'aprobada' : 'rechazada'} exitosamente`);
+      } else {
+        alert('Error al validar la medición');
+      }
+    } catch (error) {
+      console.error('Error validando medición:', error);
+      alert('Error al validar la medición');
+    }
+  };
 
   const handleGoogleLogin = async (credentialResponse) => {
     const result = await loginWithGoogle(credentialResponse.credential);
@@ -234,7 +294,25 @@ export default function UserPanel() {
           border: "1px solid #dee2e6"
         }}>
           <span className="icon" aria-label="Usuario" role="img" style={{ fontSize: "2em" }}>👤</span>
+          
           <div>
+            {/* Tag de Admin */}
+            {user.role === 'admin' && (
+              <div style={{
+                display: "inline-block",
+                background: "#dc3545",
+                color: "#fff",
+                padding: "0.2em 0.6em",
+                borderRadius: "12px",
+                fontSize: "0.7em",
+                fontWeight: "bold",
+                textTransform: "uppercase",
+                letterSpacing: "0.5px",
+                marginBottom: "0.3em"
+              }}>
+                Admin
+              </div>
+            )}
             <div style={{ fontWeight: "bold", fontSize: "1.2em", color: "#495057" }}>
               {user.name}
             </div>
@@ -291,43 +369,72 @@ export default function UserPanel() {
           open={open}
           setOpen={setOpen}
         >
-          {userData.pending.length === 0 ? (
-            <p style={{ textAlign: "center", color: "#6c757d", fontStyle: "italic" }}>
-              No hay mediciones pendientes.
-            </p>
-          ) : (
-            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-              {userData.pending.map(med => (
-                <li key={med.id} style={{ 
-                  marginBottom: "0.8em",
-                  padding: "0.8em",
-                  background: "#fffbe6",
-                  border: "1px solid #ffe58f",
-                  borderRadius: "6px"
-                }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div>
-                      <div style={{ fontWeight: "bold", color: "#856404" }}>
-                        {med.localidad}
+          {canValidate && pendingMeasurementsFromOthers.length > 0 ? (
+            <div>
+              <h4 style={{ marginBottom: "1em", color: "#495057" }}>
+                Mediciones de otros usuarios para validar
+              </h4>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                {pendingMeasurementsFromOthers.map(med => (
+                  <li key={med.id} style={{ 
+                    marginBottom: "0.8em",
+                    padding: "0.8em",
+                    background: "#fffbe6",
+                    border: "1px solid #ffe58f",
+                    borderRadius: "6px"
+                  }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div>
+                        <div style={{ fontWeight: "bold", color: "#856404" }}>
+                          {med.location_name}
+                        </div>
+                        <div style={{ fontSize: "0.9em", color: "#6c757d" }}>
+                          Por: {med.user_name} • {new Date(med.created_at).toLocaleDateString()}
+                        </div>
+                        <div style={{ fontSize: "0.8em", color: "#6c757d", marginTop: "0.5em" }}>
+                          Agua: E.coli {med.ecoli_water || 'N/A'}, Enterococos {med.enterococci_water || 'N/A'}
+                          {med.ecoli_sand && ` • Arena: E.coli ${med.ecoli_sand}, Enterococos ${med.enterococci_sand}`}
+                        </div>
                       </div>
-                      <div style={{ fontSize: "0.9em", color: "#6c757d" }}>
-                        {med.fecha}
+                      <div style={{ display: "flex", gap: "0.5em" }}>
+                        <button
+                          onClick={() => handleValidateMeasurement(med.id, 'approved')}
+                          style={{
+                            padding: "0.3em 0.6em",
+                            background: "#28a745",
+                            color: "#fff",
+                            border: "none",
+                            borderRadius: "4px",
+                            fontSize: "0.8em",
+                            cursor: "pointer"
+                          }}
+                        >
+                          Aprobar
+                        </button>
+                        <button
+                          onClick={() => handleValidateMeasurement(med.id, 'rejected')}
+                          style={{
+                            padding: "0.3em 0.6em",
+                            background: "#dc3545",
+                            color: "#fff",
+                            border: "none",
+                            borderRadius: "4px",
+                            fontSize: "0.8em",
+                            cursor: "pointer"
+                          }}
+                        >
+                          Rechazar
+                        </button>
                       </div>
                     </div>
-                    <span style={{ 
-                      padding: "0.3em 0.6em", 
-                      background: "#ffc107", 
-                      color: "#856404",
-                      borderRadius: "4px",
-                      fontSize: "0.8em",
-                      fontWeight: "bold"
-                    }}>
-                      Pendiente
-                    </span>
-                  </div>
-                </li>
-              ))}
-            </ul>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p style={{ textAlign: "center", color: "#6c757d", fontStyle: "italic" }}>
+              {canValidate ? "No hay mediciones pendientes de otros usuarios." : "No hay mediciones pendientes."}
+            </p>
           )}
         </AccordionSection>
 

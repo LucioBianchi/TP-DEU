@@ -4,14 +4,18 @@ class User {
   static async create(userData) {
     const { id, email, name, role = 'user', measurement_count = 0 } = userData;
     
+    // Si el email coincide con el admin del .env, forzar rol admin
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const finalRole = (adminEmail && email === adminEmail) ? 'admin' : role;
+
     const sql = `
       INSERT OR IGNORE INTO users (id, email, name, role, measurement_count)
       VALUES (?, ?, ?, ?, ?)
     `;
     
     try {
-      const result = await db.run(sql, [id, email, name, role, measurement_count]);
-      return { id, email, name, role, measurement_count };
+      const result = await db.run(sql, [id, email, name, finalRole, measurement_count]);
+      return { id, email, name, role: finalRole, measurement_count };
     } catch (error) {
       throw new Error(`Error creando usuario: ${error.message}`);
     }
@@ -40,13 +44,53 @@ class User {
   }
 
   static async updateMeasurementCount(userId) {
-    const sql = 'UPDATE users SET measurement_count = measurement_count + 1 WHERE id = ?';
-    
     try {
-      const result = await db.run(sql, [userId]);
+      // Primero actualizar el contador
+      const result = await db.run(
+        'UPDATE users SET measurement_count = measurement_count + 1 WHERE id = ?', 
+        [userId]
+      );
+      
+      // Verificar si puede ser promovido a validador
+      const canBecomeValidator = await this.canBecomeValidator(userId);
+      
+      if (canBecomeValidator) {
+        // Promover automáticamente a validador
+        await this.promoteToValidator(userId);
+        console.log(`Usuario ${userId} promovido a validador automáticamente`);
+      }
+      
       return result;
     } catch (error) {
       throw new Error(`Error actualizando contador de mediciones: ${error.message}`);
+    }
+  }
+  
+  // Verificar si un usuario puede ser validador
+  static async canBecomeValidator(userId) {
+    const sql = `
+      SELECT COUNT(*) as approved_count
+      FROM measurements 
+      WHERE user_id = ? AND status = 'approved'
+    `;
+    
+    try {
+      const result = await db.queryOne(sql, [userId]);
+      return result.approved_count >= 3;
+    } catch (error) {
+      throw new Error(`Error verificando elegibilidad de validador: ${error.message}`);
+    }
+  }
+  
+  // Promover usuario a validador
+  static async promoteToValidator(userId) {
+    const sql = 'UPDATE users SET role = ? WHERE id = ?';
+    
+    try {
+      const result = await db.run(sql, ['validator', userId]);
+      return result;
+    } catch (error) {
+      throw new Error(`Error promoviendo usuario a validador: ${error.message}`);
     }
   }
 
