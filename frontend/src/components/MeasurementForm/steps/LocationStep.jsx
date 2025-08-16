@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useConfig } from "../../../context/ConfigContext";
+import { useBalnearios } from "../../../hooks/useBalnearios";
 
 const LocationStep = ({ onNext, onBack, onClose, dateData }) => {
   const { config } = useConfig();
+  const { uniqueValues, loading, error } = useBalnearios();
   const [locationType, setLocationType] = useState("locality");
   const [selectedLocality, setSelectedLocality] = useState("");
   const [coordinates, setCoordinates] = useState({
@@ -31,20 +33,6 @@ const LocationStep = ({ onNext, onBack, onClose, dateData }) => {
   
   const fontSize = getFontSize();
   const fontFamily = getFontFamily();
-  
-  // Lista de localidades disponibles (esto debería venir de una API)
-  const availableLocalities = [
-    "Punta Lara",
-    "Balneario Municipal de La Plata",
-    "Balneario El Rincón",
-    "Playa de Berisso",
-    "Balneario San Fernando",
-    "Playa Vicente López",
-    "Balneario Quilmes",
-    "Balneario Tigre",
-    "Playa de Ensenada",
-    "Balneario Magdalena"
-  ];
   
   const handleLocationTypeChange = (newType) => {
     setLocationType(newType);
@@ -101,6 +89,33 @@ const LocationStep = ({ onNext, onBack, onClose, dateData }) => {
     }
   };
   
+  // Mostrar loading mientras se cargan las localidades
+  if (loading) {
+    return (
+      <div className="form-step">
+        <h2 className="step-title">Cargando localidades...</h2>
+        <div className="loading-spinner">⏳</div>
+      </div>
+    );
+  }
+  
+  // Mostrar error si falla la carga
+  if (error) {
+    return (
+      <div className="form-step">
+        <h2 className="step-title">Error al cargar localidades</h2>
+        <p className="error-message">No se pudieron cargar las localidades. Por favor, intente nuevamente.</p>
+        <button 
+          onClick={() => window.location.reload()} 
+          className="btn-primary"
+          style={{ fontSize: fontSize.button, fontFamily }}
+        >
+          Reintentar
+        </button>
+      </div>
+    );
+  }
+  
   return (
     <div 
       className="form-step"
@@ -115,12 +130,12 @@ const LocationStep = ({ onNext, onBack, onClose, dateData }) => {
         Ubicación de la medición
       </h2>
       
-      <div className="date-options" role="radiogroup" aria-labelledby="location-step-title">
+      <div className="location-options" role="radiogroup" aria-labelledby="location-step-title">
         {/* Opción: Por Localidad */}
-        <div className="date-option-container">
+        <div className="location-option-container">
           <button
             type="button"
-            className={`date-option ${locationType === "locality" ? "selected" : ""}`}
+            className={`location-option ${locationType === "locality" ? "selected" : ""}`}
             onClick={() => handleLocationTypeChange("locality")}
             onKeyDown={handleKeyDown}
             data-type="locality"
@@ -169,7 +184,7 @@ const LocationStep = ({ onNext, onBack, onClose, dateData }) => {
                 aria-describedby="locality-hint"
               >
                 <option value="">-- Seleccione una localidad --</option>
-                {availableLocalities.map((locality, index) => (
+                {uniqueValues.localidades && uniqueValues.localidades.map((locality, index) => (
                   <option key={index} value={locality}>
                     {locality}
                   </option>
@@ -191,10 +206,10 @@ const LocationStep = ({ onNext, onBack, onClose, dateData }) => {
         </div>
         
         {/* Opción: Por Coordenadas */}
-        <div className="date-option-container">
+        <div className="location-option-container">
           <button
             type="button"
-            className={`date-option ${locationType === "coordinates" ? "selected" : ""}`}
+            className={`location-option ${locationType === "coordinates" ? "selected" : ""}`}
             onClick={() => handleLocationTypeChange("coordinates")}
             onKeyDown={handleKeyDown}
             data-type="coordinates"

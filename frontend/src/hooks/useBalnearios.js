@@ -49,22 +49,31 @@ export function useBalnearios(filters) {
     
     console.log('Filtros aplicados:', filters);
     console.log('Datos normalizados antes del filtrado:', normalized);
+
+    // Asegurar que filters tenga valores por defecto
+    const safeFilters = {
+      localidad: '',
+      agua: '',
+      arena: '',
+      ...filters
+    };
+    
     
     const result = normalized.filter(b => {
-      // Filtro por nombre/localidad
-      const matchLocalidad = !filters.localidad || 
-                         filters.localidad === "" || 
-                         b.nombre.toLowerCase().includes(filters.localidad.toLowerCase());
+      // Filtro por nombre/localidad - USAR safeFilters en lugar de filters
+      const matchLocalidad = !safeFilters.localidad || 
+                         safeFilters.localidad === "" || 
+                         b.nombre.toLowerCase().includes(safeFilters.localidad.toLowerCase());
       
-      // Filtro por contaminación de agua
-      const matchAgua = !filters.agua || 
-                       filters.agua === "" || 
-                       b.agua === filters.agua;
+      // Filtro por contaminación de agua - USAR safeFilters en lugar de filters
+      const matchAgua = !safeFilters.agua || 
+                       safeFilters.agua === "" || 
+                       b.agua === safeFilters.agua;
       
-      // Filtro por contaminación de arena
-      const matchArena = !filters.arena || 
-                        filters.arena === "" || 
-                        b.arena === filters.arena;
+      // Filtro por contaminación de arena - USAR safeFilters en lugar de filters
+      const matchArena = !safeFilters.arena || 
+                        safeFilters.arena === "" || 
+                        b.arena === safeFilters.arena;
       
       const matches = matchLocalidad && matchAgua && matchArena;
       console.log(`Balneario ${b.nombre}: localidad=${matchLocalidad}, agua=${matchAgua}, arena=${matchArena}, total=${matches}`);
