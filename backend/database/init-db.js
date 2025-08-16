@@ -18,10 +18,11 @@ async function initDatabase() {
     await database.exec(schema);
     console.log('Esquema ejecutado correctamente');
     
-    // Insertar solo ubicaciones de ejemplo
+    // Insertar solo ubicaciones de ejemplo (SIN niveles de contaminación)
     await insertDefaultLocations();
     
     console.log('Base de datos inicializada correctamente!');
+    console.log('Los niveles de contaminación se calcularan dinamicamente basandose en las mediciones');
     
   } catch (error) {
     console.error('Error inicializando base de datos:', error);
@@ -34,7 +35,7 @@ async function initDatabase() {
 async function insertDefaultLocations() {
   console.log('Insertando ubicaciones por defecto...');
   
-  // Ubicaciones precargadas por defecto
+  // Ubicaciones precargadas por defecto (SIN niveles de contaminación fijos)
   const defaultLocations = [
     {
       name: 'Punta Lara',
@@ -100,6 +101,9 @@ async function insertDefaultLocations() {
 
   for (const locationData of defaultLocations) {
     try {
+      // Crear ubicación SIN especificar niveles de contaminación
+      // Los campos water_pollution_level y sand_pollution_level se mantienen como NULL
+      // hasta que se aprueben las primeras mediciones
       await Location.create(locationData);
       console.log('Ubicación creada:', locationData.name);
     } catch (error) {
@@ -107,12 +111,21 @@ async function insertDefaultLocations() {
     }
   }
   
-  console.log(defaultLocations.length, 'ubicaciones procesadas');
+  console.log(`${defaultLocations.length} ubicaciones procesadas`);
   
   // Verificar que las ubicaciones se crearon
   try {
     const locationCount = await database.queryOne('SELECT COUNT(*) as count FROM locations');
     console.log('Total ubicaciones en la base:', locationCount.count);
+    
+    // Verificar que los niveles de contaminación están NULL (como debe ser)
+    const nullLevelsCount = await database.queryOne(`
+      SELECT COUNT(*) as count 
+      FROM locations 
+      WHERE water_pollution_level IS NULL AND sand_pollution_level IS NULL
+    `);
+    console.log('Ubicaciones sin niveles de contaminación (correcto):', nullLevelsCount.count);
+    
   } catch (error) {
     console.log('Error verificando ubicaciones:', error.message);
   }

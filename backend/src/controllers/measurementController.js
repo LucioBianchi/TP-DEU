@@ -62,14 +62,23 @@ class MeasurementController {
   // Crear nueva medición
   static async create(req, res) {
     try {
-      const { location_id, water_quality, sand_quality, additional_notes } = req.body;
+      const { 
+        location_id, 
+        ecoli_water, 
+        enterococci_water, 
+        ecoli_sand, 
+        enterococci_sand, 
+        additional_notes 
+      } = req.body;
       const user_id = req.user.id;
       
       // Validaciones básicas
-      if (!location_id || water_quality === undefined || sand_quality === undefined) {
+      if (!location_id || 
+          (ecoli_water === undefined && enterococci_water === undefined) ||
+          (ecoli_sand === undefined && enterococci_sand === undefined)) {
         return res.status(400).json({
           success: false,
-          error: 'location_id, water_quality y sand_quality son requeridos'
+          error: 'location_id y al menos un valor de contaminación son requeridos'
         });
       }
       
@@ -86,8 +95,10 @@ class MeasurementController {
       const measurementData = {
         user_id,
         location_id,
-        water_quality: parseFloat(water_quality),
-        sand_quality: parseFloat(sand_quality),
+        ecoli_water: ecoli_water ? parseFloat(ecoli_water) : null,
+        enterococci_water: enterococci_water ? parseFloat(enterococci_water) : null,
+        ecoli_sand: ecoli_sand ? parseFloat(ecoli_sand) : null,
+        enterococci_sand: enterococci_sand ? parseFloat(enterococci_sand) : null,
         additional_notes: additional_notes || ''
       };
       
@@ -109,6 +120,7 @@ class MeasurementController {
       });
     }
   }
+  
 
   // Aprobar/rechazar medición
   static async review(req, res) {

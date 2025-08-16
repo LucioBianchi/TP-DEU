@@ -2,15 +2,33 @@ const db = require('../config/database');
 
 class Measurement {
   static async create(measurementData) {
-    const { user_id, location_id, water_quality, sand_quality, additional_notes } = measurementData;
+    const { 
+      user_id, 
+      location_id, 
+      ecoli_water, 
+      enterococci_water, 
+      ecoli_sand, 
+      enterococci_sand, 
+      additional_notes 
+    } = measurementData;
     
     const sql = `
-      INSERT INTO measurements (user_id, location_id, water_quality, sand_quality, additional_notes)
-      VALUES (?, ?, ?, ?, ?)
+      INSERT INTO measurements (
+        user_id, location_id, 
+        ecoli_water, enterococci_water, 
+        ecoli_sand, enterococci_sand, 
+        additional_notes
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
     
     try {
-      const result = await db.run(sql, [user_id, location_id, water_quality, sand_quality, additional_notes]);
+      const result = await db.run(sql, [
+        user_id, location_id, 
+        ecoli_water, enterococci_water, 
+        ecoli_sand, enterococci_sand, 
+        additional_notes
+      ]);
       
       // Agregar al historial del usuario
       await db.run(
@@ -18,7 +36,16 @@ class Measurement {
         [user_id, result.id]
       );
       
-      return { id: result.id, user_id, location_id, water_quality, sand_quality, additional_notes };
+      return { 
+        id: result.id, 
+        user_id, 
+        location_id, 
+        ecoli_water, 
+        enterococci_water, 
+        ecoli_sand, 
+        enterococci_sand, 
+        additional_notes 
+      };
     } catch (error) {
       throw new Error(`Error creando medición: ${error.message}`);
     }
@@ -68,6 +95,13 @@ class Measurement {
       WHERE m.status = 'approved'
       ORDER BY m.created_at DESC
     `;
+    
+    try {
+      const measurements = await db.query(sql);
+      return measurements;
+    } catch (error) {
+      throw new Error(`Error obteniendo mediciones aprobadas: ${error.message}`);
+    }
   }
 
   static async getUserHistory(userId) {
@@ -126,7 +160,82 @@ class Measurement {
       JOIN users u ON m.user_id = u.id
       JOIN locations l ON m.location_id = l.id
       ORDER BY m.created_at DESC
+      LIMIT ? OFFSET ?
     `;
+    
+    try {
+      const measurements = await db.query(sql, [limit, offset]);
+      return measurements;
+    } catch (error) {
+      throw new Error(`Error obteniendo todas las mediciones: ${error.message}`);
+    }
+  }
+
+  // Método para actualizar niveles de contaminación de ubicación basado en mediciones aprobadas
+  static async updateLocationPollutionLevels(locationId) {
+    const sql = `
+      SELECT 
+        AVG(ecoli_water) as avg_ecoli_water,
+        AVG(enterococci_water) as avg_enterococci_water,
+        AVG(ecoli_sand) as avg_ecoli_sand,
+        AVG(enterococci_sand) as avg_enterococci_sand
+      FROM measurements 
+      WHERE location_id = ? AND status = 'approved'
+      AND created_at >= datetime('now', '-30 days')
+    `;
+    
+    try {
+      const result = await db.queryOne(sql, [locationId]);
+      
+      if (result && result.avg_ecoli_water) {
+        // Calcular nivel general basado en promedios
+        const waterLevel = this.calculatePollutionLevel(
+          result.avg_ecoli_water, 
+          result.avg_enterococci_water, 
+          'water'
+        );
+        
+        const sandLevel = this.calculatePollutionLevel(
+          result.avg_ecoli_sand, 
+          result.avg_enterococci_sand, 
+          'sand'
+        );
+        
+        // Actualizar la ubicación
+        await db.run(
+          `UPDATE locations 
+           SET water_pollution_level = ?, sand_pollution_level = ?, last_measurement_date = CURRENT_TIMESTAMP
+           WHERE id = ?`,
+          [waterLevel, sandLevel, locationId]
+        );
+      }
+    } catch (error) {
+      throw new Error(`Error actualizando niveles de contaminación: ${error.message}`);
+    }
+  }
+
+  // Método auxiliar para calcular nivel de contaminación
+  static calculatePollutionLevel(ecoli, enterococci, type) {
+    if (!ecoli || !enterococci) return 3.0; // Valor por defecto
+    
+    const standards = type === 'water' ? {
+      low: { ecoli: 250, enterococci: 50 },
+      medium: { ecoli: 500, enterococci: 100 }
+    } : {
+      low: { ecoli: 100, enterococci: 20 },
+      medium: { ecoli: 500, enterococci: 100 }
+    };
+    
+    // Determinar nivel basado en el peor caso
+    let level = 1.0; // Bajo
+    
+    if (ecoli >= standards.medium.ecoli || enterococci >= standards.medium.enterococci) {
+      level = 5.0; // Alto
+    } else if (ecoli >= standards.low.ecoli || enterococci >= standards.low.enterococci) {
+      level = 3.0; // Medio
+    }
+    
+    return level;
   }
 }
 
