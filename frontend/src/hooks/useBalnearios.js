@@ -89,7 +89,7 @@ export function useBalnearios(filters) {
     if (!normalized.length) return { localidades: [], aguas: [], arenas: [] };
     
     return {
-      localidades: [...new Set(normalized.map(b => b.nombre))],
+      localidades: normalized.map(b => ({ id: b.id, nombre: b.nombre })),
       aguas: [...new Set(normalized.map(b => b.agua))],
       arenas: [...new Set(normalized.map(b => b.arena))]
     };

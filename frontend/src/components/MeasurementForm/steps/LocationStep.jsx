@@ -51,7 +51,11 @@ const LocationStep = ({ onNext, onBack, onClose, dateData }) => {
         alert("Por favor seleccione una localidad");
         return;
       }
+
+      const selectedLocalityData = uniqueValues.localidades.find(b => b.nombre === selectedLocality);
+
       locationData = {
+        id: selectedLocalityData?.id,
         locationType: "locality",
         selectedLocality,
         coordinates: null
@@ -185,8 +189,8 @@ const LocationStep = ({ onNext, onBack, onClose, dateData }) => {
               >
                 <option value="">-- Seleccione una localidad --</option>
                 {uniqueValues.localidades && uniqueValues.localidades.map((locality, index) => (
-                  <option key={index} value={locality}>
-                    {locality}
+                  <option key={locality.id} value={locality.nombre}>
+                    {locality.nombre}
                   </option>
                 ))}
               </select>
