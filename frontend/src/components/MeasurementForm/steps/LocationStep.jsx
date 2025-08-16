@@ -16,15 +16,15 @@ const LocationStep = ({ onNext, onBack, onClose, dateData }) => {
       medium: { title: '1.4rem', body: '1rem', button: '1rem' },
       large: { title: '1.6rem', body: '1.1rem', button: '1.1rem' }
     };
-    return sizeMap[config.textSize] || sizeMap.medium;
+    return sizeMap[config.fontSize] || sizeMap.medium;
   };
   
   const getFontFamily = () => {
     const fontMap = {
-      'OpenDyslexic': "'OpenDyslexic', monospace",
-      'Arial': "'Arial', sans-serif",
-      'Times': "'Times New Roman', serif",
-      'default': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+      default: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+      dyslexic: "'OpenDyslexic', Arial, sans-serif",
+      serif: "Georgia, serif",
+      monospace: "'Courier New', monospace"
     };
     return fontMap[config.fontFamily] || fontMap.default;
   };
@@ -89,10 +89,7 @@ const LocationStep = ({ onNext, onBack, onClose, dateData }) => {
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      if (e.target.type === 'radio') {
-        const value = e.target.value;
-        handleLocationTypeChange(value);
-      }
+      handleLocationTypeChange(e.currentTarget.dataset.type);
     }
   };
   
@@ -118,29 +115,24 @@ const LocationStep = ({ onNext, onBack, onClose, dateData }) => {
         Ubicación de la medición
       </h2>
       
-      <div className="location-options" role="radiogroup" aria-labelledby="location-step-title">
+      <div className="date-options" role="radiogroup" aria-labelledby="location-step-title">
         {/* Opción: Por Localidad */}
-        <div className="location-option-container">
-          <input
-            type="radio"
-            id="location-locality"
-            name="locationType"
-            value="locality"
-            checked={locationType === "locality"}
-            onChange={() => handleLocationTypeChange("locality")}
+        <div className="date-option-container">
+          <button
+            type="button"
+            className={`date-option ${locationType === "locality" ? "selected" : ""}`}
+            onClick={() => handleLocationTypeChange("locality")}
             onKeyDown={handleKeyDown}
+            data-type="locality"
+            role="radio"
+            aria-checked={locationType === "locality"}
             aria-describedby="locality-selection"
-            style={{ fontSize: fontSize.body, fontFamily }}
-          />
-          <label 
-            htmlFor="location-locality"
-            className={`location-option ${locationType === "locality" ? "selected" : ""}`}
             style={{ fontSize: fontSize.body, fontFamily }}
           >
             <span className="radio-custom" aria-hidden="true"></span>
-            <span className="option-text">Seleccionar localidad existente</span>
+            <span className="option-text">Seleccionar localidad</span>
             <span className="location-icon" aria-hidden="true">🏖️</span>
-          </label>
+          </button>
           
           {/* Selector de localidad */}
           {locationType === "locality" && (
@@ -199,27 +191,22 @@ const LocationStep = ({ onNext, onBack, onClose, dateData }) => {
         </div>
         
         {/* Opción: Por Coordenadas */}
-        <div className="location-option-container">
-          <input
-            type="radio"
-            id="location-coordinates"
-            name="locationType"
-            value="coordinates"
-            checked={locationType === "coordinates"}
-            onChange={() => handleLocationTypeChange("coordinates")}
+        <div className="date-option-container">
+          <button
+            type="button"
+            className={`date-option ${locationType === "coordinates" ? "selected" : ""}`}
+            onClick={() => handleLocationTypeChange("coordinates")}
             onKeyDown={handleKeyDown}
+            data-type="coordinates"
+            role="radio"
+            aria-checked={locationType === "coordinates"}
             aria-describedby="coordinates-input"
-            style={{ fontSize: fontSize.body, fontFamily }}
-          />
-          <label 
-            htmlFor="location-coordinates"
-            className={`location-option ${locationType === "coordinates" ? "selected" : ""}`}
             style={{ fontSize: fontSize.body, fontFamily }}
           >
             <span className="radio-custom" aria-hidden="true"></span>
             <span className="option-text">Ingresar coordenadas manualmente</span>
             <span className="coordinates-icon" aria-hidden="true">📍</span>
-          </label>
+          </button>
           
           {/* Inputs para coordenadas */}
           {locationType === "coordinates" && (
@@ -228,7 +215,7 @@ const LocationStep = ({ onNext, onBack, onClose, dateData }) => {
               className="coordinates-input"
               style={{ marginTop: "0.5rem" }}
             >
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "1rem" }}>
                 <div>
                   <label 
                     htmlFor="latitude" 
