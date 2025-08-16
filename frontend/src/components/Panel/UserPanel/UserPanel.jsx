@@ -3,6 +3,8 @@ import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from "../../../context/AuthContext";
 import MeasurementForm from "../../MeasurementForm/MeasurementForm";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api'; 
+
 // Simulación de datos del usuario
 const initialUserData = {
   isValidated: true,
@@ -99,7 +101,7 @@ export default function UserPanel() {
   const [showMeasurementForm, setShowMeasurementForm] = useState(false);
   const [pendingMeasurementsFromOthers, setPendingMeasurementsFromOthers] = useState([]);
   const [canValidate, setCanValidate] = useState(false);
-  const { user, loginWithGoogle, logout, isAuthenticated } = useAuth();
+  const { user, loginWithGoogle, logout, isAuthenticated, token } = useAuth();
 
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -108,19 +110,22 @@ export default function UserPanel() {
   }, [isAuthenticated, user]);
 
   const checkIfCanValidate = () => {
-    // Verificar si el usuario tiene rol de validador o admin
-    setCanValidate(user.role === 'validator' || user.role === 'admin');
-    
-    if (canValidate) {
+     // Verificar si el usuario tiene rol de validador o admin    
+     const canValidateUser = user.role === 'validator' || user.role === 'admin';     
+     
+     setCanValidate(canValidateUser);
+     
+     if (canValidateUser) {
       loadPendingMeasurementsFromOthers();
     }
   };
 
   const loadPendingMeasurementsFromOthers = async () => {
     try {
-      const response = await fetch('/api/measurements/pending-others', {
+
+      const response = await fetch(`${API_BASE_URL}/measurements/pending-others`, {
         headers: { 
-          'Authorization': `Bearer ${user.token}`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
@@ -139,7 +144,7 @@ export default function UserPanel() {
       const response = await fetch(`/api/measurements/${measurementId}/review`, {
         method: 'PUT',
         headers: { 
-          'Authorization': `Bearer ${user.token}`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ status, notes: '' })
