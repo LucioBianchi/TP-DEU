@@ -16,9 +16,16 @@
 }
 
 /* Estilos para marcadores accesibles */
-.custom-marker-container {
-  background: transparent !important;
-  border: none !important;
+.custom-marker-container[data-size="small"] .custom-marker {
+  transform: scale(0.83); /* 20/24 = 0.83 */
+}
+
+.custom-marker-container[data-size="medium"] .custom-marker {
+  transform: scale(1); /* 24/24 = 1 */
+}
+
+.custom-marker-container[data-size="large"] .custom-marker {
+  transform: scale(1.33); /* 32/24 = 1.33 */
 }
 
 .custom-marker {
