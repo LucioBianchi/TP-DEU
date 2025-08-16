@@ -7,14 +7,16 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api'
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Verificar token al cargar
   useEffect(() => {
     if (token) {
       checkAuthStatus();
+    } else {
+      setLoading(false); // Si no hay token, no está cargando
     }
-  }, [token]);
+  }, []); // Solo ejecutar una vez al montar
 
   const checkAuthStatus = async () => {
     try {
@@ -78,7 +80,7 @@ export function AuthProvider({ children }) {
     loading,
     loginWithGoogle,
     logout,
-    isAuthenticated: !!user
+    isAuthenticated: !!user && !!token
   };
 
   return (

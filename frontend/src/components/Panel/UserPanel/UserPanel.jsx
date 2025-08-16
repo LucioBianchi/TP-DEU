@@ -1,16 +1,11 @@
 import React, { useState } from "react";
 import { GoogleLogin } from '@react-oauth/google';
-import * as jwt_decode from 'jwt-decode';
-import { GoogleOAuthProvider } from '@react-oauth/google';
+import { useAuth } from "../../../context/AuthContext";
 
-// Simulación de estado de usuario y datos
-// El estado real se manejará con useState
-const initialUser = {
-  isLogged: false,
+// Simulación de datos del usuario
+const initialUserData = {
   isValidated: true,
   canValidateUsers: true,
-  name: "",
-  email: "",
   pending: [],
   history: [],
   toValidate: []
@@ -99,57 +94,18 @@ function AccordionSection({ id, label, children, open, setOpen }) {
 
 export default function UserPanel() {
   const [open, setOpen] = useState(null);
-  const [user, setUser] = useState(() => {
-    // Intentar cargar usuario de localStorage
-    const token = localStorage.getItem('jwt');
-    if (token) {
-      try {
-        const decoded = jwt_decode.default(token);
-        return {
-          ...initialUser,
-          isLogged: true,
-          name: decoded.name,
-          email: decoded.email
-        };
-      } catch {
-        return initialUser;
-      }
-    }
-    return initialUser;
-  });
+  const [userData, setUserData] = useState(initialUserData);
+  const { user, loginWithGoogle, logout, isAuthenticated } = useAuth();
 
   const handleGoogleLogin = async (credentialResponse) => {
-    const token = credentialResponse.credential;
-    try {
-      const res = await fetch('http://localhost:4000/api/auth/google', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token })
-      });
-      const data = await res.json();
-      if (data.token) {
-        localStorage.setItem('jwt', data.token);
-        setUser({
-          ...user,
-          isLogged: true,
-          name: data.user.name,
-          email: data.user.email
-        });
-      } else {
-        alert('Error al iniciar sesión con Google');
-      }
-    } catch (err) {
-      alert('Error de red o del servidor');
+    const result = await loginWithGoogle(credentialResponse.credential);
+    if (!result.success) {
+      alert(result.error || 'Error al iniciar sesión');
     }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('jwt');
-    setUser(initialUser);
   };
 
   // No logueado
-  if (!user.isLogged) {
+  if (!isAuthenticated) {
     return (
       <section aria-label="Inicio de sesión">
         <div style={{ textAlign: "center", marginBottom: "2em" }}>
@@ -186,7 +142,7 @@ export default function UserPanel() {
   }
 
   // Logueado pero no validado
-  if (!user.isValidated) {
+  if (!userData.isValidated) {
     return (
       <section aria-label="Estado de validación">
         <div style={{ textAlign: "center", marginBottom: "2em" }}>
@@ -218,7 +174,7 @@ export default function UserPanel() {
 
         <button
           type="button"
-          onClick={handleLogout}
+          onClick={logout}
           style={{
             width: "100%",
             padding: "0.8em",
@@ -252,7 +208,7 @@ export default function UserPanel() {
     );
   }
 
-  // Logueado y validado
+  // Logueado y validado 
   return (
     <section aria-label="Perfil de usuario">
       {/* Header usuario */}
@@ -323,13 +279,13 @@ export default function UserPanel() {
         open={open}
         setOpen={setOpen}
       >
-        {user.pending.length === 0 ? (
+        {userData.pending.length === 0 ? (
           <p style={{ textAlign: "center", color: "#6c757d", fontStyle: "italic" }}>
             No hay mediciones pendientes.
           </p>
         ) : (
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            {user.pending.map(med => (
+            {userData.pending.map(med => (
               <li key={med.id} style={{ 
                 marginBottom: "0.8em",
                 padding: "0.8em",
@@ -369,13 +325,13 @@ export default function UserPanel() {
         open={open}
         setOpen={setOpen}
       >
-        {user.history.length === 0 ? (
-          <p style={{ textAlign: "center", color: "#6c757d", fontStyle: "italic" }}>
+        {userData.history.length === 0 ? (
+          <p style={{ color: "#6c757d", fontStyle: "italic" }}>
             No hay mediciones en el historial.
           </p>
         ) : (
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            {user.history.map(med => (
+            {userData.history.map(med => (
               <li key={med.id} style={{ 
                 marginBottom: "0.8em",
                 padding: "0.8em",
@@ -412,7 +368,7 @@ export default function UserPanel() {
       {/* Botón cerrar sesión */}
       <button
         type="button"
-        onClick={handleLogout}
+        onClick={logout}
         style={{
           width: "100%",
           padding: "0.8em",

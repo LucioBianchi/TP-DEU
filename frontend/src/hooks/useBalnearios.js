@@ -18,7 +18,7 @@ export function useBalnearios(filters) {
           id: r.id,
             // nombres
           nombre: r.name || r.nombre || '',
-          localidad: r.locality || r.localidad || '',
+          localidad: r.name || '',
             // coordenadas normalizadas
           latitude: toNumber(r.latitude),
           longitude: toNumber(r.longitude),
@@ -52,9 +52,9 @@ export function useBalnearios(filters) {
     
     const result = normalized.filter(b => {
       // Filtro por nombre/localidad
-      const matchNombre = !filters.nombre || 
-                         filters.nombre === "" || 
-                         b.nombre.toLowerCase().includes(filters.nombre.toLowerCase());
+      const matchLocalidad = !filters.localidad || 
+                         filters.localidad === "" || 
+                         b.nombre.toLowerCase().includes(filters.localidad.toLowerCase());
       
       // Filtro por contaminación de agua
       const matchAgua = !filters.agua || 
@@ -66,8 +66,8 @@ export function useBalnearios(filters) {
                         filters.arena === "" || 
                         b.arena === filters.arena;
       
-      const matches = matchNombre && matchAgua && matchArena;
-      console.log(`Balneario ${b.nombre}: nombre=${matchNombre}, agua=${matchAgua}, arena=${matchArena}, total=${matches}`);
+      const matches = matchLocalidad && matchAgua && matchArena;
+      console.log(`Balneario ${b.nombre}: localidad=${matchLocalidad}, agua=${matchAgua}, arena=${matchArena}, total=${matches}`);
       
       return matches;
     });
@@ -77,10 +77,10 @@ export function useBalnearios(filters) {
   }, [normalized, filters]);
 
   const uniqueValues = useMemo(() => {
-    if (!normalized.length) return { nombres: [], aguas: [], arenas: [] };
+    if (!normalized.length) return { localidades: [], aguas: [], arenas: [] };
     
     return {
-      nombres: [...new Set(normalized.map(b => b.nombre))],
+      localidades: [...new Set(normalized.map(b => b.nombre))],
       aguas: [...new Set(normalized.map(b => b.agua))],
       arenas: [...new Set(normalized.map(b => b.arena))]
     };
