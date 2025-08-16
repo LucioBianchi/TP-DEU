@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useConfig } from "../../context/ConfigContext";
-import { DateStep, LocationStep } from "./steps";
+import { DateStep, LocationStep, ContaminationTypeStep } from "./steps";
 import "./MeasurementForm.css";
 
 // Componente principal del formulario
@@ -63,12 +63,25 @@ const MeasurementForm = ({ isOpen, onClose, onSubmit }) => {
           <LocationStep
             onNext={(locationData) => {
               setFormData(prev => ({ ...prev, location: locationData }));
-              // Aquí iría el siguiente paso cuando lo implementemos
-              console.log("Datos completos:", { ...formData, location: locationData });
+              setCurrentStep(3);
             }}
             onBack={() => setCurrentStep(1)}
             onClose={onClose}
             dateData={formData.date}
+          />
+        );
+       case 3:
+        return (
+          <ContaminationTypeStep
+            onNext={(contaminationData) => {
+              setFormData(prev => ({ ...prev, contamination: contaminationData }));
+              // Aquí iría el siguiente paso cuando lo implementemos
+              console.log("Datos completos:", { ...formData, contamination: contaminationData });
+            }}
+            onBack={() => setCurrentStep(2)}
+            onClose={onClose}
+            dateData={formData.date}
+            locationData={formData.location}
           />
         );
       default:
@@ -101,7 +114,7 @@ const MeasurementForm = ({ isOpen, onClose, onSubmit }) => {
             <div className="progress-bar">
               <div 
                 className="progress-fill" 
-                style={{ width: `${(currentStep / 2) * 100}%` }}
+                style={{ width: `${(currentStep / 3) * 100}%` }}
               ></div>
             </div>
   

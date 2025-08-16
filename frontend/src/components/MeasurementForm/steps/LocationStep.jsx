@@ -332,6 +332,7 @@ const LocationStep = ({ onNext, onBack, onClose, dateData }) => {
           className="btn-secondary"
           style={{ fontSize: fontSize.button, fontFamily }}
           aria-label="Volver al paso anterior"
+          tabIndex={0}
         >
           ← Volver
         </button>
@@ -342,6 +343,7 @@ const LocationStep = ({ onNext, onBack, onClose, dateData }) => {
           style={{ fontSize: fontSize.button, fontFamily }}
           aria-label="Continuar al siguiente paso"
           disabled={!isFormValid()}
+          tabIndex={0}
         >
           <span className="arrow-right" aria-hidden="true">▶</span>
           Continuar
