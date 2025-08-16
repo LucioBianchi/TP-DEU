@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from "../../../context/AuthContext";
+import MeasurementForm from "../../MeasurementForm/MeasurementForm";
 
 // Simulación de datos del usuario
 const initialUserData = {
@@ -95,6 +96,7 @@ function AccordionSection({ id, label, children, open, setOpen }) {
 export default function UserPanel() {
   const [open, setOpen] = useState(null);
   const [userData, setUserData] = useState(initialUserData);
+  const [showMeasurementForm, setShowMeasurementForm] = useState(false);
   const { user, loginWithGoogle, logout, isAuthenticated } = useAuth();
 
   const handleGoogleLogin = async (credentialResponse) => {
@@ -102,6 +104,14 @@ export default function UserPanel() {
     if (!result.success) {
       alert(result.error || 'Error al iniciar sesión');
     }
+  };
+
+  const handleAddMeasurement = () => {
+    setShowMeasurementForm(true);
+  };
+
+  const handleCloseMeasurementForm = () => {
+    setShowMeasurementForm(false);
   };
 
   // No logueado
@@ -210,195 +220,211 @@ export default function UserPanel() {
 
   // Logueado y validado 
   return (
-    <section aria-label="Perfil de usuario">
-      {/* Header usuario */}
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "0.75em",
-        marginBottom: "2em",
-        padding: "1em",
-        background: "#f8f9fa",
-        borderRadius: "8px",
-        border: "1px solid #dee2e6"
-      }}>
-        <span className="icon" aria-label="Usuario" role="img" style={{ fontSize: "2em" }}>👤</span>
-        <div>
-          <div style={{ fontWeight: "bold", fontSize: "1.2em", color: "#495057" }}>
-            {user.name}
-          </div>
-          <div style={{ fontSize: "0.9em", color: "#6c757d" }}>
-            {shortenEmail(user.email)}
-          </div>
-        </div>
-      </div>
-
-      {/* Botón agregar medición */}
-      <button
-        type="button"
-        aria-label="Agregar nueva medición"
-        style={{
-          width: "100%",
+    <>
+      <section aria-label="Perfil de usuario">
+        {/* Header usuario */}
+        <div style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
-          gap: "0.5em",
-          background: "#007bff",
-          color: "#fff",
-          border: "none",
-          borderRadius: "8px",
-          padding: "0.8em",
-          fontWeight: "bold",
+          gap: "0.75em",
           marginBottom: "2em",
-          cursor: "pointer",
-          transition: "background-color 0.2s",
-          fontSize: "1em"
-        }}
-        onFocus={(e) => {
-          e.target.style.outline = "2px solid #0056b3";
-          e.target.style.outlineOffset = "2px";
-        }}
-        onBlur={(e) => {
-          e.target.style.outline = "none";
-        }}
-        onMouseEnter={(e) => {
-          e.target.style.background = "#0056b3";
-        }}
-        onMouseLeave={(e) => {
-          e.target.style.background = "#007bff";
-        }}
-      >
-        <span className="icon" aria-hidden="true">+</span> 
-        Agregar medición
-      </button>
-
-      {/* Acordeones */}
-      <AccordionSection
-        id="pendientes"
-        label="Pendientes de evaluación"
-        open={open}
-        setOpen={setOpen}
-      >
-        {userData.pending.length === 0 ? (
-          <p style={{ textAlign: "center", color: "#6c757d", fontStyle: "italic" }}>
-            No hay mediciones pendientes.
-          </p>
-        ) : (
-          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            {userData.pending.map(med => (
-              <li key={med.id} style={{ 
-                marginBottom: "0.8em",
-                padding: "0.8em",
-                background: "#fffbe6",
-                border: "1px solid #ffe58f",
-                borderRadius: "6px"
-              }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div>
-                    <div style={{ fontWeight: "bold", color: "#856404" }}>
-                      {med.localidad}
-                    </div>
-                    <div style={{ fontSize: "0.9em", color: "#6c757d" }}>
-                      {med.fecha}
-                    </div>
-                  </div>
-                  <span style={{ 
-                    padding: "0.3em 0.6em", 
-                    background: "#ffc107", 
-                    color: "#856404",
-                    borderRadius: "4px",
-                    fontSize: "0.8em",
-                    fontWeight: "bold"
-                  }}>
-                    Pendiente
-                  </span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </AccordionSection>
-
-      <AccordionSection
-        id="historial"
-        label="Historial de mediciones"
-        open={open}
-        setOpen={setOpen}
-      >
-        {userData.history.length === 0 ? (
-          <p style={{ color: "#6c757d", fontStyle: "italic" }}>
-            No hay mediciones en el historial.
-          </p>
-        ) : (
-          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            {userData.history.map(med => (
-              <li key={med.id} style={{ 
-                marginBottom: "0.8em",
-                padding: "0.8em",
-                background: med.estado === "aceptada" ? "#d4edda" : "#f8d7da",
-                border: `1px solid ${med.estado === "aceptada" ? "#c3e6cb" : "#f5c6cb"}`,
-                borderRadius: "6px"
-              }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div>
-                    <div style={{ fontWeight: "bold", color: med.estado === "aceptada" ? "#155724" : "#721c24" }}>
-                      {med.localidad}
-                    </div>
-                    <div style={{ fontSize: "0.9em", color: "#6c757d" }}>
-                      {med.fecha}
-                    </div>
-                  </div>
-                  <span style={{ 
-                    padding: "0.3em 0.6em", 
-                    background: med.estado === "aceptada" ? "#28a745" : "#dc3545",
-                    color: "#fff",
-                    borderRadius: "4px",
-                    fontSize: "0.8em",
-                    fontWeight: "bold"
-                  }}>
-                    {med.estado === "aceptada" ? "Aceptada" : "Rechazada"}
-                  </span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </AccordionSection>
-
-      {/* Botón cerrar sesión */}
-      <button
-        type="button"
-        onClick={logout}
-        style={{
-          width: "100%",
-          padding: "0.8em",
-          fontSize: "1em",
+          padding: "1em",
+          background: "#f8f9fa",
           borderRadius: "8px",
-          background: "#6c757d",
-          color: "#fff",
-          border: "none",
-          fontWeight: "bold",
-          cursor: "pointer",
-          transition: "background-color 0.2s",
-          marginTop: "2em"
-        }}
-        onFocus={(e) => {
-          e.target.style.outline = "2px solid #495057";
-          e.target.style.outlineOffset = "2px";
-        }}
-        onBlur={(e) => {
-          e.target.style.outline = "none";
-        }}
-        onMouseEnter={(e) => {
-          e.target.style.background = "#5a6268";
-        }}
-        onMouseLeave={(e) => {
-          e.target.style.background = "#6c757d";
-        }}
-        aria-label="Cerrar sesión"
-      >
-        Cerrar sesión
-      </button>
-    </section>
+          border: "1px solid #dee2e6"
+        }}>
+          <span className="icon" aria-label="Usuario" role="img" style={{ fontSize: "2em" }}>👤</span>
+          <div>
+            <div style={{ fontWeight: "bold", fontSize: "1.2em", color: "#495057" }}>
+              {user.name}
+            </div>
+            <div style={{ fontSize: "0.9em", color: "#6c757d" }}>
+              {shortenEmail(user.email)}
+            </div>
+          </div>
+        </div>
+
+        {/* Botón agregar medición */}
+        <button
+          type="button"
+          aria-label="Agregar nueva medición"
+          onClick={handleAddMeasurement}
+          style={{
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "0.5em",
+            background: "#007bff",
+            color: "#fff",
+            border: "none",
+            borderRadius: "8px",
+            padding: "0.8em",
+            fontWeight: "bold",
+            marginBottom: "2em",
+            cursor: "pointer",
+            transition: "background-color 0.2s",
+            fontSize: "1em"
+          }}
+          onFocus={(e) => {
+            e.target.style.outline = "2px solid #0056b3";
+            e.target.style.outlineOffset = "2px";
+          }}
+          onBlur={(e) => {
+            e.target.style.outline = "none";
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.background = "#0056b3";
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.background = "#007bff";
+          }}
+        >
+          <span className="icon" aria-hidden="true">+</span> 
+          Agregar medición
+        </button>
+
+        {/* Acordeones */}
+        <AccordionSection
+          id="pendientes"
+          label="Pendientes de evaluación"
+          open={open}
+          setOpen={setOpen}
+        >
+          {userData.pending.length === 0 ? (
+            <p style={{ textAlign: "center", color: "#6c757d", fontStyle: "italic" }}>
+              No hay mediciones pendientes.
+            </p>
+          ) : (
+            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+              {userData.pending.map(med => (
+                <li key={med.id} style={{ 
+                  marginBottom: "0.8em",
+                  padding: "0.8em",
+                  background: "#fffbe6",
+                  border: "1px solid #ffe58f",
+                  borderRadius: "6px"
+                }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div>
+                      <div style={{ fontWeight: "bold", color: "#856404" }}>
+                        {med.localidad}
+                      </div>
+                      <div style={{ fontSize: "0.9em", color: "#6c757d" }}>
+                        {med.fecha}
+                      </div>
+                    </div>
+                    <span style={{ 
+                      padding: "0.3em 0.6em", 
+                      background: "#ffc107", 
+                      color: "#856404",
+                      borderRadius: "4px",
+                      fontSize: "0.8em",
+                      fontWeight: "bold"
+                    }}>
+                      Pendiente
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </AccordionSection>
+
+        <AccordionSection
+          id="historial"
+          label="Historial de mediciones"
+          open={open}
+          setOpen={setOpen}
+        >
+          {userData.history.length === 0 ? (
+            <p style={{ color: "#6c757d", fontStyle: "italic" }}>
+              No hay mediciones en el historial.
+            </p>
+          ) : (
+            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+              {userData.history.map(med => (
+                <li key={med.id} style={{ 
+                  marginBottom: "0.8em",
+                  padding: "0.8em",
+                  background: med.estado === "aceptada" ? "#d4edda" : "#f8d7da",
+                  border: `1px solid ${med.estado === "aceptada" ? "#c3e6cb" : "#f5c6cb"}`,
+                  borderRadius: "6px"
+                }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div>
+                      <div style={{ fontWeight: "bold", color: med.estado === "aceptada" ? "#155724" : "#721c24" }}>
+                        {med.localidad}
+                      </div>
+                      <div style={{ fontSize: "0.9em", color: "#6c757d" }}>
+                        {med.fecha}
+                      </div>
+                    </div>
+                    <span style={{ 
+                      padding: "0.3em 0.6em", 
+                      background: med.estado === "aceptada" ? "#28a745" : "#dc3545",
+                      color: "#fff",
+                      borderRadius: "4px",
+                      fontSize: "0.8em",
+                      fontWeight: "bold"
+                    }}>
+                      {med.estado === "aceptada" ? "Aceptada" : "Rechazada"}
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </AccordionSection>
+
+        {/* Botón cerrar sesión */}
+        <button
+          type="button"
+          onClick={logout}
+          style={{
+            width: "100%",
+            padding: "0.8em",
+            fontSize: "1em",
+            borderRadius: "8px",
+            background: "#6c757d",
+            color: "#fff",
+            border: "none",
+            fontWeight: "bold",
+            cursor: "pointer",
+            transition: "background-color 0.2s",
+            marginTop: "2em"
+          }}
+          onFocus={(e) => {
+            e.target.style.outline = "2px solid #495057";
+            e.target.style.outlineOffset = "2px";
+          }}
+          onBlur={(e) => {
+            e.target.style.outline = "none";
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.background = "#5a6268";
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.background = "#6c757d";
+          }}
+          aria-label="Cerrar sesión"
+        >
+          Cerrar sesión
+        </button>
+      </section>
+
+      {/* Formulario de medición */}
+      {showMeasurementForm && (
+        <MeasurementForm
+          isOpen={showMeasurementForm} 
+          onClose={handleCloseMeasurementForm}
+          onSubmit={(measurement) => { 
+            console.log('Medición enviada exitosamente:', measurement);
+            setShowMeasurementForm(false);
+            // Aquí podrías actualizar el estado local o recargar datos
+          }}
+        />
+      )}
+    </>
   );
 }
