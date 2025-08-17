@@ -101,6 +101,8 @@ export default function UserPanel() {
   const [showMeasurementForm, setShowMeasurementForm] = useState(false);
   const [pendingMeasurementsFromOthers, setPendingMeasurementsFromOthers] = useState([]);
   const [canValidate, setCanValidate] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedMeasurement, setSelectedMeasurement] = useState(null);
   const { user, loginWithGoogle, logout, isAuthenticated, token } = useAuth();
 
   useEffect(() => {
@@ -153,6 +155,9 @@ export default function UserPanel() {
       if (response.ok) {
         // Recargar las mediciones pendientes
         loadPendingMeasurementsFromOthers();
+        // Cerrar el modal
+        setShowDetailModal(false);
+        setSelectedMeasurement(null);
         // Mostrar mensaje de éxito
         alert(`Medición ${status === 'approved' ? 'aprobada' : 'rechazada'} exitosamente`);
       } else {
@@ -162,6 +167,16 @@ export default function UserPanel() {
       console.error('Error validando medición:', error);
       alert('Error al validar la medición');
     }
+  };
+
+  const handleShowMeasurementDetail = (measurement) => {
+    setSelectedMeasurement(measurement);
+    setShowDetailModal(true);
+  };
+
+  const handleCloseDetailModal = () => {
+    setShowDetailModal(false);
+    setSelectedMeasurement(null);
   };
 
   const handleGoogleLogin = async (credentialResponse) => {
@@ -375,71 +390,170 @@ export default function UserPanel() {
           setOpen={setOpen}
         >
           {canValidate && pendingMeasurementsFromOthers.length > 0 ? (
-            <div>
-              <h4 style={{ marginBottom: "1em", color: "#495057" }}>
-                Mediciones de otros usuarios para validar
-              </h4>
-              <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                {pendingMeasurementsFromOthers.map(med => (
-                  <li key={med.id} style={{ 
-                    marginBottom: "0.8em",
-                    padding: "0.8em",
-                    background: "#fffbe6",
-                    border: "1px solid #ffe58f",
-                    borderRadius: "6px"
-                  }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <div>
-                        <div style={{ fontWeight: "bold", color: "#856404" }}>
-                          {med.location_name}
-                        </div>
-                        <div style={{ fontSize: "0.9em", color: "#6c757d" }}>
-                          Por: {med.user_name} • {new Date(med.created_at).toLocaleDateString()}
-                        </div>
-                        <div style={{ fontSize: "0.8em", color: "#6c757d", marginTop: "0.5em" }}>
-                          Agua: E.coli {med.ecoli_water || 'N/A'}, Enterococos {med.enterococci_water || 'N/A'}
-                          {med.ecoli_sand && ` • Arena: E.coli ${med.ecoli_sand}, Enterococos ${med.enterococci_sand}`}
-                        </div>
-                      </div>
-                      <div style={{ display: "flex", gap: "0.5em" }}>
-                        <button
-                          onClick={() => handleValidateMeasurement(med.id, 'approved')}
-                          style={{
-                            padding: "0.3em 0.6em",
-                            background: "#28a745",
-                            color: "#fff",
-                            border: "none",
-                            borderRadius: "4px",
-                            fontSize: "0.8em",
-                            cursor: "pointer"
-                          }}
-                        >
-                          Aprobar
-                        </button>
-                        <button
-                          onClick={() => handleValidateMeasurement(med.id, 'rejected')}
-                          style={{
-                            padding: "0.3em 0.6em",
-                            background: "#dc3545",
-                            color: "#fff",
-                            border: "none",
-                            borderRadius: "4px",
-                            fontSize: "0.8em",
-                            cursor: "pointer"
-                          }}
-                        >
-                          Rechazar
-                        </button>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+            <div 
+              style={{ 
+                display: "grid", 
+                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                gap: "0.75rem"
+              }}
+              role="grid"
+              aria-label="Lista de mediciones pendientes de validación"
+            >
+              {pendingMeasurementsFromOthers.map((med, index) => (
+                <article
+                  key={med.id}
+                  style={{
+                    background: "#ffffff",
+                    border: "2px solid #e9ecef",
+                    borderRadius: "8px",
+                    padding: "0.75rem",
+                    boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+                    transition: "all 0.2s ease",
+                    minHeight: "100px",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between"
+                  }}
+                  role="gridcell"
+                  tabIndex="0"
+                  aria-label={`Medición ${index + 1}: ${med.location_name} por ${med.user_name}`}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = "#007bff";
+                    e.target.style.boxShadow = "0 2px 8px rgba(0,123,255,0.2)";
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = "#e9ecef";
+                    e.target.style.boxShadow = "0 1px 4px rgba(0,0,0,0.1)";
+                  }}
+                >
+                  {/* Localidad */}
+                  <h5 
+                    style={{ 
+                      margin: "0 0 0.5rem 0", 
+                      fontSize: "0.9rem", 
+                      fontWeight: "bold", 
+                      color: "#495057",
+                      lineHeight: "1.2"
+                    }}
+                  >
+                    {med.location_name}
+                  </h5>
+                  
+                  {/* Usuario */}
+                  <div 
+                    style={{ 
+                      fontSize: "0.8rem", 
+                      color: "#6c757d",
+                      marginBottom: "0.5rem",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.3rem"
+                    }}
+                  >
+                    <span 
+                      className="icon" 
+                      aria-hidden="true" 
+                      style={{ fontSize: "0.7rem" }}
+                    >
+                      👤
+                    </span>
+                    <span>{med.user_name}</span>
+                  </div>
+                  
+                  {/* Fecha */}
+                  <div 
+                    style={{ 
+                      fontSize: "0.75rem", 
+                      color: "#868e96",
+                      marginBottom: "0.5rem"
+                    }}
+                  >
+                    {new Date(med.created_at).toLocaleDateString('es-ES', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric'
+                    })}
+                  </div>
+
+                  {/* Botón Ver Detalle */}
+                  <button
+                    type="button"
+                    onClick={() => handleShowMeasurementDetail(med)}
+                    style={{
+                      width: "100%",
+                      padding: "0.4rem 0.6rem",
+                      background: "#007bff",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "6px",
+                      fontSize: "0.75rem",
+                      fontWeight: "bold",
+                      cursor: "pointer",
+                      transition: "background-color 0.2s",
+                      minHeight: "32px"
+                    }}
+                    aria-label={`Ver detalles de medición de ${med.location_name} por ${med.user_name}`}
+                    onFocus={(e) => {
+                      e.target.style.outline = "2px solid #0056b3";
+                      e.target.style.outlineOffset = "2px";
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.outline = "none";
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.background = "#0056b3";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.background = "#007bff";
+                    }}
+                  >
+                    Ver detalle
+                  </button>
+                </article>
+              ))}
             </div>
           ) : (
-            <p style={{ textAlign: "center", color: "#6c757d", fontStyle: "italic" }}>
-              {canValidate ? "No hay mediciones pendientes de otros usuarios." : "No hay mediciones pendientes."}
-            </p>
+            <div 
+              style={{
+                textAlign: "center",
+                padding: "1.5rem",
+                background: "#f8f9fa",
+                border: "2px dashed #dee2e6",
+                borderRadius: "8px"
+              }}
+              role="status"
+              aria-live="polite"
+            >
+              <span 
+                className="icon" 
+                aria-hidden="true" 
+                style={{ 
+                  fontSize: "2rem", 
+                  display: "block", 
+                  marginBottom: "0.5rem",
+                  color: "#adb5bd"
+                }}
+              >
+                📋
+              </span>
+              <p style={{ 
+                margin: "0 0 0.5rem 0", 
+                color: "#6c757d", 
+                fontWeight: "bold"
+              }}>
+                {canValidate ? "No hay mediciones pendientes" : "No tienes permisos de validación"}
+              </p>
+              <p style={{ 
+                margin: 0, 
+                color: "#868e96", 
+                fontSize: "0.85rem" 
+              }}>
+                {canValidate 
+                  ? "Cuando otros usuarios envíen mediciones, aparecerán aquí para su revisión."
+                  : "Contacta al administrador si necesitas permisos de validación."
+                }
+              </p>
+            </div>
           )}
         </AccordionSection>
 
@@ -536,6 +650,238 @@ export default function UserPanel() {
             // Aquí podrías actualizar el estado local o recargar datos
           }}
         />
+      )}
+
+      {/* Modal de detalles de medición */}
+      {showDetailModal && selectedMeasurement && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            padding: "1rem"
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+          onClick={handleCloseDetailModal}
+        >
+          <div
+            style={{
+              background: "#fff",
+              borderRadius: "12px",
+              padding: "1.5rem",
+              maxWidth: "500px",
+              width: "100%",
+              maxHeight: "80vh",
+              overflow: "auto",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.3)"
+            }}
+            onClick={(e) => e.stopPropagation()}
+            role="document"
+          >
+            {/* Header del modal */}
+            <div style={{ 
+              display: "flex", 
+              justifyContent: "space-between", 
+              alignItems: "center",
+              marginBottom: "1.5rem"
+            }}>
+              <h3 
+                id="modal-title"
+                style={{ 
+                  margin: 0, 
+                  color: "#495057",
+                  fontSize: "1.2rem"
+                }}
+              >
+                Detalles de Medición
+              </h3>
+              <button
+                type="button"
+                onClick={handleCloseDetailModal}
+                style={{
+                  background: "none",
+                  border: "none",
+                  fontSize: "1.5rem",
+                  cursor: "pointer",
+                  color: "#6c757d",
+                  padding: "0.25rem",
+                  borderRadius: "4px"
+                }}
+                aria-label="Cerrar modal"
+                onFocus={(e) => {
+                  e.target.style.outline = "2px solid #007bff";
+                  e.target.style.outlineOffset = "2px";
+                }}
+                onBlur={(e) => {
+                  e.target.style.outline = "none";
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Contenido del modal */}
+            <div style={{ marginBottom: "1.5rem" }}>
+              <div style={{ marginBottom: "1rem" }}>
+                <h4 style={{ margin: "0 0 0.5rem 0", color: "#495057" }}>
+                  📍 {selectedMeasurement.location_name}
+                </h4>
+                <p style={{ margin: "0 0 0.5rem 0", color: "#6c757d" }}>
+                  <strong>Usuario:</strong> {selectedMeasurement.user_name}
+                </p>
+                <p style={{ margin: "0 0 0.5rem 0", color: "#6c757d" }}>
+                  <strong>Fecha:</strong> {new Date(selectedMeasurement.created_at).toLocaleDateString('es-ES', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </p>
+              </div>
+
+              {/* Mediciones de agua */}
+              {(selectedMeasurement.ecoli_water || selectedMeasurement.enterococci_water) && (
+                <div style={{ marginBottom: "1rem" }}>
+                  <h5 style={{ margin: "0 0 0.5rem 0", color: "#495057" }}>💧 Mediciones de Agua</h5>
+                  <div style={{ 
+                    background: "#f8f9fa", 
+                    padding: "0.75rem", 
+                    borderRadius: "6px",
+                    fontSize: "0.9rem"
+                  }}>
+                    {selectedMeasurement.ecoli_water && (
+                      <p style={{ margin: "0 0 0.25rem 0" }}>
+                        <strong>E. coli:</strong> {selectedMeasurement.ecoli_water} UFC/100ml
+                      </p>
+                    )}
+                    {selectedMeasurement.enterococci_water && (
+                      <p style={{ margin: 0 }}>
+                        <strong>Enterococos:</strong> {selectedMeasurement.enterococci_water} UFC/100ml
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Mediciones de arena */}
+              {(selectedMeasurement.ecoli_sand || selectedMeasurement.enterococci_sand) && (
+                <div style={{ marginBottom: "1.5rem" }}>
+                  <h5 style={{ margin: "0 0 0.5rem 0", color: "#495057" }}>🏖️ Mediciones de Arena</h5>
+                  <div style={{ 
+                    background: "#f8f9fa", 
+                    padding: "0.75rem", 
+                    borderRadius: "6px",
+                    fontSize: "0.9rem"
+                  }}>
+                    {selectedMeasurement.ecoli_sand && (
+                      <p style={{ margin: "0 0 0.25rem 0" }}>
+                        <strong>E. coli:</strong> {selectedMeasurement.ecoli_sand} UFC/100ml
+                      </p>
+                    )}
+                    {selectedMeasurement.enterococci_sand && (
+                      <p style={{ margin: 0 }}>
+                        <strong>Enterococos:</strong> {selectedMeasurement.enterococci_sand} UFC/100ml
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Botones de acción */}
+            <div style={{ 
+              display: "flex", 
+              gap: "0.75rem",
+              justifyContent: "flex-end"
+            }}>
+              <button
+                type="button"
+                onClick={handleCloseDetailModal}
+                style={{
+                  padding: "0.75rem 1.5rem",
+                  background: "#6c757d",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "6px",
+                  fontSize: "0.9rem",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  transition: "background-color 0.2s"
+                }}
+                aria-label="Cancelar"
+                onFocus={(e) => {
+                  e.target.style.outline = "2px solid #495057";
+                  e.target.style.outlineOffset = "2px";
+                }}
+                onBlur={(e) => {
+                  e.target.style.outline = "none";
+                }}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={() => handleValidateMeasurement(selectedMeasurement.id, 'approved')}
+                style={{
+                  padding: "0.75rem 1.5rem",
+                  background: "#28a745",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "6px",
+                  fontSize: "0.9rem",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  transition: "background-color 0.2s"
+                }}
+                aria-label={`Aprobar medición de ${selectedMeasurement.location_name}`}
+                onFocus={(e) => {
+                  e.target.style.outline = "2px solid #1e7e34";
+                  e.target.style.outlineOffset = "2px";
+                }}
+                onBlur={(e) => {
+                  e.target.style.outline = "none";
+                }}
+              >
+                ✓ Aprobar
+              </button>
+              <button
+                type="button"
+                onClick={() => handleValidateMeasurement(selectedMeasurement.id, 'rejected')}
+                style={{
+                  padding: "0.75rem 1.5rem",
+                  background: "#dc3545",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "6px",
+                  fontSize: "0.9rem",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  transition: "background-color 0.2s"
+                }}
+                aria-label={`Rechazar medición de ${selectedMeasurement.location_name}`}
+                onFocus={(e) => {
+                  e.target.style.outline = "2px solid #c82333";
+                  e.target.style.outlineOffset = "2px";
+                }}
+                onBlur={(e) => {
+                  e.target.style.outline = "none";
+                }}
+              >
+                ✗ Rechazar
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );
