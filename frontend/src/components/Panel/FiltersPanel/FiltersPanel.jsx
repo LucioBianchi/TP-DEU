@@ -43,7 +43,41 @@ export default function FiltersPanel({ filters, onFiltersChange, onResetFilters 
           border: "1px solid #dee2e6"
         }}
       >
-        <strong>Resultados:</strong> {stats.filtered} de {stats.total} balnearios
+        <div 
+          tabIndex="0" 
+          aria-label="Resultados"
+          style={{ 
+            display: "inline", 
+            fontWeight: "bold",
+            cursor: "default"
+          }}
+          onFocus={(e) => {
+            e.target.style.outline = "2px solid #007bff";
+            e.target.style.outlineOffset = "2px";
+          }}
+          onBlur={(e) => {
+            e.target.style.outline = "none";
+          }}
+        >
+          Resultados:
+        </div> 
+        <div 
+          tabIndex="0" 
+          aria-label={`${stats.filtered} de ${stats.total} balnearios`}
+          style={{ 
+            display: "inline",
+            cursor: "default"
+          }}
+          onFocus={(e) => {
+            e.target.style.outline = "2px solid #007bff";
+            e.target.style.outlineOffset = "2px";
+          }}
+          onBlur={(e) => {
+            e.target.style.outline = "none";
+          }}
+        >
+          {stats.filtered} de {stats.total} balnearios
+        </div>
       </section>
 
       {/* Botón para quitar filtros */}
@@ -87,7 +121,25 @@ export default function FiltersPanel({ filters, onFiltersChange, onResetFilters 
       {/* Filtro de Localidad con estilo mejorado */}
       <section style={{ marginBottom: "2em" }}>
         <label htmlFor="localidad-select" style={{ display: "block", marginBottom: "0.5em" }}>
-          <strong style={{ fontSize: "1.1em", color: "#495057" }}>Localidad</strong>
+        <div 
+            tabIndex="0" 
+            aria-label="Localidad"
+            style={{ 
+              fontSize: "1.1em", 
+              color: "#495057",
+              fontWeight: "bold",
+              cursor: "default"
+            }}
+            onFocus={(e) => {
+              e.target.style.outline = "2px solid #007bff";
+              e.target.style.outlineOffset = "2px";
+            }}
+            onBlur={(e) => {
+              e.target.style.outline = "none";
+            }}
+          >
+            Localidad
+          </div>
         </label>
         <div style={{ position: "relative" }}>
           <select
@@ -97,30 +149,29 @@ export default function FiltersPanel({ filters, onFiltersChange, onResetFilters 
             onChange={e => handleFilterChange('localidad', e.target.value)}
             style={{ 
               width: "100%", 
-              padding: "0.8em 1em",
-              borderRadius: "8px",
+              padding: "0.6em",
               border: "2px solid #dee2e6",
+              borderRadius: "6px",
               fontSize: "1em",
               background: "#fff",
-              cursor: "pointer",
-              appearance: "none",
-              backgroundImage: "url('data:image/svg+xml;charset=US-ASCII,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"12\" height=\"8\"><path d=\"M1 1l5 5 5-5\" stroke=\"%23666\" stroke-width=\"2\" fill=\"none\"/></svg>')",
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "right 1em center",
-              paddingRight: "2.5em"
+              cursor: "pointer"
             }}
             aria-describedby="localidad-desc"
             onFocus={(e) => {
-              e.target.style.borderColor = "#007bff";
-              e.target.style.outline = "none";
+              e.target.borderColor = "#007bff";
+              e.target.style.outline = "2px solid #007bff";
+              e.target.style.outlineOffset = "2px";
             }}
             onBlur={(e) => {
-              e.target.style.borderColor = "#dee2e6";
+              e.target.borderColor = "#dee2e6";
+              e.target.style.outline = "none";
             }}
           >
             <option value="">Todas las localidades</option>
-            {uniqueValues.localidades.map(loc => (
-              <option key={loc} value={loc}>{loc}</option>
+            {uniqueValues.localidades.map((loc, index) => (
+              <option key={`${loc.id}-${index}`} value={loc.nombre}>
+                {loc.nombre}
+              </option>
             ))}
           </select>
         </div>
