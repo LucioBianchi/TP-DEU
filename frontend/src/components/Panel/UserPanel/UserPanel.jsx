@@ -366,10 +366,18 @@ export default function UserPanel() {
     return (
       <section aria-label="Inicio de sesión">
         <div style={{ textAlign: "center", marginBottom: "2em" }}>
-          <h2 style={{ fontSize: "1.5em", marginBottom: "0.5em", color: "#495057" }}>
+          <h2 
+            style={{ fontSize: "1.5em", marginBottom: "0.5em", color: "#495057" }}
+            tabIndex={0}
+            aria-label="Iniciar Sesión"
+          >
             Iniciar Sesión
           </h2>
-          <p style={{ color: "#6c757d", marginBottom: "2em" }}>
+          <p 
+            style={{ color: "#6c757d", marginBottom: "2em" }}
+            tabIndex={0}
+            aria-label="Accede a tu cuenta para gestionar mediciones y contribuir al monitoreo de balnearios."
+          >
             Accede a tu cuenta para gestionar mediciones y contribuir al monitoreo de balnearios.
           </p>
         </div>
@@ -388,8 +396,14 @@ export default function UserPanel() {
             background: "#f8f9fa",
             borderRadius: "8px",
             border: "1px solid #dee2e6"
-          }}>
-            <p style={{ margin: 0, fontSize: "0.9em", color: "#6c757d" }}>
+          }}
+          tabIndex={0}
+          >
+            <p 
+              style={{ margin: 0, fontSize: "0.9em", color: "#6c757d" }}
+              tabIndex={0}
+              aria-label="Al continuar, aceptas nuestros términos de servicio y política de privacidad."
+            >
               Al continuar, aceptas nuestros términos de servicio y política de privacidad.
             </p>
           </div>
