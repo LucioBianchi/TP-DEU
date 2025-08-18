@@ -6,13 +6,13 @@ const sections = [
     label: "¿Qué es la contaminación?",
     content: (
       <article>
-        <p>
+        <p tabIndex="0" aria-label="La contaminación en balnearios puede afectar tanto el agua como la arena, poniendo en riesgo la salud de las personas y el ambiente. Es importante conocer sus causas y cómo prevenirla.">
           La contaminación en balnearios puede afectar tanto el agua como la arena, poniendo en riesgo la salud de las personas y el ambiente. Es importante conocer sus causas y cómo prevenirla.
         </p>
-        <p>
+        <p tabIndex="0" aria-label="La contaminación del agua puede incluir bacterias, virus, parásitos y sustancias químicas que pueden causar enfermedades gastrointestinales, infecciones de la piel y otros problemas de salud.">
           La contaminación del agua puede incluir bacterias, virus, parásitos y sustancias químicas que pueden causar enfermedades gastrointestinales, infecciones de la piel y otros problemas de salud.
         </p>
-        <p>
+        <p tabIndex="0" aria-label="La contaminación de la arena puede contener microorganismos patógenos, residuos plásticos, colillas de cigarrillos y otros desechos que representan un riesgo para la salud, especialmente para niños que juegan en la playa.">
           La contaminación de la arena puede contener microorganismos patógenos, residuos plásticos, colillas de cigarrillos y otros desechos que representan un riesgo para la salud, especialmente para niños que juegan en la playa.
         </p>
       </article>
@@ -23,23 +23,29 @@ const sections = [
     label: "¿Cómo se mide?",
     content: (
       <article>
-        <h3>Protocolo de muestreo</h3>
-        <p>
+        <h3 tabIndex="0" aria-label="Protocolo de muestreo">Protocolo de muestreo</h3>
+        <p tabIndex="0" aria-label="Las muestras tanto de agua como de arena se toman siguiendo un protocolo específico y deben ser enviadas a laboratorio para su análisis.">
           Las muestras tanto de agua como de arena se toman siguiendo un protocolo específico y deben ser enviadas a laboratorio para su análisis.
         </p>
         
-        <h4>Muestreo de agua</h4>
-        <ul>
-          <li>Se utiliza una jeringa estéril para tomar pequeñas submuestras a lo largo de 100 metros de playa.</li>
-          <li>Las submuestras se combinan en una botella para formar una muestra compuesta.</li>
-          <li>En el laboratorio se analiza la presencia de <strong>Escherichia coli</strong> y <strong>Estreptococo fecal</strong>.</li>
+        <h4 tabIndex="0" aria-label="Muestreo de agua">Muestreo de agua</h4>
+        <ul role="list" aria-label="Pasos para el muestreo de agua">
+          <li tabIndex="0" aria-label="Se utiliza una jeringa estéril para tomar pequeñas submuestras a lo largo de 100 metros de playa.">
+            Se utiliza una jeringa estéril para tomar pequeñas submuestras a lo largo de 100 metros de playa.
+          </li>
+          <li tabIndex="0" aria-label="Las submuestras se combinan en una botella para formar una muestra compuesta.">
+            Las submuestras se combinan en una botella para formar una muestra compuesta.
+          </li>
+          <li tabIndex="0" aria-label="En el laboratorio se analiza la presencia de Escherichia coli y Estreptococo fecal.">
+            En el laboratorio se analiza la presencia de <strong>Escherichia coli</strong> y <strong>Estreptococo fecal</strong>.
+          </li>
         </ul>
         
-        <h4>Muestreo de arena</h4>
-        <p>
+        <h4 tabIndex="0" aria-label="Muestreo de arena">Muestreo de arena</h4>
+        <p tabIndex="0" aria-label="La arena acumula contaminantes que pueden sobrevivir durante más tiempo. Las bacterias pueden ingresar al cuerpo a través de pequeñas heridas o mucosas al jugar, caminar descalzo o acostarse sobre la arena.">
           La arena acumula contaminantes que pueden sobrevivir durante más tiempo. Las bacterias pueden ingresar al cuerpo a través de pequeñas heridas o mucosas al jugar, caminar descalzo o acostarse sobre la arena.
         </p>
-        <p>
+        <p tabIndex="0" aria-label="Se toman muestras de arena a diferentes profundidades y se analizan en laboratorio para detectar la presencia de microorganismos patógenos y otros contaminantes.">
           Se toman muestras de arena a diferentes profundidades y se analizan en laboratorio para detectar la presencia de microorganismos patógenos y otros contaminantes.
         </p>
       </article>
@@ -50,11 +56,19 @@ const sections = [
     label: "¿Cómo ayudarnos?",
     content: (
       <article>
-        <p>Puedes contribuir a mantener las playas limpias y seguras de las siguientes maneras:</p>
-        <ul>
-          <li><strong>No arrojar basura:</strong> Lleva contigo todos los residuos y deposítalos en los contenedores correspondientes.</li>
-          <li><strong>Usar productos biodegradables:</strong> Opta por protectores solares y otros productos que no dañen el medio ambiente.</li>
-          <li><strong>Realizar mediciones:</strong> Participa en el monitoreo ciudadano de la calidad del agua y arena de las playas.</li>
+        <p tabIndex="0" aria-label="Puedes contribuir a mantener las playas limpias y seguras de las siguientes maneras:">
+          Puedes contribuir a mantener las playas limpias y seguras de las siguientes maneras:
+        </p>
+        <ul role="list" aria-label="Lista de acciones para ayudar">
+          <li tabIndex="0" aria-label="No arrojar basura: Lleva contigo todos los residuos y deposítalos en los contenedores correspondientes.">
+            <strong>No arrojar basura:</strong> Lleva contigo todos los residuos y deposítalos en los contenedores correspondientes.
+          </li>
+          <li tabIndex="0" aria-label="Usar productos biodegradables: Opta por protectores solares y otros productos que no dañen el medio ambiente.">
+            <strong>Usar productos biodegradables:</strong> Opta por protectores solares y otros productos que no dañen el medio ambiente.
+          </li>
+          <li tabIndex="0" aria-label="Realizar mediciones: Participa en el monitoreo ciudadano de la calidad del agua y arena de las playas.">
+            <strong>Realizar mediciones:</strong> Participa en el monitoreo ciudadano de la calidad del agua y arena de las playas.
+          </li>
         </ul>
       </article>
     ),
@@ -64,27 +78,47 @@ const sections = [
     label: "Información de contacto",
     content: (
       <article>
-        <p>
+        <p tabIndex="0" aria-label="Para consultas, denuncias o reportes de contaminación, comunícate con nosotros:">
           Para consultas, denuncias o reportes de contaminación, comunícate con nosotros:
         </p>
-        <ul>
-          <li>
+        <ul role="list" aria-label="Información de contacto disponible">
+          <li tabIndex="0" aria-label="Email: info@riox.todos">
             <strong>Email:</strong> 
-            <a href="mailto:info@riox.todos" aria-label="Enviar email a info@riox.todos">
+            <a 
+              href="mailto:info@riox.todos" 
+              aria-label="Enviar email a info@riox.todos"
+              onFocus={(e) => {
+                e.target.style.outline = "2px solid #007bff";
+                e.target.style.outlineOffset = "2px";
+              }}
+              onBlur={(e) => {
+                e.target.style.outline = "none";
+              }}
+            >
               info@riox.todos
             </a>
           </li>
-          <li>
+          <li tabIndex="0" aria-label="Teléfono: +54 00 0000-0000">
             <strong>Teléfono:</strong> 
-            <a href="tel:+5400000000" aria-label="Llamar al +54 00 0000-0000">
+            <a 
+              href="tel:+5400000000" 
+              aria-label="Llamar al +54 00 0000-0000"
+              onFocus={(e) => {
+                e.target.style.outline = "2px solid #007bff";
+                e.target.style.outlineOffset = "2px";
+              }}
+              onBlur={(e) => {
+                e.target.style.outline = "none";
+              }}
+            >
               +54 00 0000-0000
             </a>
           </li>
-          <li>
+          <li tabIndex="0" aria-label="Horarios de atención: Lunes a viernes de 9:00 a 18:00">
             <strong>Horarios de atención:</strong> Lunes a viernes de 9:00 a 18:00
           </li>
         </ul>
-        <p>
+        <p tabIndex="0" aria-label="Emergencias ambientales: Si detectas un vertido o contaminación grave, llama inmediatamente al número de emergencias.">
           <strong>Emergencias ambientales:</strong> Si detectas un vertido o contaminación grave, llama inmediatamente al número de emergencias.
         </p>
       </article>
@@ -99,6 +133,13 @@ export default function InfoPanel() {
     setOpen(open === sectionId ? null : sectionId);
   };
 
+  const handleKeyDown = (e, sectionId) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleToggle(sectionId);
+    }
+  };
+
   return (
     <section aria-label="Información sobre contaminación de balnearios">
       <h2 className="sr-only">Información sobre contaminación</h2>
@@ -111,12 +152,14 @@ export default function InfoPanel() {
               aria-controls={`section-${section.id}`}
               id={`accordion-${section.id}`}
               onClick={() => handleToggle(section.id)}
+              onKeyDown={(e) => handleKeyDown(e, section.id)}
               style={{
                 width: "100%",
                 textAlign: "left",
                 padding: "1em 1.2em",
                 borderRadius: "8px",
                 border: "2px solid #007bff",
+                borderColor: open === section.id ? "#0056b3" : "#007bff",
                 background: open === section.id ? "#e9f5ff" : "#f8f9fa",
                 fontWeight: "bold",
                 cursor: "pointer",
@@ -135,6 +178,7 @@ export default function InfoPanel() {
               onBlur={(e) => {
                 e.target.style.outline = "none";
               }}
+              aria-label={`${section.label}. Presiona Enter o Espacio para ${open === section.id ? 'cerrar' : 'abrir'} esta sección`}
             >
               <span>{section.label}</span>
               <span 
@@ -151,6 +195,7 @@ export default function InfoPanel() {
             
             <div
               id={`section-${section.id}`}
+              role="region"
               aria-labelledby={`accordion-${section.id}`}
               hidden={open !== section.id}
               style={{
@@ -165,7 +210,11 @@ export default function InfoPanel() {
               }}
             >
               {open === section.id && (
-                <div style={{ lineHeight: "1.6" }}>
+                <div 
+                  style={{ lineHeight: "1.6" }}
+                  role="contentinfo"
+                  aria-label={`Contenido de la sección: ${section.label}`}
+                >
                   {section.content}
                 </div>
               )}

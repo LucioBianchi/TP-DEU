@@ -12,7 +12,13 @@ export default function ConfigPanel() {
     <section aria-label="Configuración de accesibilidad">
       <div style={{ marginBottom: "2em" }}>
         <label htmlFor="font-size-select" style={{ display: "block", marginBottom: "0.5em" }}>
-          <strong style={{ fontSize: "1.1em", color: "#495057" }}>Tamaño de la letra</strong>
+          <strong 
+            tabIndex="0" 
+            aria-label="Tamaño de la letra"
+            style={{ fontSize: "1.1em", color: "#495057" }}
+          >
+            Tamaño de la letra
+          </strong>
         </label>
         <div style={{ position: "relative" }}>
           <select
@@ -40,6 +46,7 @@ export default function ConfigPanel() {
             onBlur={(e) => {
               e.target.style.borderColor = "#dee2e6";
             }}
+            aria-label="Selector de tamaño de letra. Opciones disponibles: Pequeño, Mediano, Grande"
           >
             <option value="small">Pequeño</option>
             <option value="medium">Mediano</option>
@@ -50,7 +57,13 @@ export default function ConfigPanel() {
 
       <div style={{ marginBottom: "2em" }}>
         <label htmlFor="icon-size-select" style={{ display: "block", marginBottom: "0.5em" }}>
-          <strong style={{ fontSize: "1.1em", color: "#495057" }}>Tamaño de los iconos</strong>
+          <strong 
+            tabIndex="0" 
+            aria-label="Tamaño de los iconos"
+            style={{ fontSize: "1.1em", color: "#495057" }}
+          >
+            Tamaño de los iconos
+          </strong>
         </label>
         <div style={{ position: "relative" }}>
           <select
@@ -78,6 +91,7 @@ export default function ConfigPanel() {
             onBlur={(e) => {
               e.target.style.borderColor = "#dee2e6";
             }}
+            aria-label="Selector de tamaño de iconos. Opciones disponibles: Pequeño, Mediano, Grande"
           >
             <option value="small">Pequeño</option>
             <option value="medium">Mediano</option>
@@ -88,7 +102,13 @@ export default function ConfigPanel() {
 
       <div style={{ marginBottom: "2em" }}>
         <label htmlFor="font-family-select" style={{ display: "block", marginBottom: "0.5em" }}>
-          <strong style={{ fontSize: "1.1em", color: "#495057" }}>Familia de fuente</strong>
+          <strong 
+            tabIndex="0" 
+            aria-label="Familia de fuente"
+            style={{ fontSize: "1.1em", color: "#495057" }}
+          >
+            Familia de fuente
+          </strong>
         </label>
         <div style={{ position: "relative" }}>
           <select
@@ -116,6 +136,7 @@ export default function ConfigPanel() {
             onBlur={(e) => {
               e.target.style.borderColor = "#dee2e6";
             }}
+            aria-label="Selector de familia de fuente. Opciones disponibles: Predeterminada, Dyslexic-friendly, Serif, Monospace"
           >
             <option value="default">Predeterminada</option>
             <option value="dyslexic">Dyslexic-friendly</option>
