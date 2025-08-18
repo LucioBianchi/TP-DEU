@@ -7,6 +7,29 @@ async function initDatabase() {
   try {
     // Conectar a la base de datos
     await database.connect();
+
+    console.log('🗑️  Eliminando base de datos existente...');
+    
+    // Limpiar completamente antes de ejecutar el esquema
+    try {
+      await database.exec(`
+        -- Desactivar foreign keys temporalmente para SQLite
+        PRAGMA foreign_keys = OFF;
+        
+        -- Eliminar todas las tablas
+        DROP TABLE IF EXISTS user_measurement_history;
+        DROP TABLE IF EXISTS location_images;
+        DROP TABLE IF EXISTS measurements;
+        DROP TABLE IF EXISTS locations;
+        DROP TABLE IF EXISTS users;
+        
+        -- Reactivar foreign keys
+        PRAGMA foreign_keys = ON;
+      `);
+      console.log('✅ Base de datos limpiada correctamente');
+    } catch (error) {
+      console.log('⚠️  Error limpiando (normal si es primera vez):', error.message);
+    }
     
     // Leer el esquema
     const schemaPath = path.join(__dirname, 'schema.sql');
