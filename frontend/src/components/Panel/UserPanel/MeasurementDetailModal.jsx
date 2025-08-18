@@ -71,6 +71,8 @@ export default function MeasurementDetailModal({
               color: "#495057",
               fontSize: "1.2rem"
             }}
+            tabIndex="0"
+            aria-label="Título del modal: Detalles de Medición"
           >
             Detalles de Medición
           </h2>
@@ -121,6 +123,8 @@ export default function MeasurementDetailModal({
                 color: "#495057",
                 fontSize: "1.1rem"
               }}
+              tabIndex="0"
+              aria-label="Sección de información general de la medición"
             >
               📍 Información General
             </h3>
@@ -132,16 +136,56 @@ export default function MeasurementDetailModal({
             }}>
               <dl style={{ margin: 0, display: "grid", gap: "0.5rem" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <dt style={{ fontWeight: "bold", color: "#495057" }}>Localidad:</dt>
-                  <dd style={{ margin: 0, color: "#6c757d" }}>{measurement.location_name}</dd>
+                  <dt 
+                    style={{ fontWeight: "bold", color: "#495057" }}
+                    tabIndex="0"
+                    aria-label="Etiqueta: Localidad de la medición"
+                  >
+                    Localidad:
+                  </dt>
+                  <dd 
+                    style={{ margin: 0, color: "#6c757d" }}
+                    tabIndex="0"
+                    aria-label={`Valor de localidad: ${measurement.location_name}`}
+                  >
+                    {measurement.location_name}
+                  </dd>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <dt style={{ fontWeight: "bold", color: "#495057" }}>Usuario:</dt>
-                  <dd style={{ margin: 0, color: "#6c757d" }}>{measurement.user_name}</dd>
+                  <dt 
+                    style={{ fontWeight: "bold", color: "#495057" }}
+                    tabIndex="0"
+                    aria-label="Etiqueta: Usuario que realizó la medición"
+                  >
+                    Usuario:
+                  </dt>
+                  <dd 
+                    style={{ margin: 0, color: "#6c757d" }}
+                    tabIndex="0"
+                    aria-label={`Valor de usuario: ${measurement.user_name}`}
+                  >
+                    {measurement.user_name}
+                  </dd>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <dt style={{ fontWeight: "bold", color: "#495057" }}>Fecha:</dt>
-                  <dd style={{ margin: 0, color: "#6c757d" }}>
+                  <dt 
+                    style={{ fontWeight: "bold", color: "#495057" }}
+                    tabIndex="0"
+                    aria-label="Etiqueta: Fecha de la medición"
+                  >
+                    Fecha:
+                  </dt>
+                  <dd 
+                    style={{ margin: 0, color: "#6c757d" }}
+                    tabIndex="0"
+                    aria-label={`Valor de fecha: ${new Date(measurement.created_at).toLocaleDateString('es-ES', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}`}
+                  >
                     {new Date(measurement.created_at).toLocaleDateString('es-ES', {
                       day: '2-digit',
                       month: '2-digit',
@@ -165,6 +209,8 @@ export default function MeasurementDetailModal({
                   color: "#495057",
                   fontSize: "1.1rem"
                 }}
+                tabIndex="0"
+                aria-label="Sección de mediciones de agua de la playa"
               >
                 💧 Mediciones de Agua
               </h3>
@@ -177,16 +223,36 @@ export default function MeasurementDetailModal({
                 <dl style={{ margin: 0, display: "grid", gap: "0.5rem" }}>
                   {measurement.ecoli_water && (
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <dt style={{ fontWeight: "bold", color: "#1565c0" }}>E. coli:</dt>
-                      <dd style={{ margin: 0, color: "#1976d2" }}>
+                      <dt 
+                        style={{ fontWeight: "bold", color: "#1565c0" }}
+                        tabIndex="0"
+                        aria-label="Etiqueta: Medición de E. coli en agua"
+                      >
+                        E. coli:
+                      </dt>
+                      <dd 
+                        style={{ margin: 0, color: "#1976d2" }}
+                        tabIndex="0"
+                        aria-label={`Valor de E. coli en agua: ${measurement.ecoli_water} UFC por 100 mililitros`}
+                      >
                         {measurement.ecoli_water} UFC/100ml
                       </dd>
                     </div>
                   )}
                   {measurement.enterococci_water && (
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <dt style={{ fontWeight: "bold", color: "#1565c0" }}>Enterococos:</dt>
-                      <dd style={{ margin: 0, color: "#1976d2" }}>
+                      <dt 
+                        style={{ fontWeight: "bold", color: "#1565c0" }}
+                        tabIndex="0"
+                        aria-label="Etiqueta: Medición de enterococos en agua"
+                      >
+                        Enterococos:
+                      </dt>
+                      <dd 
+                        style={{ margin: 0, color: "#1976d2" }}
+                        tabIndex="0"
+                        aria-label={`Valor de enterococos en agua: ${measurement.enterococci_water} UFC por 100 mililitros`}
+                      >
                         {measurement.enterococci_water} UFC/100ml
                       </dd>
                     </div>
@@ -206,6 +272,8 @@ export default function MeasurementDetailModal({
                   color: "#495057",
                   fontSize: "1.1rem"
                 }}
+                tabIndex="0"
+                aria-label="Sección de mediciones de arena de la playa"
               >
                 🏖️ Mediciones de Arena
               </h3>
@@ -218,16 +286,36 @@ export default function MeasurementDetailModal({
                 <dl style={{ display: "grid", gap: "0.5rem" }}>
                   {measurement.ecoli_sand && (
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <dt style={{ fontWeight: "bold", color: "#e65100" }}>E. coli:</dt>
-                      <dd style={{ margin: 0, color: "#f57c00" }}>
+                      <dt 
+                        style={{ fontWeight: "bold", color: "#e65100" }}
+                        tabIndex="0"
+                        aria-label="Etiqueta: Medición de E. coli en arena"
+                      >
+                        E. coli:
+                      </dt>
+                      <dd 
+                        style={{ margin: 0, color: "#f57c00" }}
+                        tabIndex="0"
+                        aria-label={`Valor de E. coli en arena: ${measurement.ecoli_sand} UFC por 100 gramos`}
+                      >
                         {measurement.ecoli_sand} UFC/100g
                       </dd>
                     </div>
                   )}
                   {measurement.enterococci_sand && (
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <dt style={{ fontWeight: "bold", color: "#e65100" }}>Enterococos:</dt>
-                      <dd style={{ margin: 0, color: "#f57c00" }}>
+                      <dt 
+                        style={{ fontWeight: "bold", color: "#e65100" }}
+                        tabIndex="0"
+                        aria-label="Etiqueta: Medición de enterococos en arena"
+                      >
+                        Enterococos:
+                      </dt>
+                      <dd 
+                        style={{ margin: 0, color: "#f57c00" }}
+                        tabIndex="0"
+                        aria-label={`Valor de enterococos en arena: ${measurement.enterococci_sand} UFC por 100 gramos`}
+                      >
                         {measurement.enterococci_sand} UFC/100g
                       </dd>
                     </div>
@@ -247,6 +335,8 @@ export default function MeasurementDetailModal({
                   color: "#495057",
                   fontSize: "1.1rem"
                 }}
+                tabIndex="0"
+                aria-label="Sección de observaciones adicionales de la medición"
               >
                 📝 Observaciones
               </h3>
@@ -256,12 +346,16 @@ export default function MeasurementDetailModal({
                 borderRadius: "8px",
                 border: "1px solid #ce93d8"
               }}>
-                <p style={{ 
-                  margin: 0, 
-                  color: "#7b1fa2",
-                  lineHeight: "1.5",
-                  whiteSpace: "pre-wrap"
-                }}>
+                <p 
+                  style={{ 
+                    margin: 0, 
+                    color: "#7b1fa2",
+                    lineHeight: "1.5",
+                    whiteSpace: "pre-wrap"
+                  }}
+                  tabIndex="0"
+                  aria-label={`Observaciones de la medición: ${measurement.additional_notes}`}
+                >
                   {measurement.additional_notes}
                 </p>
               </div>
@@ -291,7 +385,7 @@ export default function MeasurementDetailModal({
               transition: "all 0.2s",
               minWidth: "100px"
             }}
-            aria-label="Cancelar y cerrar modal"
+            aria-label="Cancelar y cerrar modal de detalles"
             onFocus={(e) => {
               e.target.style.outline = "2px solid #495057";
               e.target.style.outlineOffset = "2px";
@@ -325,7 +419,7 @@ export default function MeasurementDetailModal({
               transition: "all 0.2s",
               minWidth: "100px"
             }}
-            aria-label={`Aprobar medición de ${measurement.location_name}`}
+            aria-label={`Aprobar medición de ${measurement.location_name} - Esta acción actualizará los niveles de contaminación`}
             onFocus={(e) => {
               e.target.style.outline = "2px solid #1e7e34";
               e.target.style.outlineOffset = "2px";
@@ -357,7 +451,7 @@ export default function MeasurementDetailModal({
               transition: "all 0.2s",
               minWidth: "100px"
             }}
-            aria-label={`Rechazar medición de ${measurement.location_name}`}
+            aria-label={`Rechazar medición de ${measurement.location_name} - La medición será marcada como rechazada`}
             onFocus={(e) => {
               e.target.style.outline = "2px solid #c82333";
               e.target.style.outlineOffset = "2px";

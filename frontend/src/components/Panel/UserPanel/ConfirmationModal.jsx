@@ -7,6 +7,8 @@ export default function ConfirmationModal({
   action, 
   measurementName 
 }) {
+  console.log('ConfirmationModal render:', { isOpen, action, measurementName }); // Debug
+
   if (!isOpen || !action) return null;
 
   const isApproval = action === 'approved';
@@ -15,6 +17,8 @@ export default function ConfirmationModal({
     ? `¿Estás seguro de que quieres aprobar la medición de "${measurementName}"?`
     : `¿Estás seguro de que quieres rechazar la medición de "${measurementName}"?`;
   
+  console.log('Modal config:', { isApproval, title, message }); // Debug
+
   const icon = isApproval ? '✅' : '❌';
   const confirmButtonText = isApproval ? 'Sí, Aprobar' : 'Sí, Rechazar';
   const confirmButtonStyle = isApproval 
@@ -51,6 +55,7 @@ export default function ConfirmationModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="confirmation-title"
+      aria-describedby="confirmation-description"
       onClick={handleBackdropClick}
       onKeyDown={handleKeyDown}
       tabIndex="-1"
@@ -74,11 +79,15 @@ export default function ConfirmationModal({
           textAlign: "center", 
           marginBottom: "1.5rem" 
         }}>
-          <div style={{
-            fontSize: "4rem",
-            marginBottom: "1rem",
-            filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.2))"
-          }}>
+          <div 
+            style={{
+              fontSize: "4rem",
+              marginBottom: "1rem",
+              filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.2))"
+            }}
+            tabIndex="0"
+            aria-label={isApproval ? "Icono de aprobación: marca de verificación verde" : "Icono de rechazo: marca X roja"}
+          >
             {icon}
           </div>
           <h2 
@@ -89,33 +98,46 @@ export default function ConfirmationModal({
               fontSize: "1.4rem",
               fontWeight: "bold"
             }}
+            tabIndex="0"
+            aria-label={`Título del modal de confirmación: ${title}`}
           >
             {title}
           </h2>
         </div>
 
         {/* Mensaje de confirmación */}
-        <div style={{ 
-          textAlign: "center", 
-          marginBottom: "2rem" 
-        }}>
-          <p style={{ 
-            margin: 0, 
-            color: "#6c757d",
-            fontSize: "1rem",
-            lineHeight: "1.5"
-          }}>
+        <div 
+          id="confirmation-description"
+          style={{ 
+            textAlign: "center", 
+            marginBottom: "2rem" 
+          }}
+        >
+          <p 
+            style={{ 
+              margin: "0 0 1rem 0", 
+              color: "#6c757d",
+              fontSize: "1rem",
+              lineHeight: "1.5"
+            }}
+            tabIndex="0"
+            aria-label={`Mensaje de confirmación: ${message}`}
+          >
             {message}
           </p>
           
           {isApproval && (
-            <div style={{
-              background: "#d4edda",
-              border: "1px solid #c3e6cb",
-              borderRadius: "8px",
-              padding: "1rem",
-              marginTop: "1rem"
-            }}>
+            <div 
+              style={{
+                background: "#d4edda",
+                border: "1px solid #c3e6cb",
+                borderRadius: "8px",
+                padding: "1rem",
+                marginTop: "1rem"
+              }}
+              tabIndex="0"
+              aria-label="Información adicional sobre la aprobación: Esta acción actualizará los niveles de contaminación de la ubicación"
+            >
               <p style={{ 
                 margin: 0, 
                 color: "#155724",
@@ -128,13 +150,17 @@ export default function ConfirmationModal({
           )}
           
           {!isApproval && (
-            <div style={{
-              background: "#f8d7da",
-              border: "1px solid #f5c6cb",
-              borderRadius: "8px",
-              padding: "1rem",
-              marginTop: "1rem"
-            }}>
+            <div 
+              style={{
+                background: "#f8d7da",
+                border: "1px solid #f5c6cb",
+                borderRadius: "8px",
+                padding: "1rem",
+                marginTop: "1rem"
+              }}
+              tabIndex="0"
+              aria-label="Advertencia sobre el rechazo: La medición será marcada como rechazada y no se incluirá en los cálculos"
+            >
               <p style={{ 
                 margin: 0, 
                 color: "#721c24",
@@ -169,7 +195,7 @@ export default function ConfirmationModal({
               minWidth: "120px",
               boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
             }}
-            aria-label="Cancelar acción"
+            aria-label="Cancelar la acción y cerrar el modal de confirmación"
             onFocus={(e) => {
               e.target.style.outline = "2px solid #495057";
               e.target.style.outlineOffset = "2px";
@@ -207,7 +233,7 @@ export default function ConfirmationModal({
               boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
               ...confirmButtonStyle
             }}
-            aria-label={`Confirmar ${isApproval ? 'aprobación' : 'rechazo'} de medición`}
+            aria-label={`Confirmar ${isApproval ? 'aprobación' : 'rechazo'} de la medición de ${measurementName}`}
             onFocus={(e) => {
               const focusColor = isApproval ? '#1e7e34' : '#c82333';
               e.target.style.outline = `2px solid ${focusColor}`;
