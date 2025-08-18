@@ -201,7 +201,7 @@ class Measurement {
         COUNT(*) as measurement_count
       FROM measurements 
       WHERE location_id = ? AND status = 'approved'
-      AND created_at >= datetime('now', '-30 days')
+      AND created_at >= datetime('now', '-2 years')
     `;
     
     try {
