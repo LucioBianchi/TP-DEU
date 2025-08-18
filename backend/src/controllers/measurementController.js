@@ -209,22 +209,28 @@ class MeasurementController {
   }
 
   // Obtener historial de usuario
-  static async getUserHistory(req, res) {
-    try {
-      const { userId } = req.params;
-      res.json({
-        success: true,
-        data: [],
-        count: 0,
-        message: 'Método getUserHistory implementado'
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        error: 'Error interno del servidor'
-      });
-    }
+static async getUserHistory(req, res) {
+  try {
+    const { userId } = req.params;
+    console.log('🔍 getUserHistory llamado con userId:', userId);
+    
+    // Llamar al modelo real en lugar del placeholder
+    const measurements = await Measurement.getUserHistory(userId);
+    console.log('📊 Mediciones encontradas:', measurements);
+    
+    res.json({
+      success: true,
+      data: measurements,
+      count: measurements.length
+    });
+  } catch (error) {
+    console.error('💥 Error en getUserHistory:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error interno del servidor'
+    });
   }
+}
 }
 
 module.exports = MeasurementController;

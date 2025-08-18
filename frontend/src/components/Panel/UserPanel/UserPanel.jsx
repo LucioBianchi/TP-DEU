@@ -102,16 +102,19 @@ export default function UserPanel() {
   const [userData, setUserData] = useState(initialUserData);
   const [showMeasurementForm, setShowMeasurementForm] = useState(false);
   const [pendingMeasurementsFromOthers, setPendingMeasurementsFromOthers] = useState([]);
+  const [userMeasurementsHistory, setUserMeasurementsHistory] = useState([]);
   const [canValidate, setCanValidate] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedMeasurement, setSelectedMeasurement] = useState(null);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [confirmationAction, setConfirmationAction] = useState(null);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const { user, loginWithGoogle, logout, isAuthenticated, token } = useAuth();
 
   useEffect(() => {
     if (isAuthenticated && user) {
       checkIfCanValidate();
+      loadUserMeasurementsHistory();
     }
   }, [isAuthenticated, user]);
 
@@ -265,6 +268,97 @@ export default function UserPanel() {
 
   const handleCloseMeasurementForm = () => {
     setShowMeasurementForm(false);
+  };
+
+  const loadUserMeasurementsHistory = async () => {
+    console.log('�� Iniciando carga de historial...');
+    console.log('�� Usuario:', user);
+    console.log('�� Token:', token ? 'Presente' : 'Ausente');
+    
+    if (!user || !token) {
+      console.log('❌ No hay usuario o token, abortando carga');
+      return;
+    }
+    
+    setIsLoadingHistory(true);
+    try {
+      const url = `${API_BASE_URL}/measurements/user/${user.id}`;
+      console.log('�� Haciendo request a:', url);
+      
+      const response = await fetch(url, {
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      console.log('�� Response status:', response.status);
+      console.log('📡 Response ok:', response.ok);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('�� Datos recibidos:', data);
+        console.log('📊 Data.data:', data.data);
+        console.log('📊 Cantidad de mediciones:', data.data?.length || 0);
+        
+        setUserMeasurementsHistory(data.data || []);
+      } else {
+        const errorText = await response.text();
+        console.error('❌ Error en response:', response.status, errorText);
+      }
+    } catch (error) {
+      console.error('💥 Error de red:', error);
+    } finally {
+      setIsLoadingHistory(false);
+      console.log('✅ Carga de historial finalizada');
+    }
+  };
+
+  const getStatusDisplayInfo = (status) => {
+    switch (status) {
+      case 'approved':
+        return {
+          text: 'Aprobada',
+          background: '#d4edda',
+          border: '#c3e6cb',
+          textColor: '#155724',
+          badgeBackground: '#28a745'
+        };
+      case 'rejected':
+        return {
+          text: 'Rechazada',
+          background: '#f8d7da',
+          border: '#f5c6cb',
+          textColor: '#721c24',
+          badgeBackground: '#dc3545'
+        };
+      case 'pending':
+        return {
+          text: 'Pendiente',
+          background: '#fff3cd',
+          border: '#ffeaa7',
+          textColor: '#856404',
+          badgeBackground: '#ffc107'
+        };
+      default:
+        return {
+          text: 'Desconocido',
+          background: '#e2e3e5',
+          border: '#d6d8db',
+          textColor: '#383d41',
+          badgeBackground: '#6c757d'
+        };
+    }
+  };
+
+  const formatMeasurementDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
   // No logueado
@@ -636,43 +730,164 @@ export default function UserPanel() {
           open={open}
           setOpen={setOpen}
         >
-          {userData.history.length === 0 ? (
-            <p style={{ color: "#6c757d", fontStyle: "italic" }}>
-              No hay mediciones en el historial.
-            </p>
+          {isLoadingHistory ? (
+            <div 
+              style={{
+                textAlign: "center",
+                padding: "2rem",
+                color: "#6c757d"
+              }}
+              role="status"
+              aria-live="polite"
+              aria-label="Cargando historial de mediciones"
+            >
+              <span 
+                className="icon" 
+                aria-hidden="true" 
+                style={{ 
+                  fontSize: "2rem", 
+                  display: "block", 
+                  marginBottom: "1rem",
+                  animation: "spin 1s linear infinite"
+                }}
+              >
+                ⏳
+              </span>
+              <p style={{ margin: 0, fontWeight: "bold" }}>
+                Cargando historial...
+              </p>
+            </div>
+          ) : userMeasurementsHistory.length === 0 ? (
+            <div 
+              style={{
+                textAlign: "center",
+                padding: "2rem",
+                background: "#f8f9fa",
+                border: "2px dashed #dee2e6",
+                borderRadius: "8px"
+              }}
+              role="status"
+              aria-live="polite"
+            >
+              <span 
+                className="icon" 
+                aria-hidden="true" 
+                style={{ 
+                  fontSize: "2rem", 
+                  display: "block", 
+                  marginBottom: "1rem",
+                  color: "#adb5bd"
+                }}
+              >
+                📋
+              </span>
+              <p style={{ 
+                margin: "0 0 0.5rem 0", 
+                color: "#6c757d", 
+                fontWeight: "bold"
+              }}>
+                No hay mediciones en el historial
+              </p>
+              <p style={{ 
+                margin: 0, 
+                color: "#868e96", 
+                fontSize: "0.85rem" 
+              }}>
+                Cuando envíes mediciones, aparecerán aquí con su estado de validación.
+              </p>
+            </div>
           ) : (
-            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-              {userData.history.map(med => (
-                <li key={med.id} style={{ 
-                  marginBottom: "0.8em",
-                  padding: "0.8em",
-                  background: med.estado === "aceptada" ? "#d4edda" : "#f8d7da",
-                  border: `1px solid ${med.estado === "aceptada" ? "#c3e6cb" : "#f5c6cb"}`,
-                  borderRadius: "6px"
-                }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div>
-                      <div style={{ fontWeight: "bold", color: med.estado === "aceptada" ? "#155724" : "#721c24" }}>
-                        {med.localidad}
-                      </div>
-                      <div style={{ fontSize: "0.9em", color: "#6c757d" }}>
-                        {med.fecha}
-                      </div>
+            <div 
+              style={{ 
+                display: "grid", 
+                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                gap: "0.75rem"
+              }}
+              role="grid"
+              aria-label={`Historial de ${userMeasurementsHistory.length} mediciones`}
+            >
+              {userMeasurementsHistory.map((med, index) => {
+                const statusInfo = getStatusDisplayInfo(med.status);
+                return (
+                  <article
+                    key={med.id}
+                    style={{
+                      background: "#ffffff",
+                      border: "2px solid #e9ecef",
+                      borderRadius: "8px",
+                      padding: "0.75rem",
+                      boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+                      transition: "all 0.2s ease",
+                      minHeight: "100px",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between"
+                    }}
+                    role="gridcell"
+                    tabIndex="0"
+                    aria-label={`Medición ${index + 1}: ${med.location_name} - ${statusInfo.text}`}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = "#007bff";
+                      e.target.style.boxShadow = "0 2px 8px rgba(0,123,255,0.2)";
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = "#e9ecef";
+                      e.target.style.boxShadow = "0 1px 4px rgba(0,0,0,0.1)";
+                    }}
+                  >
+                    {/* Localidad */}
+                    <h5 
+                      style={{ 
+                        margin: "0 0 0.5rem 0", 
+                        fontSize: "0.9rem", 
+                        fontWeight: "bold", 
+                        color: "#495057",
+                        lineHeight: "1.2"
+                      }}
+                    >
+                      {med.location_name}
+                    </h5>
+                    
+                    {/* Fecha */}
+                    <div 
+                      style={{ 
+                        fontSize: "0.8rem", 
+                        color: "#6c757d",
+                        marginBottom: "0.5rem"
+                      }}
+                    >
+                      {new Date(med.created_at).toLocaleDateString('es-ES', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                      })}
                     </div>
-                    <span style={{ 
-                      padding: "0.3em 0.6em", 
-                      background: med.estado === "aceptada" ? "#28a745" : "#dc3545",
-                      color: "#fff",
-                      borderRadius: "4px",
-                      fontSize: "0.8em",
-                      fontWeight: "bold"
+
+                    {/* Estado */}
+                    <div style={{ 
+                      display: "flex", 
+                      justifyContent: "center"
                     }}>
-                      {med.estado === "aceptada" ? "Aceptada" : "Rechazada"}
-                    </span>
-                  </div>
-                </li>
-              ))}
-            </ul>
+                      <span 
+                        style={{ 
+                          padding: "0.4rem 0.8rem", 
+                          background: statusInfo.badgeBackground,
+                          color: "#fff",
+                          borderRadius: "20px",
+                          fontSize: "0.75rem",
+                          fontWeight: "bold",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.5px"
+                        }}
+                        aria-label={`Estado: ${statusInfo.text}`}
+                      >
+                        {statusInfo.text}
+                      </span>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
           )}
         </AccordionSection>
 
