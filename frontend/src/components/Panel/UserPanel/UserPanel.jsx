@@ -3,7 +3,7 @@ import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from "../../../context/AuthContext";
 import MeasurementForm from "../../MeasurementForm/MeasurementForm";
 import MeasurementDetailModal from "./MeasurementDetailModal";
-
+import ConfirmationModal from "./ConfirmationModal";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api'; 
 
@@ -105,6 +105,8 @@ export default function UserPanel() {
   const [canValidate, setCanValidate] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedMeasurement, setSelectedMeasurement] = useState(null);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [confirmationAction, setConfirmationAction] = useState(null);
   const { user, loginWithGoogle, logout, isAuthenticated, token } = useAuth();
 
   useEffect(() => {
@@ -157,11 +159,15 @@ export default function UserPanel() {
       if (response.ok) {
         // Recargar las mediciones pendientes
         loadPendingMeasurementsFromOthers();
-        // Cerrar el modal
+        // Cerrar el modal de detalles
         setShowDetailModal(false);
         setSelectedMeasurement(null);
-        // Mostrar mensaje de éxito
-        alert(`Medición ${status === 'approved' ? 'aprobada' : 'rechazada'} exitosamente`);
+        // Cerrar el modal de confirmación
+        setShowConfirmationModal(false);
+        setConfirmationAction(null);
+        
+        // Mostrar mensaje de éxito personalizado
+        showSuccessMessage(status);
       } else {
         const errorData = await response.json();
         alert(`Error al validar la medición: ${errorData.error || 'Error desconocido'}`);
@@ -169,6 +175,69 @@ export default function UserPanel() {
     } catch (error) {
       console.error('Error validando medición:', error);
       alert('Error de conexión al validar la medición');
+    }
+  };
+
+  const handleShowConfirmation = (action) => {
+    setConfirmationAction(action);
+    setShowConfirmationModal(true);
+  };
+
+  const handleConfirmValidation = () => {
+    if (selectedMeasurement && confirmationAction) {
+      handleValidateMeasurement(selectedMeasurement.id, confirmationAction);
+    }
+  };
+
+  const showSuccessMessage = (status) => {
+    const message = status === 'approved' 
+      ? 'Medición aprobada exitosamente'
+      : 'Medición rechazada exitosamente';
+    
+    // Crear un toast personalizado
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: ${status === 'approved' ? '#28a745' : '#dc3545'};
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 10000;
+      font-weight: bold;
+      animation: slideInRight 0.3s ease-out;
+    `;
+    toast.textContent = message;
+    
+    document.body.appendChild(toast);
+    
+    // Remover después de 3 segundos
+    setTimeout(() => {
+      toast.style.animation = 'slideOutRight 0.3s ease-in';
+      setTimeout(() => {
+        if (toast.parentNode) {
+          toast.parentNode.removeChild(toast);
+        }
+      }, 300);
+    }, 3000);
+    
+    // Agregar estilos CSS para las animaciones
+    if (!document.getElementById('toast-styles')) {
+      const style = document.createElement('style');
+      style.id = 'toast-styles';
+      style.textContent = `
+        @keyframes slideInRight {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOutRight {
+          from { transform: translateX(0); opacity: 1; }
+          to { transform: translateX(100%); opacity: 0; }
+        }
+      `;
+      document.head.appendChild(style);
     }
   };
 
@@ -661,7 +730,19 @@ export default function UserPanel() {
         measurement={selectedMeasurement}
         isOpen={showDetailModal}
         onClose={handleCloseDetailModal}
-        onValidate={handleValidateMeasurement}
+        onValidate={handleShowConfirmation}
+      />
+
+      {/* Modal de confirmación */}
+      <ConfirmationModal
+        isOpen={showConfirmationModal}
+        onClose={() => {
+          setShowConfirmationModal(false);
+          setConfirmationAction(null);
+        }}
+        onConfirm={handleConfirmValidation}
+        action={confirmationAction}
+        measurementName={selectedMeasurement?.location_name || ''}
       />
     </>
   );

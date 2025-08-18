@@ -312,7 +312,7 @@ export default function MeasurementDetailModal({
           {/* Los botones de aprobar/rechazar siempre están disponibles para mediciones pendientes */}
           <button
             type="button"
-            onClick={() => onValidate(measurement.id, 'approved')}
+            onClick={() => onValidate('approved')}
             style={{
               padding: "0.75rem 1.5rem",
               background: "#28a745",
@@ -344,7 +344,7 @@ export default function MeasurementDetailModal({
           </button>
           <button
             type="button"
-            onClick={() => onValidate(measurement.id, 'rejected')}
+            onClick={() => onValidate('rejected')}
             style={{
               padding: "0.75rem 1.5rem",
               background: "#dc3545",
