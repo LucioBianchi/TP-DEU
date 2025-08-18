@@ -19,39 +19,6 @@ const sections = [
     ),
   },
   {
-    id: "como-se-mide",
-    label: "¿Cómo se mide?",
-    content: (
-      <article>
-        <h3 tabIndex="0" aria-label="Protocolo de muestreo">Protocolo de muestreo</h3>
-        <p tabIndex="0" aria-label="Las muestras tanto de agua como de arena se toman siguiendo un protocolo específico y deben ser enviadas a laboratorio para su análisis.">
-          Las muestras tanto de agua como de arena se toman siguiendo un protocolo específico y deben ser enviadas a laboratorio para su análisis.
-        </p>
-        
-        <h4 tabIndex="0" aria-label="Muestreo de agua">Muestreo de agua</h4>
-        <ul role="list" aria-label="Pasos para el muestreo de agua">
-          <li tabIndex="0" aria-label="Se utiliza una jeringa estéril para tomar pequeñas submuestras a lo largo de 100 metros de playa.">
-            Se utiliza una jeringa estéril para tomar pequeñas submuestras a lo largo de 100 metros de playa.
-          </li>
-          <li tabIndex="0" aria-label="Las submuestras se combinan en una botella para formar una muestra compuesta.">
-            Las submuestras se combinan en una botella para formar una muestra compuesta.
-          </li>
-          <li tabIndex="0" aria-label="En el laboratorio se analiza la presencia de Escherichia coli y Estreptococo fecal.">
-            En el laboratorio se analiza la presencia de <strong>Escherichia coli</strong> y <strong>Estreptococo fecal</strong>.
-          </li>
-        </ul>
-        
-        <h4 tabIndex="0" aria-label="Muestreo de arena">Muestreo de arena</h4>
-        <p tabIndex="0" aria-label="La arena acumula contaminantes que pueden sobrevivir durante más tiempo. Las bacterias pueden ingresar al cuerpo a través de pequeñas heridas o mucosas al jugar, caminar descalzo o acostarse sobre la arena.">
-          La arena acumula contaminantes que pueden sobrevivir durante más tiempo. Las bacterias pueden ingresar al cuerpo a través de pequeñas heridas o mucosas al jugar, caminar descalzo o acostarse sobre la arena.
-        </p>
-        <p tabIndex="0" aria-label="Se toman muestras de arena a diferentes profundidades y se analizan en laboratorio para detectar la presencia de microorganismos patógenos y otros contaminantes.">
-          Se toman muestras de arena a diferentes profundidades y se analizan en laboratorio para detectar la presencia de microorganismos patógenos y otros contaminantes.
-        </p>
-      </article>
-    ),
-  },
-  {
     id: "como-ayudar",
     label: "¿Cómo ayudarnos?",
     content: (
@@ -70,6 +37,138 @@ const sections = [
             <strong>Realizar mediciones:</strong> Participa en el monitoreo ciudadano de la calidad del agua y arena de las playas.
           </li>
         </ul>
+      </article>
+    ),
+  },
+  {
+    id: "como-se-mide",
+    label: "¿Cómo realizar mediciones?",
+    content: (
+      <article>
+        <h3 tabIndex="0" aria-label="Protocolo de muestreo">Protocolo de muestreo</h3>
+        <p tabIndex="0" aria-label="Las muestras tanto de agua como de arena se toman siguiendo un protocolo específico y deben ser enviadas a laboratorio para su análisis.">
+          Las muestras tanto de agua como de arena se toman siguiendo un protocolo específico y deben ser enviadas a laboratorio para su análisis microbiológico certificado.
+        </p>
+        
+        <h4 tabIndex="0" aria-label="Materiales necesarios">📋 Materiales necesarios</h4>
+        <ul role="list" aria-label="Lista de materiales para muestreo">
+          <li tabIndex="0">🧪 Frascos estériles de 500ml con tapa hermética</li>
+          <li tabIndex="0">🧤 Guantes de látex o nitrilo desechables</li>
+          <li tabIndex="0">💉 Jeringa estéril de 50ml (para agua)</li>
+          <li tabIndex="0">🥄 Cucharas estériles o espátulas desechables</li>
+          <li tabIndex="0">🧊 Conservadora con hielo (4°C)</li>
+          <li tabIndex="0">🏷️ Etiquetas resistentes al agua</li>
+          <li tabIndex="0">📝 Planilla de campo</li>
+        </ul>
+
+        <h4 tabIndex="0" aria-label="Muestreo de agua">🌊 Muestreo de agua</h4>
+        <ol role="list" aria-label="Pasos detallados para el muestreo de agua">
+          <li tabIndex="0">
+            <strong>Preparación:</strong> Use guantes estériles y evite tocar el interior del frasco
+          </li>
+          <li tabIndex="0">
+            <strong>Ubicación:</strong> Tome muestras a 30-50cm de profundidad, alejado de desagües pluviales
+          </li>
+          <li tabIndex="0">
+            <strong>Técnica compuesta:</strong> Con jeringa estéril, tome 5-7 submuestras a lo largo de 100 metros de costa
+          </li>
+          <li tabIndex="0">
+            <strong>Combinación:</strong> Mezcle todas las submuestras en un frasco estéril de 500ml
+          </li>
+          <li tabIndex="0">
+            <strong>Conservación:</strong> Mantenga a 4°C y lleve al laboratorio dentro de 6 horas
+          </li>
+        </ol>
+        
+        <h4 tabIndex="0" aria-label="Muestreo de arena">🏖️ Muestreo de arena</h4>
+        <div tabIndex="0">
+          <p><strong>¿Por qué es importante?</strong></p>
+          <p>La arena acumula contaminantes que pueden sobrevivir durante más tiempo que en el agua. Las bacterias pueden ingresar al cuerpo a través de pequeñas heridas o mucosas al jugar, caminar descalzo o acostarse sobre la arena.</p>
+        </div>
+        
+        <ol role="list" aria-label="Pasos detallados para el muestreo de arena">
+          <li tabIndex="0">
+            <strong>Zona de muestreo:</strong> Arena húmeda en la zona inter-mareal (donde rompen las olas)
+          </li>
+          <li tabIndex="0">
+            <strong>Profundidad:</strong> Tome muestras de los primeros 5cm de profundidad
+          </li>
+          <li tabIndex="0">
+            <strong>Técnica:</strong> Con cuchara estéril, tome 5-7 submuestras a lo largo de 100m de playa
+          </li>
+          <li tabIndex="0">
+            <strong>Cantidad:</strong> Colecte aproximadamente 200g de arena total
+          </li>
+          <li tabIndex="0">
+            <strong>Almacenamiento:</strong> Use frasco estéril, mantenga refrigerado y procese dentro de 24 horas
+          </li>
+        </ol>
+
+        <h4 tabIndex="0" aria-label="Análisis de laboratorio">🔬 Análisis de laboratorio</h4>
+        <p tabIndex="0">
+          En el laboratorio se determina la concentración de:
+        </p>
+        <ul role="list">
+          <li tabIndex="0"><strong>Escherichia coli</strong> - Indicador de contaminación fecal reciente</li>
+          <li tabIndex="0"><strong>Enterococos</strong> - Indicador más resistente, persiste más tiempo en ambiente marino</li>
+        </ul>
+        
+        <div className="alert alert-warning" tabIndex="0">
+          <strong> Importante:</strong> Los resultados se expresan en UFC/100ml para agua y UFC/100g para arena.
+        </div>
+      </article>
+    ),
+  },
+  {
+    id: "laboratorios",
+    label: "¿Dónde analizar las muestras?",
+    content: (
+      <article>
+        <h3 tabIndex="0" aria-label="Laboratorios recomendados">🏥 Laboratorios en La Plata y Gran Buenos Aires</h3>
+        
+        <div className="lab-card" tabIndex="0">
+          <h4>🧪 IABIM - Instituto de Análisis Bioquímicos y Microbiológicos</h4>
+          <ul role="list">
+            <li><strong>📍 Dirección:</strong> Calle 3 e/47 y 48 #782, La Plata</li>
+            <li><strong>📍 Sucursal:</strong> Av. 19 e/530 y 531 #109, La Plata</li>
+            <li><strong>📞 Teléfono:</strong> <a href="tel:+542214525555">+54 221 452-5555</a></li>
+            <li><strong>🌐 Web:</strong> <a href="https://www.iabim.com" target="_blank" rel="noopener">www.iabim.com</a></li>
+            <li><strong>📧 Email:</strong> <a href="mailto:info@iabim.com">info@iabim.com</a></li>
+            <li><strong>💰 Costo aproximado:</strong> Consultar</li>
+            <li><strong>⏱️ Tiempo de resultado:</strong> 3-5 días hábiles</li>
+          </ul>
+        </div>
+
+        <div className="lab-card" tabIndex="0">
+          <h4>🧪 LAMI - Laboratorio de Análisis Microbiológicos</h4>
+          <ul role="list">
+            <li><strong>📍 Dirección:</strong> Bernal, Provincia de Buenos Aires</li>
+            <li><strong>🚗 Acceso:</strong> Próximo a bajada autopista La Plata-Buenos Aires</li>
+            <li><strong>🌐 Web:</strong> <a href="https://www.laboratoriolami.com" target="_blank" rel="noopener">www.laboratoriolami.com</a></li>
+            <li><strong>🔬 Servicios:</strong> Análisis microbiológicos especializados</li>
+            <li><strong>💰 Costo:</strong> Consultar según tipo de análisis</li>
+          </ul>
+        </div>
+
+        <div className="lab-card" tabIndex="0">
+          <h4>🏛️ Laboratorio Central - Autoridad del Agua (ADA)</h4>
+          <ul role="list">
+            <li><strong>📍 Ubicación:</strong> La Plata</li>
+            <li><strong>🔬 Servicios:</strong> Análisis oficiales de agua</li>
+            <li><strong>📞 Contacto:</strong> Autoridad del Agua de la Provincia de Buenos Aires</li>
+            <li><strong>ℹ️ Nota:</strong> Para muestreos oficiales y denuncias ambientales</li>
+            <li><strong>🌐 Web:</strong> <a href="https://ada.gba.gov.ar" target="_blank" rel="noopener">ada.gba.gov.ar</a></li>
+          </ul>
+        </div>
+
+        <h4 tabIndex="0" aria-label="Cómo contactar">📞 Antes de ir al laboratorio</h4>
+        <ul role="list" aria-label="Pasos previos al análisis">
+          <li tabIndex="0"><strong>Llamar previamente:</strong> Confirme horarios y disponibilidad</li>
+          <li tabIndex="0"><strong>Consultar precios:</strong> Los costos pueden variar según temporada</li>
+          <li tabIndex="0"><strong>Coordinar entrega:</strong> Algunas muestras requieren entrega inmediata</li>
+          <li tabIndex="0"><strong>Solicitar protocolo:</strong> Pida instrucciones específicas de muestreo</li>
+        </ul>
+
       </article>
     ),
   },
