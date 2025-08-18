@@ -197,7 +197,7 @@ class Measurement {
         AVG(ecoli_water) as avg_ecoli_water,
         AVG(enterococci_water) as avg_enterococci_water,
         AVG(ecoli_sand) as avg_ecoli_sand,
-        AVG(enterococci_sand) as avg_enterococci_sand
+        AVG(enterococci_sand) as avg_enterococci_sand,
         COUNT(*) as measurement_count
       FROM measurements 
       WHERE location_id = ? AND status = 'approved'
@@ -205,9 +205,10 @@ class Measurement {
     `;
     
     try {
-      const result = await db.queryOne(sql, [locationId]);
+      const results = await db.query(sql, [locationId]);
+      const result = results[0]; // Tomar el primer resultado
       
-      if (result && result.avg_ecoli_water) {
+      if (result && (result.avg_ecoli_water || result.avg_enterococci_water || result.avg_ecoli_sand || result.avg_enterococci_sand)) {
         // Calcular nivel general basado en promedios
         const waterLevel = this.calculatePollutionLevel(
           result.avg_ecoli_water, 
@@ -222,7 +223,7 @@ class Measurement {
         );
         
         // Actualizar la ubicación
-        await db.run(
+        await db.query(
           `UPDATE locations 
            SET water_pollution_level = ?, sand_pollution_level = ?, last_measurement_date = CURRENT_TIMESTAMP
            WHERE id = ?`,
@@ -230,7 +231,9 @@ class Measurement {
         );
       }
     } catch (error) {
-      throw new Error(`Error actualizando niveles de contaminación: ${error.message}`);
+      console.error('Error actualizando niveles de contaminación:', error);
+      // No lanzar error para evitar que falle la aprobación
+      // Solo loguear el error
     }
   }
 

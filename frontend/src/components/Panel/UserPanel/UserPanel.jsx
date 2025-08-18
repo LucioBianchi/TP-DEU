@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from "../../../context/AuthContext";
 import MeasurementForm from "../../MeasurementForm/MeasurementForm";
+import MeasurementDetailModal from "./MeasurementDetailModal";
+
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api'; 
 
@@ -143,7 +145,7 @@ export default function UserPanel() {
 
   const handleValidateMeasurement = async (measurementId, status) => {
     try {
-      const response = await fetch(`/api/measurements/${measurementId}/review`, {
+      const response = await fetch(`${API_BASE_URL}/measurements/${measurementId}/review`, {
         method: 'PUT',
         headers: { 
           'Authorization': `Bearer ${token}`,
@@ -161,13 +163,15 @@ export default function UserPanel() {
         // Mostrar mensaje de éxito
         alert(`Medición ${status === 'approved' ? 'aprobada' : 'rechazada'} exitosamente`);
       } else {
-        alert('Error al validar la medición');
+        const errorData = await response.json();
+        alert(`Error al validar la medición: ${errorData.error || 'Error desconocido'}`);
       }
     } catch (error) {
       console.error('Error validando medición:', error);
-      alert('Error al validar la medición');
+      alert('Error de conexión al validar la medición');
     }
   };
+
 
   const handleShowMeasurementDetail = (measurement) => {
     setSelectedMeasurement(measurement);
@@ -653,236 +657,12 @@ export default function UserPanel() {
       )}
 
       {/* Modal de detalles de medición */}
-      {showDetailModal && selectedMeasurement && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1000,
-            padding: "1rem"
-          }}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="modal-title"
-          onClick={handleCloseDetailModal}
-        >
-          <div
-            style={{
-              background: "#fff",
-              borderRadius: "12px",
-              padding: "1.5rem",
-              maxWidth: "500px",
-              width: "100%",
-              maxHeight: "80vh",
-              overflow: "auto",
-              boxShadow: "0 10px 30px rgba(0,0,0,0.3)"
-            }}
-            onClick={(e) => e.stopPropagation()}
-            role="document"
-          >
-            {/* Header del modal */}
-            <div style={{ 
-              display: "flex", 
-              justifyContent: "space-between", 
-              alignItems: "center",
-              marginBottom: "1.5rem"
-            }}>
-              <h3 
-                id="modal-title"
-                style={{ 
-                  margin: 0, 
-                  color: "#495057",
-                  fontSize: "1.2rem"
-                }}
-              >
-                Detalles de Medición
-              </h3>
-              <button
-                type="button"
-                onClick={handleCloseDetailModal}
-                style={{
-                  background: "none",
-                  border: "none",
-                  fontSize: "1.5rem",
-                  cursor: "pointer",
-                  color: "#6c757d",
-                  padding: "0.25rem",
-                  borderRadius: "4px"
-                }}
-                aria-label="Cerrar modal"
-                onFocus={(e) => {
-                  e.target.style.outline = "2px solid #007bff";
-                  e.target.style.outlineOffset = "2px";
-                }}
-                onBlur={(e) => {
-                  e.target.style.outline = "none";
-                }}
-              >
-                ×
-              </button>
-            </div>
-
-            {/* Contenido del modal */}
-            <div style={{ marginBottom: "1.5rem" }}>
-              <div style={{ marginBottom: "1rem" }}>
-                <h4 style={{ margin: "0 0 0.5rem 0", color: "#495057" }}>
-                  📍 {selectedMeasurement.location_name}
-                </h4>
-                <p style={{ margin: "0 0 0.5rem 0", color: "#6c757d" }}>
-                  <strong>Usuario:</strong> {selectedMeasurement.user_name}
-                </p>
-                <p style={{ margin: "0 0 0.5rem 0", color: "#6c757d" }}>
-                  <strong>Fecha:</strong> {new Date(selectedMeasurement.created_at).toLocaleDateString('es-ES', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
-                </p>
-              </div>
-
-              {/* Mediciones de agua */}
-              {(selectedMeasurement.ecoli_water || selectedMeasurement.enterococci_water) && (
-                <div style={{ marginBottom: "1rem" }}>
-                  <h5 style={{ margin: "0 0 0.5rem 0", color: "#495057" }}>💧 Mediciones de Agua</h5>
-                  <div style={{ 
-                    background: "#f8f9fa", 
-                    padding: "0.75rem", 
-                    borderRadius: "6px",
-                    fontSize: "0.9rem"
-                  }}>
-                    {selectedMeasurement.ecoli_water && (
-                      <p style={{ margin: "0 0 0.25rem 0" }}>
-                        <strong>E. coli:</strong> {selectedMeasurement.ecoli_water} UFC/100ml
-                      </p>
-                    )}
-                    {selectedMeasurement.enterococci_water && (
-                      <p style={{ margin: 0 }}>
-                        <strong>Enterococos:</strong> {selectedMeasurement.enterococci_water} UFC/100ml
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Mediciones de arena */}
-              {(selectedMeasurement.ecoli_sand || selectedMeasurement.enterococci_sand) && (
-                <div style={{ marginBottom: "1.5rem" }}>
-                  <h5 style={{ margin: "0 0 0.5rem 0", color: "#495057" }}>🏖️ Mediciones de Arena</h5>
-                  <div style={{ 
-                    background: "#f8f9fa", 
-                    padding: "0.75rem", 
-                    borderRadius: "6px",
-                    fontSize: "0.9rem"
-                  }}>
-                    {selectedMeasurement.ecoli_sand && (
-                      <p style={{ margin: "0 0 0.25rem 0" }}>
-                        <strong>E. coli:</strong> {selectedMeasurement.ecoli_sand} UFC/100ml
-                      </p>
-                    )}
-                    {selectedMeasurement.enterococci_sand && (
-                      <p style={{ margin: 0 }}>
-                        <strong>Enterococos:</strong> {selectedMeasurement.enterococci_sand} UFC/100ml
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Botones de acción */}
-            <div style={{ 
-              display: "flex", 
-              gap: "0.75rem",
-              justifyContent: "flex-end"
-            }}>
-              <button
-                type="button"
-                onClick={handleCloseDetailModal}
-                style={{
-                  padding: "0.75rem 1.5rem",
-                  background: "#6c757d",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "6px",
-                  fontSize: "0.9rem",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  transition: "background-color 0.2s"
-                }}
-                aria-label="Cancelar"
-                onFocus={(e) => {
-                  e.target.style.outline = "2px solid #495057";
-                  e.target.style.outlineOffset = "2px";
-                }}
-                onBlur={(e) => {
-                  e.target.style.outline = "none";
-                }}
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                onClick={() => handleValidateMeasurement(selectedMeasurement.id, 'approved')}
-                style={{
-                  padding: "0.75rem 1.5rem",
-                  background: "#28a745",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "6px",
-                  fontSize: "0.9rem",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  transition: "background-color 0.2s"
-                }}
-                aria-label={`Aprobar medición de ${selectedMeasurement.location_name}`}
-                onFocus={(e) => {
-                  e.target.style.outline = "2px solid #1e7e34";
-                  e.target.style.outlineOffset = "2px";
-                }}
-                onBlur={(e) => {
-                  e.target.style.outline = "none";
-                }}
-              >
-                ✓ Aprobar
-              </button>
-              <button
-                type="button"
-                onClick={() => handleValidateMeasurement(selectedMeasurement.id, 'rejected')}
-                style={{
-                  padding: "0.75rem 1.5rem",
-                  background: "#dc3545",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "6px",
-                  fontSize: "0.9rem",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  transition: "background-color 0.2s"
-                }}
-                aria-label={`Rechazar medición de ${selectedMeasurement.location_name}`}
-                onFocus={(e) => {
-                  e.target.style.outline = "2px solid #c82333";
-                  e.target.style.outlineOffset = "2px";
-                }}
-                onBlur={(e) => {
-                  e.target.style.outline = "none";
-                }}
-              >
-                ✗ Rechazar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <MeasurementDetailModal
+        measurement={selectedMeasurement}
+        isOpen={showDetailModal}
+        onClose={handleCloseDetailModal}
+        onValidate={handleValidateMeasurement}
+      />
     </>
   );
 }
