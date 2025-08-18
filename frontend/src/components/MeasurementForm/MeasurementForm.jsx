@@ -3,6 +3,9 @@ import { useConfig } from "../../context/ConfigContext";
 import { useMedicionesAPI } from "../../hooks/useMedicionesAPI";
 import { DateStep, LocationStep, ContaminationTypeStep, WaterMeasurementStep, SandMeasurementStep, ExtraInfoStep } from "./steps";
 import "./MeasurementForm.css";
+import { ValidationProvider } from "../../context/ValidationContext";
+import { useFormValidation } from "../../hooks/useFormValidation";
+import ValidationError from "../../components/common/ValidationError";
 
 // Componente principal del formulario
 const MeasurementForm = ({ isOpen, onClose, onSubmit }) => {
@@ -198,7 +201,7 @@ const MeasurementForm = ({ isOpen, onClose, onSubmit }) => {
   if (!isOpen) return null;
   
   return (
-    <>
+    <ValidationProvider>
       {isOpen && (
         <div className="measurement-form-overlay">
           <div className="measurement-form-modal" ref={modalRef}>
@@ -243,7 +246,7 @@ const MeasurementForm = ({ isOpen, onClose, onSubmit }) => {
           </div>
         </div>
       )}
-    </>
+    </ValidationProvider>
   );
 };
 

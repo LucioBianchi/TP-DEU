@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { useConfig } from "../../../context/ConfigContext";
+import { useFormValidation } from "../../../hooks/useFormValidation";
+import ValidationError from "../../common/ValidationError";
 
 const DateStep = ({ onNext, onClose }) => {
   const { config } = useConfig();
+  const { errors, validateField, clearError } = useFormValidation();
   const [dateType, setDateType] = useState("current");
   const [customDate, setCustomDate] = useState("");
   
@@ -46,10 +49,23 @@ const DateStep = ({ onNext, onClose }) => {
   
   const handleCustomDateChange = (e) => {
     setCustomDate(e.target.value);
+    // Limpiar error cuando el usuario escriba
+    if (errors.customDate) {
+      clearError('customDate');
+    }
   };
   
   const handleContinue = () => {
     const selectedDate = dateType === "current" ? currentDate : customDate;
+    
+    // Validar solo si es fecha personalizada
+    if (dateType === "custom") {
+      const error = validateField(customDate, 'date', 'customDate');
+      if (error) {
+        return; // No continuar si hay error
+      }
+    }
+    
     onNext({ dateType, selectedDate });
   };
   
@@ -161,21 +177,28 @@ const DateStep = ({ onNext, onClose }) => {
                 value={customDate}
                 onChange={handleCustomDateChange}
                 placeholder="DD/MM/AAAA"
+                aria-describedby={errors.customDate ? "customDate-error" : "date-format-hint"}
+                aria-invalid={errors.customDate ? "true" : "false"}
+                className="coordinates-input"
                 style={{ 
                   fontSize: fontSize.body, 
                   fontFamily,
-                  width: "100%",
                   padding: "0.75rem",
-                  border: "2px solid #dee2e6",
+                  border: errors.customDate ? "2px solid #dc3545" : "2px solid #dee2e6",
                   borderRadius: "6px",
                   transition: "border-color 0.2s"
                 }}
-                aria-describedby="date-format-hint"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     handleContinue();
                   }
                 }}
+              />
+              
+              <ValidationError 
+                error={errors.customDate}
+                fieldName="customDate"
+                id="customDate-error"
               />
               
               <div 

@@ -293,6 +293,31 @@
     box-sizing: border-box;
   }
 
+  /* Input de coordenadas y fecha  */
+.coordinates-input {
+  width: 100%;
+  max-width: 300px; 
+  box-sizing: border-box;
+}
+
+/* Contenedor de coordenadas */
+.coordinates-inputs {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  max-width: 300px; 
+}
+
+/* Input de fecha personalizada */
+.custom-date-input {
+  max-width: 300px;
+}
+
+.custom-date-input input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
   /* Estilos para el paso de información extra */
 .extra-info-content {
     margin-bottom: 2rem;
@@ -519,3 +544,36 @@
       flex-direction: column;
     }
   }
+
+/* Estilos para errores de validación */
+.validation-error {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  padding: 0.5rem;
+  border: 1px solid #dc3545;
+  border-radius: 4px;
+  background-color: #f8d7da;
+  transition: all 0.2s ease;
+}
+
+.validation-error:focus {
+  outline: 2px solid #dc3545;
+  outline-offset: 2px;
+}
+
+/* Input con error */
+input.input-error,
+select.input-error {
+  border-color: #dc3545 !important;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+/* Mensaje de error accesible */
+.validation-error[role="alert"] {
+  position: relative;
+}
+
+.validation-error[role="alert"]:focus {
+  background-color: #f1b0b7;
+}

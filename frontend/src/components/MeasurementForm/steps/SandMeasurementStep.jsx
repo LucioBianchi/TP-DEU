@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { useConfig } from "../../../context/ConfigContext";
+import { useFormValidation } from "../../../hooks/useFormValidation";
+import ValidationError from "../../common/ValidationError";
 
 const SandMeasurementStep = ({ onNext, onBack, onClose, dateData, locationData, contaminationData }) => {
   const { config } = useConfig();
+  const { errors, validateField, clearError } = useFormValidation();
   const [measurements, setMeasurements] = useState({
     metersTraveled: "",
     eColi: "",
@@ -36,9 +39,29 @@ const SandMeasurementStep = ({ onNext, onBack, onClose, dateData, locationData, 
       ...prev,
       [field]: value
     }));
+    
+    // Limpiar error cuando el usuario escriba
+    if (errors[field]) {
+      clearError(field);
+    }
   };
-  
+
   const handleContinue = () => {
+    // Validar todos los campos
+    const fieldsToValidate = [
+      { value: measurements.metersTraveled, validatorType: 'positiveNumber', fieldName: 'metersTraveled' },
+      { value: measurements.eColi, validatorType: 'positiveNumber', fieldName: 'eColi' },
+      { value: measurements.enterococci, validatorType: 'positiveNumber', fieldName: 'enterococci' }
+    ];
+    
+    let allValid = true;
+    fieldsToValidate.forEach(({ value, validatorType, fieldName }) => {
+      const error = validateField(value, validatorType, fieldName);
+      if (error) allValid = false;
+    });
+    
+    if (!allValid) return;
+    
     onNext({
       sandMeasurements: {
         metersTraveled: parseFloat(measurements.metersTraveled) || 0,
@@ -47,7 +70,7 @@ const SandMeasurementStep = ({ onNext, onBack, onClose, dateData, locationData, 
       }
     });
   };
-  
+
   const isFormValid = () => {
     return measurements.metersTraveled.trim() !== "" && 
            measurements.eColi.trim() !== "" && 
@@ -105,6 +128,11 @@ const SandMeasurementStep = ({ onNext, onBack, onClose, dateData, locationData, 
               aria-describedby="sand-meters-hint"
               tabIndex={0}
             />
+            <ValidationError 
+              error={errors.metersTraveled}
+              fieldName="metersTraveled"
+              id="sand-meters-error"
+            />
             <div 
               id="sand-meters-hint" 
               className="input-hint"
@@ -152,6 +180,11 @@ const SandMeasurementStep = ({ onNext, onBack, onClose, dateData, locationData, 
               aria-describedby="sand-ecoli-hint"
               tabIndex={0}
             />
+            <ValidationError 
+              error={errors.eColi}
+              fieldName="eColi"
+              id="sand-ecoli-error"
+            />
             <div 
               id="sand-ecoli-hint" 
               className="input-hint"
@@ -198,6 +231,11 @@ const SandMeasurementStep = ({ onNext, onBack, onClose, dateData, locationData, 
               }}
               aria-describedby="sand-enterococci-hint"
               tabIndex={0}
+            />
+            <ValidationError 
+              error={errors.enterococci}
+              fieldName="enterococci"
+              id="sand-enterococci-error"
             />
             <div 
               id="sand-enterococci-hint" 

@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { useConfig } from "../../../context/ConfigContext";
 import { useBalnearios } from "../../../hooks/useBalnearios";
+import { useFormValidation } from "../../../hooks/useFormValidation";
+import ValidationError from "../../common/ValidationError";
 
 const LocationStep = ({ onNext, onBack, onClose, dateData }) => {
   const { config } = useConfig();
   const { uniqueValues, loading, error } = useBalnearios();
+  const { errors, validateField, clearError } = useFormValidation();
   const [locationType, setLocationType] = useState("locality");
   const [selectedLocality, setSelectedLocality] = useState("");
   const [coordinates, setCoordinates] = useState({
@@ -38,22 +41,36 @@ const LocationStep = ({ onNext, onBack, onClose, dateData }) => {
     setLocationType(newType);
     if (newType === "locality") {
       setCoordinates({ latitude: "", longitude: "" });
+      clearError('selectedLocality');
     } else {
       setSelectedLocality("");
+      clearError('coordinates');
     }
   };
-  
+
+  const handleSelectedLocalityChange = (e) => {
+    setSelectedLocality(e.target.value);
+    if (errors.selectedLocality) {
+      clearError('selectedLocality');
+    }
+  };
+
+  const handleCoordinateChange = (field, value) => {
+    setCoordinates(prev => ({ ...prev, [field]: value }));
+    if (errors.coordinates) {
+      clearError('coordinates');
+    }
+  };
+
   const handleContinue = () => {
     let locationData;
     
     if (locationType === "locality") {
-      if (!selectedLocality) {
-        alert("Por favor seleccione una localidad");
-        return;
-      }
+      // Validar selección de localidad
+      const error = validateField(selectedLocality, 'required', 'selectedLocality');
+      if (error) return;
 
       const selectedLocalityData = uniqueValues.localidades.find(b => b.nombre === selectedLocality);
-
       locationData = {
         id: selectedLocalityData?.id,
         locationType: "locality",
@@ -61,10 +78,10 @@ const LocationStep = ({ onNext, onBack, onClose, dateData }) => {
         coordinates: null
       };
     } else {
-      if (!coordinates.latitude || !coordinates.longitude) {
-        alert("Por favor ingrese ambas coordenadas");
-        return;
-      }
+      // Validar coordenadas
+      const error = validateField(coordinates, 'coordinates', 'coordinates', uniqueValues.localidades);
+      if (error) return;
+
       locationData = {
         locationType: "coordinates",
         selectedLocality: null,
@@ -175,25 +192,34 @@ const LocationStep = ({ onNext, onBack, onClose, dateData }) => {
               <select
                 id="localitySelect"
                 value={selectedLocality}
-                onChange={(e) => setSelectedLocality(e.target.value)}
+                onChange={handleSelectedLocalityChange}
+                className={errors.selectedLocality ? "input-error" : ""}
+                aria-describedby={errors.selectedLocality ? "selectedLocality-error" : "locality-hint"}
+                aria-invalid={errors.selectedLocality ? "true" : "false"}
                 style={{ 
                   fontSize: fontSize.body, 
                   fontFamily,
                   width: "100%",
                   padding: "0.75rem",
-                  border: "2px solid #dee2e6",
+                  border: errors.selectedLocality ? "2px solid #dc3545" : "2px solid #dee2e6",
                   borderRadius: "6px",
                   transition: "border-color 0.2s"
                 }}
-                aria-describedby="locality-hint"
               >
                 <option value="">-- Seleccione una localidad --</option>
-                {uniqueValues.localidades && uniqueValues.localidades.map((locality, index) => (
+                {uniqueValues.localidades && uniqueValues.localidades.map((locality) => (
                   <option key={locality.id} value={locality.nombre}>
                     {locality.nombre}
                   </option>
                 ))}
               </select>
+              
+              <ValidationError 
+                error={errors.selectedLocality}
+                fieldName="selectedLocality"
+                id="selectedLocality-error"
+              />
+              
               <div 
                 id="locality-hint" 
                 className="input-hint"
@@ -234,7 +260,7 @@ const LocationStep = ({ onNext, onBack, onClose, dateData }) => {
               className="coordinates-input"
               style={{ marginTop: "0.5rem" }}
             >
-              <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "1rem" }}>
+              <div className="coordinates-inputs">
                 <div>
                   <label 
                     htmlFor="latitude" 
@@ -253,30 +279,21 @@ const LocationStep = ({ onNext, onBack, onClose, dateData }) => {
                     type="number"
                     step="any"
                     value={coordinates.latitude}
-                    onChange={(e) => setCoordinates(prev => ({ ...prev, latitude: e.target.value }))}
+                    onChange={(e) => handleCoordinateChange("latitude", e.target.value)}
                     placeholder="Ej: -34.8167"
+                    className={errors.coordinates ? "input-error" : ""}
+                    aria-describedby={errors.coordinates ? "coordinates-error" : "latitude-hint"}
+                    aria-invalid={errors.coordinates ? "true" : "false"}
                     style={{ 
                       fontSize: fontSize.body, 
                       fontFamily,
                       width: "100%",
                       padding: "0.75rem",
-                      border: "2px solid #dee2e6",
+                      border: errors.coordinates ? "2px solid #dc3545" : "2px solid #dee2e6",
                       borderRadius: "6px",
                       transition: "border-color 0.2s"
                     }}
-                    aria-describedby="latitude-hint"
                   />
-                  <div 
-                    id="latitude-hint" 
-                    className="input-hint"
-                    style={{ 
-                      fontSize: "0.85rem", 
-                      color: "#6c757d", 
-                      marginTop: "0.25rem" 
-                    }}
-                  >
-                    Valor decimal (ej: -34.8167)
-                  </div>
                 </div>
                 
                 <div>
@@ -297,31 +314,51 @@ const LocationStep = ({ onNext, onBack, onClose, dateData }) => {
                     type="number"
                     step="any"
                     value={coordinates.longitude}
-                    onChange={(e) => setCoordinates(prev => ({ ...prev, longitude: e.target.value }))}
+                    onChange={(e) => handleCoordinateChange("longitude", e.target.value)}
                     placeholder="Ej: -57.9833"
+                    className={errors.coordinates ? "input-error" : ""}
+                    aria-describedby={errors.coordinates ? "coordinates-error" : "longitude-hint"}
+                    aria-invalid={errors.coordinates ? "true" : "false"}
                     style={{ 
                       fontSize: fontSize.body, 
                       fontFamily,
                       width: "100%",
                       padding: "0.75rem",
-                      border: "2px solid #dee2e6",
+                      border: errors.coordinates ? "2px solid #dc3545" : "2px solid #dee2e6",
                       borderRadius: "6px",
                       transition: "border-color 0.2s"
                     }}
-                    aria-describedby="longitude-hint"
                   />
-                  <div 
-                    id="longitude-hint" 
-                    className="input-hint"
-                    style={{ 
-                      fontSize: "0.85rem", 
-                      color: "#6c757d", 
-                      marginTop: "0.25rem" 
-                    }}
-                  >
-                    Valor decimal (ej: -57.9833)
-                  </div>
                 </div>
+              </div>
+              
+              <ValidationError 
+                error={errors.coordinates}
+                fieldName="coordinates"
+                id="coordinates-error"
+              />
+              
+              <div 
+                id="latitude-hint" 
+                className="input-hint"
+                style={{ 
+                  fontSize: "0.85rem", 
+                  color: "#6c757d", 
+                  marginTop: "0.25rem" 
+                }}
+              >
+                Valor decimal (ej: -34.8167)
+              </div>
+              <div 
+                id="longitude-hint" 
+                className="input-hint"
+                style={{ 
+                  fontSize: "0.85rem", 
+                  color: "#6c757d", 
+                  marginTop: "0.25rem" 
+                }}
+              >
+                Valor decimal (ej: -57.9833)
               </div>
             </div>
           )}

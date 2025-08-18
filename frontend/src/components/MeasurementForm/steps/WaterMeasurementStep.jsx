@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { useConfig } from "../../../context/ConfigContext";
+import { useFormValidation } from "../../../hooks/useFormValidation";
+import ValidationError from "../../common/ValidationError";
 
 const WaterMeasurementStep = ({ onNext, onBack, onClose, dateData, locationData, contaminationData }) => {
   const { config } = useConfig();
+  const { errors, validateField, clearError } = useFormValidation();
   const [measurements, setMeasurements] = useState({
     metersTraveled: "",
     eColi: "",
@@ -36,9 +39,29 @@ const WaterMeasurementStep = ({ onNext, onBack, onClose, dateData, locationData,
       ...prev,
       [field]: value
     }));
+    
+    // Limpiar error cuando el usuario escriba
+    if (errors[field]) {
+      clearError(field);
+    }
   };
   
   const handleContinue = () => {
+    // Validar todos los campos
+    const fieldsToValidate = [
+      { value: measurements.metersTraveled, validatorType: 'positiveNumber', fieldName: 'metersTraveled' },
+      { value: measurements.eColi, validatorType: 'positiveNumber', fieldName: 'eColi' },
+      { value: measurements.enterococci, validatorType: 'positiveNumber', fieldName: 'enterococci' }
+    ];
+    
+    let allValid = true;
+    fieldsToValidate.forEach(({ value, validatorType, fieldName }) => {
+      const error = validateField(value, validatorType, fieldName);
+      if (error) allValid = false;
+    });
+    
+    if (!allValid) return;
+    
     onNext({
       waterMeasurements: {
         metersTraveled: parseFloat(measurements.metersTraveled) || 0,
@@ -93,18 +116,27 @@ const WaterMeasurementStep = ({ onNext, onBack, onClose, dateData, locationData,
               value={measurements.metersTraveled}
               onChange={(e) => handleInputChange("metersTraveled", e.target.value)}
               placeholder="Ej: 100"
+              className={errors.metersTraveled ? "input-error" : ""}
+              aria-describedby={errors.metersTraveled ? "metersTraveled-error" : "meters-hint"}
+              aria-invalid={errors.metersTraveled ? "true" : "false"}
               style={{ 
                 fontSize: fontSize.body, 
                 fontFamily,
                 width: "100%",
                 padding: "0.75rem",
-                border: "2px solid #dee2e6",
+                border: errors.metersTraveled ? "2px solid #dc3545" : "2px solid #dee2e6",
                 borderRadius: "6px",
                 transition: "border-color 0.2s"
               }}
-              aria-describedby="meters-hint"
               tabIndex={0}
             />
+            
+            <ValidationError 
+              error={errors.metersTraveled}
+              fieldName="metersTraveled"
+              id="metersTraveled-error"
+            />
+            
             <div 
               id="meters-hint" 
               className="input-hint"
@@ -140,18 +172,27 @@ const WaterMeasurementStep = ({ onNext, onBack, onClose, dateData, locationData,
               value={measurements.eColi}
               onChange={(e) => handleInputChange("eColi", e.target.value)}
               placeholder="Ej: 23"
+              className={errors.eColi ? "input-error" : ""}
+              aria-describedby={errors.eColi ? "eColi-error" : "ecoli-hint"}
+              aria-invalid={errors.eColi ? "true" : "false"}
               style={{ 
                 fontSize: fontSize.body, 
                 fontFamily,
                 width: "100%",
                 padding: "0.75rem",
-                border: "2px solid #dee2e6",
+                border: errors.eColi ? "2px solid #dc3545" : "2px solid #dee2e6",
                 borderRadius: "6px",
                 transition: "border-color 0.2s"
               }}
-              aria-describedby="ecoli-hint"
               tabIndex={0}
             />
+            
+            <ValidationError 
+              error={errors.eColi}
+              fieldName="eColi"
+              id="eColi-error"
+            />
+            
             <div 
               id="ecoli-hint" 
               className="input-hint"
@@ -187,18 +228,27 @@ const WaterMeasurementStep = ({ onNext, onBack, onClose, dateData, locationData,
               value={measurements.enterococci}
               onChange={(e) => handleInputChange("enterococci", e.target.value)}
               placeholder="Ej: 34"
+              className={errors.enterococci ? "input-error" : ""}
+              aria-describedby={errors.enterococci ? "enterococci-error" : "enterococci-hint"}
+              aria-invalid={errors.enterococci ? "true" : "false"}
               style={{ 
                 fontSize: fontSize.body, 
                 fontFamily,
                 width: "100%",
                 padding: "0.75rem",
-                border: "2px solid #dee2e6",
+                border: errors.enterococci ? "2px solid #dc3545" : "2px solid #dee2e6",
                 borderRadius: "6px",
                 transition: "border-color 0.2s"
               }}
-              aria-describedby="enterococci-hint"
               tabIndex={0}
             />
+            
+            <ValidationError 
+              error={errors.enterococci}
+              fieldName="enterococci"
+              id="enterococci-error"
+            />
+            
             <div 
               id="enterococci-hint" 
               className="input-hint"
