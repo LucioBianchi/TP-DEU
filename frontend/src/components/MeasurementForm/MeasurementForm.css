@@ -293,10 +293,10 @@
     box-sizing: border-box;
   }
 
-  /* Input de coordenadas y fecha  */
+  /* Input de coordenadas y fecha - ancho duplicado */
 .coordinates-input {
   width: 100%;
-  max-width: 300px; 
+  max-width: 600px; /* Cambiado de 300px a 600px */
   box-sizing: border-box;
 }
 
@@ -305,17 +305,33 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 1rem;
-  max-width: 300px; 
+  max-width: 600px; /* Cambiado de 300px a 600px */
 }
 
 /* Input de fecha personalizada */
 .custom-date-input {
-  max-width: 300px;
+  max-width: 600px; /* Cambiado de 300px a 600px */
 }
 
 .custom-date-input input {
   width: 100%;
   box-sizing: border-box;
+}
+
+/* Inputs generales del formulario */
+.form-step input[type="text"],
+.form-step input[type="number"],
+.form-step select,
+.form-step textarea {
+  width: 100%;
+  max-width: 600px; /* Ancho máximo duplicado */
+  box-sizing: border-box;
+}
+
+/* Contenedores de opciones para mantener consistencia */
+.date-options,
+.location-options {
+  max-width: 600px; /* Ancho máximo duplicado */
 }
 
   /* Estilos para el paso de información extra */
@@ -576,4 +592,43 @@ select.input-error {
 
 .validation-error[role="alert"]:focus {
   background-color: #f1b0b7;
+}
+
+/* Estilos para botones deshabilitados */
+.btn-primary:disabled,
+.btn-primary[disabled] {
+  background-color: #6c757d !important; /* Gris cuando está deshabilitado */
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+  opacity: 0.6;
+  border-color: #6c757d !important;
+}
+
+.btn-primary:disabled:hover,
+.btn-primary[disabled]:hover {
+  background-color: #6c757d !important; /* Mantener el mismo color al hacer hover */
+  transform: none !important; /* No aplicar transformación */
+}
+
+.btn-primary:disabled:focus,
+.btn-primary[disabled]:focus {
+  outline: 2px solid #495057 !important; /* Outline gris para focus */
+  outline-offset: 2px;
+}
+
+/* Estilos para botones habilitados (mantener los existentes) */
+.btn-primary:not(:disabled):not([disabled]) {
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-primary:not(:disabled):not([disabled]):hover {
+  background-color: #0056b3;
+}
+
+.btn-primary:not(:disabled):not([disabled]):focus {
+  outline: 2px solid #0056b3;
+  outline-offset: 2px;
 }
