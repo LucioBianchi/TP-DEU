@@ -7,7 +7,6 @@ const SandMeasurementStep = ({ onNext, onBack, onClose, dateData, locationData, 
   const { config } = useConfig();
   const { errors, validateField, clearError } = useFormValidation();
   const [measurements, setMeasurements] = useState({
-    metersTraveled: "",
     eColi: "",
     enterococci: ""
   });
@@ -45,11 +44,10 @@ const SandMeasurementStep = ({ onNext, onBack, onClose, dateData, locationData, 
       clearError(field);
     }
   };
-
+  
   const handleContinue = () => {
-    // Validar todos los campos
+    // Validar solo E. coli y enterococos (sin metros)
     const fieldsToValidate = [
-      { value: measurements.metersTraveled, validatorType: 'positiveNumber', fieldName: 'metersTraveled' },
       { value: measurements.eColi, validatorType: 'positiveNumber', fieldName: 'eColi' },
       { value: measurements.enterococci, validatorType: 'positiveNumber', fieldName: 'enterococci' }
     ];
@@ -64,16 +62,14 @@ const SandMeasurementStep = ({ onNext, onBack, onClose, dateData, locationData, 
     
     onNext({
       sandMeasurements: {
-        metersTraveled: parseFloat(measurements.metersTraveled) || 0,
         eColi: parseFloat(measurements.eColi) || 0,
         enterococci: parseFloat(measurements.enterococci) || 0
       }
     });
   };
-
+  
   const isFormValid = () => {
-    return measurements.metersTraveled.trim() !== "" && 
-           measurements.eColi.trim() !== "" && 
+    return measurements.eColi.trim() !== "" && 
            measurements.enterococci.trim() !== "";
   };
   
@@ -92,60 +88,21 @@ const SandMeasurementStep = ({ onNext, onBack, onClose, dateData, locationData, 
         Contaminación de la arena
       </h2>
       
+      {/* Recordatorio de metros */}
+      <div 
+        className="recommendation-box"
+        tabIndex={0}
+        role="note"
+        aria-label="Recomendación importante: Se recomienda tomar la muestra recorriendo un tramo de 100 metros."
+      >
+        <div className="recommendation-icon">ℹ️</div>
+        <div className="recommendation-content">
+          <strong>Recomendación:</strong> Se recomienda tomar la muestra recorriendo un tramo de 100 metros.
+        </div>
+      </div>
+      
       <div className="coordinates-input">
         <div className="coordinates-inputs">
-          {/* Metros recorridos */}
-          <div>
-            <label 
-              htmlFor="sandMetersTraveled" 
-              style={{ 
-                fontSize: fontSize.body, 
-                fontFamily,
-                display: "block",
-                marginBottom: "0.5rem",
-                fontWeight: "600"
-              }}
-            >
-              Metros recorridos:
-            </label>
-            <input
-              id="sandMetersTraveled"
-              type="number"
-              min="0"
-              step="0.1"
-              value={measurements.metersTraveled}
-              onChange={(e) => handleInputChange("metersTraveled", e.target.value)}
-              placeholder="Ej: 100"
-              style={{ 
-                fontSize: fontSize.body, 
-                fontFamily,
-                width: "100%",
-                padding: "0.75rem",
-                border: "2px solid #dee2e6",
-                borderRadius: "6px",
-                transition: "border-color 0.2s"
-              }}
-              aria-describedby="sand-meters-hint"
-              tabIndex={0}
-            />
-            <ValidationError 
-              error={errors.metersTraveled}
-              fieldName="metersTraveled"
-              id="sand-meters-error"
-            />
-            <div 
-              id="sand-meters-hint" 
-              className="input-hint"
-              style={{ 
-                fontSize: "0.85rem", 
-                color: "#6c757d", 
-                marginTop: "0.25rem" 
-              }}
-            >
-              Distancia recorrida para la medición en metros
-            </div>
-          </div>
-          
           {/* E. coli */}
           <div>
             <label 
@@ -168,23 +125,27 @@ const SandMeasurementStep = ({ onNext, onBack, onClose, dateData, locationData, 
               value={measurements.eColi}
               onChange={(e) => handleInputChange("eColi", e.target.value)}
               placeholder="Ej: 25"
+              className={errors.eColi ? "input-error" : ""}
+              aria-describedby={errors.eColi ? "sand-ecoli-error" : "sand-ecoli-hint"}
+              aria-invalid={errors.eColi ? "true" : "false"}
               style={{ 
                 fontSize: fontSize.body, 
                 fontFamily,
                 width: "100%",
                 padding: "0.75rem",
-                border: "2px solid #dee2e6",
+                border: errors.eColi ? "2px solid #dc3545" : "2px solid #dee2e6",
                 borderRadius: "6px",
                 transition: "border-color 0.2s"
               }}
-              aria-describedby="sand-ecoli-hint"
               tabIndex={0}
             />
+            
             <ValidationError 
               error={errors.eColi}
               fieldName="eColi"
               id="sand-ecoli-error"
             />
+            
             <div 
               id="sand-ecoli-hint" 
               className="input-hint"
@@ -220,23 +181,27 @@ const SandMeasurementStep = ({ onNext, onBack, onClose, dateData, locationData, 
               value={measurements.enterococci}
               onChange={(e) => handleInputChange("enterococci", e.target.value)}
               placeholder="Ej: 10"
+              className={errors.enterococci ? "input-error" : ""}
+              aria-describedby={errors.enterococci ? "sand-enterococci-error" : "sand-enterococci-hint"}
+              aria-invalid={errors.enterococci ? "true" : "false"}
               style={{ 
                 fontSize: fontSize.body, 
                 fontFamily,
                 width: "100%",
                 padding: "0.75rem",
-                border: "2px solid #dee2e6",
+                border: errors.enterococci ? "2px solid #dc3545" : "2px solid #dee2e6",
                 borderRadius: "6px",
                 transition: "border-color 0.2s"
               }}
-              aria-describedby="sand-enterococci-hint"
               tabIndex={0}
             />
+            
             <ValidationError 
               error={errors.enterococci}
               fieldName="enterococci"
               id="sand-enterococci-error"
             />
+            
             <div 
               id="sand-enterococci-hint" 
               className="input-hint"

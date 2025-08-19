@@ -7,7 +7,6 @@ const WaterMeasurementStep = ({ onNext, onBack, onClose, dateData, locationData,
   const { config } = useConfig();
   const { errors, validateField, clearError } = useFormValidation();
   const [measurements, setMeasurements] = useState({
-    metersTraveled: "",
     eColi: "",
     enterococci: ""
   });
@@ -47,9 +46,8 @@ const WaterMeasurementStep = ({ onNext, onBack, onClose, dateData, locationData,
   };
   
   const handleContinue = () => {
-    // Validar todos los campos
+    // Validar solo E. coli y enterococos (sin metros)
     const fieldsToValidate = [
-      { value: measurements.metersTraveled, validatorType: 'positiveNumber', fieldName: 'metersTraveled' },
       { value: measurements.eColi, validatorType: 'positiveNumber', fieldName: 'eColi' },
       { value: measurements.enterococci, validatorType: 'positiveNumber', fieldName: 'enterococci' }
     ];
@@ -64,7 +62,6 @@ const WaterMeasurementStep = ({ onNext, onBack, onClose, dateData, locationData,
     
     onNext({
       waterMeasurements: {
-        metersTraveled: parseFloat(measurements.metersTraveled) || 0,
         eColi: parseFloat(measurements.eColi) || 0,
         enterococci: parseFloat(measurements.enterococci) || 0
       }
@@ -72,8 +69,7 @@ const WaterMeasurementStep = ({ onNext, onBack, onClose, dateData, locationData,
   };
   
   const isFormValid = () => {
-    return measurements.metersTraveled.trim() !== "" && 
-           measurements.eColi.trim() !== "" && 
+    return measurements.eColi.trim() !== "" && 
            measurements.enterococci.trim() !== "";
   };
   
@@ -92,64 +88,21 @@ const WaterMeasurementStep = ({ onNext, onBack, onClose, dateData, locationData,
         Contaminación del agua
       </h2>
       
+      {/* Recordatorio de metros */}
+      <div 
+        className="recommendation-box"
+        tabIndex={0}
+        role="note"
+        aria-label="Recomendación importante: Se recomienda tomar la muestra recorriendo un tramo de 100 metros."
+      >
+        <div className="recommendation-icon">ℹ️</div>
+        <div className="recommendation-content">
+          <strong>Recomendación:</strong> Se recomienda tomar la muestra recorriendo un tramo de 100 metros.
+        </div>
+      </div>
+      
       <div className="coordinates-input">
         <div className="coordinates-inputs">
-          {/* Metros recorridos */}
-          <div>
-            <label 
-              htmlFor="metersTraveled" 
-              style={{ 
-                fontSize: fontSize.body, 
-                fontFamily,
-                display: "block",
-                marginBottom: "0.5rem",
-                fontWeight: "600"
-              }}
-            >
-              Metros recorridos:
-            </label>
-            <input
-              id="metersTraveled"
-              type="number"
-              min="0"
-              step="0.1"
-              value={measurements.metersTraveled}
-              onChange={(e) => handleInputChange("metersTraveled", e.target.value)}
-              placeholder="Ej: 100"
-              className={errors.metersTraveled ? "input-error" : ""}
-              aria-describedby={errors.metersTraveled ? "metersTraveled-error" : "meters-hint"}
-              aria-invalid={errors.metersTraveled ? "true" : "false"}
-              style={{ 
-                fontSize: fontSize.body, 
-                fontFamily,
-                width: "100%",
-                padding: "0.75rem",
-                border: errors.metersTraveled ? "2px solid #dc3545" : "2px solid #dee2e6",
-                borderRadius: "6px",
-                transition: "border-color 0.2s"
-              }}
-              tabIndex={0}
-            />
-            
-            <ValidationError 
-              error={errors.metersTraveled}
-              fieldName="metersTraveled"
-              id="metersTraveled-error"
-            />
-            
-            <div 
-              id="meters-hint" 
-              className="input-hint"
-              style={{ 
-                fontSize: "0.85rem", 
-                color: "#6c757d", 
-                marginTop: "0.25rem" 
-              }}
-            >
-              Distancia recorrida para la medición en metros
-            </div>
-          </div>
-          
           {/* E. coli */}
           <div>
             <label 

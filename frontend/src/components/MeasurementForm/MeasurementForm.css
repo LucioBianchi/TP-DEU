@@ -632,3 +632,50 @@ select.input-error {
   outline: 2px solid #0056b3;
   outline-offset: 2px;
 }
+
+.recommendation-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #f0f8ff; /* Fondo azul muy claro y legible */
+  border: 2px solid #0066cc; /* Reborde azul más visible */
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+  max-width: 600px;
+  cursor: pointer; /* Indica que es interactivo */
+  transition: all 0.2s ease; /* Transición suave */
+}
+
+.recommendation-box:hover {
+  background: #e6f3ff; /* Fondo ligeramente más oscuro al hover */
+  border-color: #0052a3; /* Reborde más oscuro al hover */
+  transform: translateY(-1px); /* Ligero movimiento hacia arriba */
+  box-shadow: 0 2px 8px rgba(0, 102, 204, 0.15); /* Sombra sutil */
+}
+
+.recommendation-box:focus {
+  outline: 3px solid #4d94ff; /* Outline azul al hacer focus */
+  outline-offset: 2px;
+  background: #e6f3ff;
+  border-color: #0052a3;
+}
+
+.recommendation-icon {
+  font-size: 20px;
+  color: #0066cc; /* Color azul que coincide con el borde */
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.recommendation-content {
+  color: #003366; /* Color azul oscuro para mejor legibilidad */
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 500; /* Peso medio para mejor legibilidad */
+}
+
+.recommendation-content strong {
+  color: #001a33; /* Color azul muy oscuro para el texto en negrita */
+  font-weight: 600;
+}
