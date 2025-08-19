@@ -206,7 +206,7 @@ const LocationStep = ({ onNext, onBack, onClose, dateData }) => {
                   transition: "border-color 0.2s"
                 }}
               >
-                <option value="">-- Seleccione una localidad --</option>
+                <option value=""> Seleccione una localidad </option>
                 {uniqueValues.localidades && uniqueValues.localidades.map((locality) => (
                   <option key={locality.id} value={locality.nombre}>
                     {locality.nombre}
