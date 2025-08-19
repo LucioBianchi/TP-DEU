@@ -55,7 +55,7 @@ const MeasurementForm = ({ isOpen, onClose, onSubmit }) => {
         enterococci_water: formData.water?.waterMeasurements?.enterococci ? parseFloat(formData.water.waterMeasurements.enterococci) : null,
         ecoli_sand: formData.sand?.sandMeasurements?.eColi ? parseFloat(formData.sand.sandMeasurements.eColi) : null,
         enterococci_sand: formData.sand?.sandMeasurements?.enterococci ? parseFloat(formData.sand.sandMeasurements.enterococci) : null,
-        additional_notes: finalStepData?.observations || ''
+        additional_notes: finalStepData?.extraInfo?.observations || ''
       };
       
       console.log('Datos a enviar al backend:', measurementData);
